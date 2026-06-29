@@ -1,0 +1,8 @@
+{
+  "name": "Copy of Premium Ceiling Master",
+  "description": "Mobile web application for Premium Ceiling Master featuring AI voice assistant, portfolio gallery, and AR ceiling visualizer.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

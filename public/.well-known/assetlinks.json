@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.example.pcm_wayanad",
+      "sha256_cert_fingerprints": [
+        "AC:06:97:5C:8C:8D:8C:18:E6:79:D3:F9:09:5A:AA:26:03:88:18:45:A8:5B:FD:BD:A7:65:A0:2F:39:4D:E5:FE"
+      ]
+    }
+  }
+]

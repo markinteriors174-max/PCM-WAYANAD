@@ -1,0 +1,38 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "PCM Low-Poly"
+  },
+  "nodes": [
+    {"name": "LeftPanel", "mesh": 0},
+    {"name": "RightPanel", "mesh": 1}
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "material": "fabric_curtain",
+          "indices": [0,1,2, 0,2,3],
+          "attributes": {
+            "POSITION": [
+              -3.0, 0.0,  0.0, -2.0, 0.0,  0.0, -2.0, 6.0,  0.0, -3.0, 6.0,  0.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "primitives": [
+        {
+          "material": "fabric_curtain",
+          "indices": [0,1,2, 0,2,3],
+          "attributes": {
+            "POSITION": [
+               2.0, 0.0,  0.0,  3.0, 0.0,  0.0,  3.0, 6.0,  0.0,  2.0, 6.0,  0.0
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

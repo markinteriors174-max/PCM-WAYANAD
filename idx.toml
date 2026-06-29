@@ -1,0 +1,15 @@
+# To learn more about how to use idx.toml to configure your environment
+# see: https://developers.google.com/idx/guides/customize-idx-env
+
+[preview]
+enable = true
+
+[[preview.previews]]
+id = "android"
+manager = "android"
+command = ["flutter", "run", "-d", "android", "-v"]
+
+[[preview.previews]]
+id = "web"
+manager = "web"
+command = ["flutter", "run", "-d", "web-server", "--web-port", "$PORT"]

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "294992522788",
+    "project_id": "kurichar-matrimony",
+    "storage_bucket": "kurichar-matrimony.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:294992522788:android:ce24163073d62bd1a332b1",
+        "android_client_info": {
+          "package_name": "com.android.application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBY1U-ffHcPRGBqKB3RaKMuJ-HhUS9ZoEA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

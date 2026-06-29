@@ -1,0 +1,9 @@
+{
+  "cmake.sourceDirectory": "C:/Users/USER/Downloads/PCM WAYANAD/linux",
+  "brightscript.bsdk": "embedded",
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "mssql.intelliSense.enableErrorChecking": false,
+  "files.associations": {
+    "*.sql": "postgres"
+  }
+}
