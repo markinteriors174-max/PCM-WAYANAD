@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PCM WAYANAD - Custom Gypsum Layout Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --panel-bg: rgba(15, 23, 42, 0.88);
+      --panel-border: rgba(255, 255, 255, 0.12);
+      --panel-blur: blur(20px);
+      --primary: #f59e0b;
+      --primary-hover: #d97706;
+      --primary-glow: rgba(245, 158, 11, 0.35);
+      --accent-cyan: #06b6d4;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-sub: #64748b;
+      --success: #10b981;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --input-bg: rgba(15, 23, 42, 0.65);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: #1a1a1a;
+      color: var(--text-main);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    #webgl-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      display: block;
+    }
+
+    /* Top Brand & Action Bar */
+    .top-bar {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      right: 20px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .brand-pill {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--panel-bg);
+      -webkit-backdrop-filter: var(--panel-blur);
+      backdrop-filter: var(--panel-blur);
+      border: 1px solid var(--panel-border);
+      padding: 8px 18px;
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #f59e0b, #ea580c);
+      color: #0f172a;
+      font-weight: 900;
+      font-size: 11px;
+      letter-spacing: 1px;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+
+    .top-actions {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-glass {
+      background: var(--panel-bg);
+      -webkit-backdrop-filter: var(--panel-blur);
+      backdrop-filter: var(--panel-blur);
+      border: 1px solid var(--panel-border);
+      color: var(--text-main);
+      padding: 9px 16px;
+      border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-glass:hover {
+      background: rgba(30, 41, 59, 0.9);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border: none;
+      color: #0f172a;
+      font-weight: 700;
+      box-shadow: 0 4px 18px var(--primary-glow);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px var(--primary-glow);
+    }
+
+    /* Floating UI Control Drawer */
+    #ui {
+      position: absolute;
+      top: 76px;
+      left: 20px;
+      bottom: 24px;
+      width: 320px;
+      max-width: calc(100vw - 40px);
+      background: var(--panel-bg);
+      -webkit-backdrop-filter: var(--panel-blur);
+      backdrop-filter: var(--panel-blur);
+      border: 1px solid var(--panel-border);
+      padding: 18px;
+      border-radius: 18px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #ui.collapsed {
+      transform: translateX(calc(-100% - 30px));
+    }
+
+    .panel-toggle-btn {
+      position: absolute;
+      top: 76px;
+      left: 20px;
+      z-index: 9;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--panel-bg);
+      -webkit-backdrop-filter: var(--panel-blur);
+      backdrop-filter: var(--panel-blur);
+      border: 1px solid var(--panel-border);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .ui-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    h3 {
+      margin: 0 0 4px 0;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .help-hint {
+      margin: 0;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      padding: 4px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .close-btn:hover {
+      color: #ffffff;
+      background: #0f172a;
+    }
+
+    /* Form & Input Groups */
+    .input-group {
+      margin-bottom: 12px;
+    }
+
+    .label-heading,
+    label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .label-heading .val-tag,
+    label .val-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 8px 10px;
+      box-sizing: border-box;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-glow);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin-top: 4px;
+      accent-color: var(--primary);
+      height: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* Preset Style Selector */
+    .preset-section {
+      margin: 10px 0 14px;
+      background: rgba(10, 15, 29, 0.5);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .preset-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+
+    .preset-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 8px 6px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .preset-btn:hover {
+      background: rgba(30, 41, 59, 0.95);
+      color: #f8fafc;
+    }
+
+    .preset-btn.active {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: var(--primary);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* Lighting Swatches */
+    .lighting-grid {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .light-swatch {
+      flex: 1;
+      height: 28px;
+      border-radius: 6px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .light-swatch.swatch-amber {
+      background-color: #ffaa33;
+    }
+
+    .light-swatch.swatch-warm {
+      background-color: #fff4d6;
+    }
+
+    .light-swatch.swatch-day {
+      background-color: #ffffff;
+    }
+
+    .light-swatch.swatch-cyan {
+      background-color: #38bdf8;
+    }
+
+    .light-swatch:hover {
+      transform: scale(1.05);
+    }
+
+    .light-swatch.active {
+      border-color: #fff;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    }
+
+    /* Live Cost Card */
+    .cost-card {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(15, 23, 42, 0.8));
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 14px;
+    }
+
+    .cost-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .cost-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .cost-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .cost-metrics span {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Bottom Floating Action Bar */
+    .bottom-bar {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      background: var(--panel-bg);
+      -webkit-backdrop-filter: var(--panel-blur);
+      backdrop-filter: var(--panel-blur);
+      border: 1px solid var(--panel-border);
+      padding: 6px 12px;
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .view-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .view-btn:hover {
+      color: #fff;
+    }
+
+    .view-btn.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    @media (max-width: 640px) {
+      .top-bar { top: 10px; left: 10px; right: 10px; }
+      #ui { top: 68px; left: 10px; width: calc(100vw - 20px); max-height: 70vh; }
+      .bottom-bar { bottom: 12px; width: 90%; justify-content: center; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-bar">
+    <div class="brand-pill">
+      <span class="brand-badge">3D STUDIO</span>
+      <span class="brand-title">PCM WAYANAD</span>
+    </div>
+    <div class="top-actions">
+      <button type="button" class="btn-glass" id="btnSnapshot" title="Download Screenshot">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span>Snapshot</span>
+      </button>
+      <button type="button" class="btn-glass btn-primary" id="btnWhatsappQuote" title="Get WhatsApp Estimate">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2z"/></svg>
+        <span>WhatsApp Quote</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Toggle Button for Floating Panel -->
+  <button type="button" class="panel-toggle-btn" id="btnToggleUI" aria-label="Toggle Designer Controls" title="Toggle Controls">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+  </button>
+
+  <!-- Floating UI Drawer -->
+  <div id="ui">
+    <div class="ui-header">
+      <div>
+        <h3>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          Custom Layout Designer
+        </h3>
+        <p class="help-hint">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          മൗസ് ഉപയോഗിച്ച് കറക്കി നോക്കാം (Orbit Controls)
+        </p>
+      </div>
+      <button type="button" class="close-btn" id="btnCloseUI" aria-label="Close Panel" title="Close Panel">&times;</button>
+    </div>
+
+    <!-- Design Preset Selection -->
+    <div class="preset-section">
+      <div class="preset-title">Ceiling Style / ഡിസൈൻ രീതി</div>
+      <div class="preset-grid">
+        <button type="button" class="preset-btn active" data-preset="cove">Cove Recess</button>
+        <button type="button" class="preset-btn" data-preset="multilayer">3-Layer Box</button>
+        <button type="button" class="preset-btn" data-preset="island">Island Drop</button>
+        <button type="button" class="preset-btn" data-preset="perimeter">Border Step</button>
+      </div>
+    </div>
+
+    <!-- Length Input -->
+    <div class="input-group">
+      <label for="roomL">
+        <span>മുറിയുടെ നീളം (Length - Meter):</span>
+        <span class="val-tag" id="valL">5.0 m</span>
+      </label>
+      <input type="number" id="roomL" value="5" step="0.5" min="2" max="15" placeholder="5.0" title="Room Length in Meters" aria-label="Room Length in Meters" />
+      <input type="range" id="rangeL" value="5" step="0.5" min="2" max="15" title="Room Length Slider" aria-label="Room Length Slider" />
+    </div>
+
+    <!-- Width Input -->
+    <div class="input-group">
+      <label for="roomW">
+        <span>മുറിയുടെ വീതി (Width - Meter):</span>
+        <span class="val-tag" id="valW">4.0 m</span>
+      </label>
+      <input type="number" id="roomW" value="4" step="0.5" min="2" max="15" placeholder="4.0" title="Room Width in Meters" aria-label="Room Width in Meters" />
+      <input type="range" id="rangeW" value="4" step="0.5" min="2" max="15" title="Room Width Slider" aria-label="Room Width Slider" />
+    </div>
+
+    <!-- Cove Margin Input -->
+    <div class="input-group">
+      <label for="coveGap">
+        <span>കോവ് ഗ്യാപ്പ് അകലം (Cove Margin):</span>
+        <span class="val-tag" id="valGap">0.5 m</span>
+      </label>
+      <input type="number" id="coveGap" value="0.5" step="0.1" min="0.2" max="2" placeholder="0.5" title="Cove Margin in Meters" aria-label="Cove Margin in Meters" />
+      <input type="range" id="rangeGap" value="0.5" step="0.1" min="0.2" max="2" title="Cove Margin Slider" aria-label="Cove Margin Slider" />
+    </div>
+
+    <!-- Cove LED Color Swatches -->
+    <div class="input-group">
+      <div class="label-heading">
+        <span>LED കോവ് ലൈറ്റിംഗ് (Cove Light):</span>
+        <span class="val-tag" id="valCoveColor">Amber 3000K</span>
+      </div>
+      <div class="lighting-grid">
+        <button type="button" class="light-swatch swatch-amber active" data-color="0xffaa33" data-name="Amber 3000K" title="Amber 3000K Warm Glow">Amber</button>
+        <button type="button" class="light-swatch swatch-warm" data-color="0xfff4d6" data-name="Warm White 4000K" title="Warm White 4000K">Warm</button>
+        <button type="button" class="light-swatch swatch-day" data-color="0xffffff" data-name="Cool Day 6500K" title="Cool Day 6500K">Day</button>
+        <button type="button" class="light-swatch swatch-cyan" data-color="0x38bdf8" data-name="Ice Cyan" title="Ice Cyan Neon">Cyan</button>
+      </div>
+    </div>
+
+    <!-- Live Cost Estimation Card -->
+    <div class="cost-card">
+      <div class="cost-header">
+        <span>ESTIMATED BUDGET</span>
+        <span>PCM WAYANAD</span>
+      </div>
+      <div class="cost-value" id="costEstimate">₹28,500</div>
+      <div class="cost-metrics">
+        <div>Area: <span id="metricArea">215 Sq.Ft (20 m²)</span></div>
+        <div>Cove: <span id="metricCove">59 Rft</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Camera View Controls -->
+  <div class="bottom-bar">
+    <button type="button" class="view-btn active" data-view="ceiling">Ceiling View</button>
+    <button type="button" class="view-btn" data-view="eye">Eye Level</button>
+    <button type="button" class="view-btn" data-view="iso">Isometric 3D</button>
+    <button type="button" class="view-btn" data-view="plan">Plan View</button>
+  </div>
+
+  <!-- Three.js CDN & OrbitControls CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js" integrity="sha384-wagZhIFgY4hD+7awjQjR4e2E294y6J2HSnd8eTNc15ZubTeQeVRZwhQJ+W6hnBsf" crossorigin="anonymous"></script>
+
+  <script>
+    // 1. Scene & Renderer Setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x121824);
+
+    const canvas = document.getElementById('webgl-canvas');
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, preserveDrawingBuffer: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    // Camera initial position looking up towards the ceiling
+    camera.position.set(0, 0, 5);
+
+    // 2. Orbit Controls
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.maxPolarAngle = Math.PI / 2 + 0.1; // Restrict to ceiling view focus
+
+    // 3. Lighting Setup
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+    scene.add(ambientLight);
+
+    let currentCoveColor = 0xffaa33;
+    const coveLight = new THREE.PointLight(currentCoveColor, 1.8, 12);
+    coveLight.position.set(0, 1.8, 0);
+    coveLight.castShadow = true;
+    scene.add(coveLight);
+
+    // Secondary soft room fill light
+    const fillLight = new THREE.PointLight(0xffffff, 0.5, 15);
+    fillLight.position.set(0, 0.2, 0);
+    scene.add(fillLight);
+
+    // 4. Ceiling Materials & Design Group
+    const designGroup = new THREE.Group();
+    scene.add(designGroup);
+
+    const ceilingMaterial = new THREE.MeshStandardMaterial({
+      color: 0xfcfcfc,
+      roughness: 0.45,
+      metalness: 0.05,
+      side: THREE.DoubleSide
+    });
+
+    const slabMaterial = new THREE.MeshStandardMaterial({
+      color: 0x222938,
+      roughness: 0.8,
+      side: THREE.DoubleSide
+    });
+
+    const accentMaterial = new THREE.MeshStandardMaterial({
+      color: 0xe2e8f0,
+      roughness: 0.35,
+      metalness: 0.1
+    });
+
+    let currentPreset = 'cove';
+
+    // 5. Update Design Logic
+    function updateDesign() {
+      // Clear previous meshes
+      while (designGroup.children.length > 0) {
+        const obj = designGroup.children[0];
+        if (obj.geometry) obj.geometry.dispose();
+        designGroup.remove(obj);
+      }
+
+      const length = Number.parseFloat(document.getElementById('roomL').value) || 5;
+      const width = Number.parseFloat(document.getElementById('roomW').value) || 4;
+      let gap = Number.parseFloat(document.getElementById('coveGap').value) || 0.5;
+
+      // Ensure cove gap is within reasonable bounds for room dimensions
+      const maxGap = (Math.min(length, width) / 2) - 0.2;
+      if (gap >= maxGap) {
+        gap = Math.max(0.2, maxGap - 0.1);
+        document.getElementById('coveGap').value = gap.toFixed(1);
+        document.getElementById('rangeGap').value = gap.toFixed(1);
+      }
+
+      // Upper Ceiling Slab (The base room ceiling above false ceiling)
+      const slabGeo = new THREE.PlaneGeometry(length + 0.6, width + 0.6);
+      const slabMesh = new THREE.Mesh(slabGeo, slabMaterial);
+      slabMesh.rotation.x = Math.PI / 2;
+      slabMesh.position.y = 2.15;
+      slabMesh.receiveShadow = true;
+      designGroup.add(slabMesh);
+
+      if (currentPreset === 'cove') {
+        // Custom ExtrudeGeometry with hole for cove lighting recess
+        const shape = new THREE.Shape();
+        shape.moveTo(-length / 2, -width / 2);
+        shape.lineTo(length / 2, -width / 2);
+        shape.lineTo(length / 2, width / 2);
+        shape.lineTo(-length / 2, width / 2);
+        shape.closePath();
+
+        // Hole for cove lighting recess (clockwise winding)
+        const holePath = new THREE.Path();
+        holePath.moveTo(-length / 2 + gap, -width / 2 + gap);
+        holePath.lineTo(-length / 2 + gap, width / 2 - gap);
+        holePath.lineTo(length / 2 - gap, width / 2 - gap);
+        holePath.lineTo(length / 2 - gap, -width / 2 + gap);
+        holePath.closePath();
+        shape.holes.push(holePath);
+
+        const extrudeSettings = {
+          steps: 1,
+          depth: 0.2,
+          bevelEnabled: true,
+          bevelThickness: 0.05,
+          bevelSize: 0.05,
+          bevelSegments: 3
+        };
+
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        const ceilingMesh = new THREE.Mesh(geometry, ceilingMaterial);
+        ceilingMesh.rotation.x = Math.PI / 2;
+        ceilingMesh.position.y = 2;
+        ceilingMesh.castShadow = true;
+        ceilingMesh.receiveShadow = true;
+        designGroup.add(ceilingMesh);
+
+        // Center Accent Platter
+        const centerL = Math.max(1, length - (2 * gap) - 1);
+        const centerW = Math.max(1, width - (2 * gap) - 1);
+        const centerGeo = new THREE.BoxGeometry(centerL, 0.12, centerW);
+        const centerMesh = new THREE.Mesh(centerGeo, accentMaterial);
+        centerMesh.position.set(0, 2.05, 0);
+        designGroup.add(centerMesh);
+
+      } else if (currentPreset === 'multilayer') {
+        // Multi-layer Gypsum Box (Outer Base y=2, Recessed y=1.85, Center y=1.7)
+        const baseGeo = new THREE.BoxGeometry(length, 0.1, width);
+        const baseCeiling = new THREE.Mesh(baseGeo, ceilingMaterial);
+        baseCeiling.position.y = 2;
+        designGroup.add(baseCeiling);
+
+        const innerL = Math.max(1.2, length - (2 * gap));
+        const innerW = Math.max(1.2, width - (2 * gap));
+        const innerGeo = new THREE.BoxGeometry(innerL, 0.15, innerW);
+        const innerCeiling = new THREE.Mesh(innerGeo, accentMaterial);
+        innerCeiling.position.set(0, 1.85, 0);
+        designGroup.add(innerCeiling);
+
+        const centerL = Math.max(0.8, innerL / 2);
+        const centerW = Math.max(0.8, innerW / 2);
+        const centerGeo = new THREE.BoxGeometry(centerL, 0.2, centerW);
+        const centerDesign = new THREE.Mesh(centerGeo, ceilingMaterial);
+        centerDesign.position.set(0, 1.7, 0);
+        designGroup.add(centerDesign);
+
+      } else if (currentPreset === 'island') {
+        // Floating Island Drop with Perimeter Border
+        const borderThickness = gap;
+        const outerGeo = new THREE.BoxGeometry(length, 0.12, width);
+        const outerCeiling = new THREE.Mesh(outerGeo, slabMaterial);
+        outerCeiling.position.y = 2.05;
+        designGroup.add(outerCeiling);
+
+        const islandL = Math.max(1.5, length - (borderThickness * 2));
+        const islandW = Math.max(1.2, width - (borderThickness * 2));
+        const islandGeo = new THREE.BoxGeometry(islandL, 0.18, islandW);
+        const islandMesh = new THREE.Mesh(islandGeo, ceilingMaterial);
+        islandMesh.position.set(0, 1.85, 0);
+        designGroup.add(islandMesh);
+
+      } else if (currentPreset === 'perimeter') {
+        // Step Border Ceiling
+        const borderGeo = new THREE.BoxGeometry(length, 0.22, width);
+        const borderCeiling = new THREE.Mesh(borderGeo, ceilingMaterial);
+        borderCeiling.position.y = 1.9;
+        designGroup.add(borderCeiling);
+
+        const centerGeo = new THREE.BoxGeometry(length - (gap * 1.6), 0.1, width - (gap * 1.6));
+        const centerMesh = new THREE.Mesh(centerGeo, slabMaterial);
+        centerMesh.position.set(0, 2.05, 0);
+        designGroup.add(centerMesh);
+      }
+
+      // Update Cove Light position & height relative to geometry
+      coveLight.position.set(0, 1.85, 0);
+
+      // Update Labels & Real-Time Cost
+      updateMetricsAndCost(length, width, gap);
+    }
+
+    // 6. Live Cost Calculation (PCM Wayanad Standard Commercial Rates)
+    function updateMetricsAndCost(lengthM, widthM, gapM) {
+      const M_TO_FT = 3.28084;
+      const lengthFt = lengthM * M_TO_FT;
+      const widthFt = widthM * M_TO_FT;
+      const areaSqFt = Math.round(lengthFt * widthFt);
+      const areaSqM = (lengthM * widthM).toFixed(1);
+
+      // Cove perimeter in running feet
+      const coveInnerLFt = Math.max(0, (lengthM - (2 * gapM)) * M_TO_FT);
+      const coveInnerWFt = Math.max(0, (widthM - (2 * gapM)) * M_TO_FT);
+      const coveRft = Math.round(2 * (coveInnerLFt + coveInnerWFt));
+
+      // Pricing structure:
+      // ₹125/sq.ft Saint-Gobain Gyproc false ceiling framework
+      // ₹55/Rft Cove lighting profile trough
+      // 4 LED spot lights included base: ₹1,400
+      const baseCeilingCost = areaSqFt * 125;
+      const coveCost = coveRft * 55;
+      const spotCost = 1400;
+      const totalEstimated = baseCeilingCost + coveCost + spotCost;
+
+      document.getElementById('valL').textContent = `${lengthM.toFixed(1)} m`;
+      document.getElementById('valW').textContent = `${widthM.toFixed(1)} m`;
+      document.getElementById('valGap').textContent = `${gapM.toFixed(1)} m`;
+
+      document.getElementById('costEstimate').textContent = `₹${totalEstimated.toLocaleString('en-IN')}`;
+      document.getElementById('metricArea').textContent = `${areaSqFt} Sq.Ft (${areaSqM} m²)`;
+      document.getElementById('metricCove').textContent = `${coveRft} Rft`;
+    }
+
+    // 7. Synchronize Sliders with Number Inputs
+    function bindInputPair(numberId, rangeId) {
+      const numInput = document.getElementById(numberId);
+      const rangeInput = document.getElementById(rangeId);
+
+      numInput.addEventListener('input', () => {
+        rangeInput.value = numInput.value;
+        updateDesign();
+      });
+
+      rangeInput.addEventListener('input', () => {
+        numInput.value = rangeInput.value;
+        updateDesign();
+      });
+    }
+
+    bindInputPair('roomL', 'rangeL');
+    bindInputPair('roomW', 'rangeW');
+    bindInputPair('coveGap', 'rangeGap');
+
+    // 8. Preset Buttons
+    document.querySelectorAll('.preset-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.preset-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentPreset = btn.dataset.preset;
+        updateDesign();
+      });
+    });
+
+    // 9. Lighting Color Swatches
+    document.querySelectorAll('.light-swatch').forEach((swatch) => {
+      swatch.addEventListener('click', () => {
+        document.querySelectorAll('.light-swatch').forEach((s) => s.classList.remove('active'));
+        swatch.classList.add('active');
+        currentCoveColor = Number.parseInt(swatch.dataset.color, 16);
+        coveLight.color.setHex(currentCoveColor);
+        document.getElementById('valCoveColor').textContent = swatch.dataset.name;
+      });
+    });
+
+    // 10. Camera Presets
+    document.querySelectorAll('.view-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.view-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        const view = btn.dataset.view;
+
+        if (view === 'ceiling') {
+          // Direct upward ceiling view
+          camera.position.set(0, 0, 5);
+          controls.target.set(0, 2, 0);
+        } else if (view === 'eye') {
+          // Standing view looking across and up
+          camera.position.set(-2.5, 0.4, 3.2);
+          controls.target.set(0, 1.9, 0);
+        } else if (view === 'iso') {
+          // 3D Isometric high angle
+          camera.position.set(4.5, 3.8, 5.5);
+          controls.target.set(0, 1.5, 0);
+        } else if (view === 'plan') {
+          // Top-down 2D plan view
+          camera.position.set(0, 7.5, 0.01);
+          controls.target.set(0, 2, 0);
+        }
+        controls.update();
+      });
+    });
+
+    // 11. Panel Toggles
+    const uiPanel = document.getElementById('ui');
+    document.getElementById('btnToggleUI').addEventListener('click', () => {
+      uiPanel.classList.toggle('collapsed');
+    });
+    document.getElementById('btnCloseUI').addEventListener('click', () => {
+      uiPanel.classList.add('collapsed');
+    });
+
+    // 12. Snapshot Feature
+    document.getElementById('btnSnapshot').addEventListener('click', () => {
+      renderer.render(scene, camera);
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `PCM-Gypsum-3D-Layout-${Date.now()}.png`;
+      link.href = dataUrl;
+      link.click();
+    });
+
+    // 13. WhatsApp Inquiry
+    document.getElementById('btnWhatsappQuote').addEventListener('click', () => {
+      const length = document.getElementById('roomL').value;
+      const width = document.getElementById('roomW').value;
+      const gap = document.getElementById('coveGap').value;
+      const cost = document.getElementById('costEstimate').textContent;
+      const area = document.getElementById('metricArea').textContent;
+
+      const message = encodeURIComponent(
+        `Hello PCM WAYANAD!\n` +
+        `I customized a False Ceiling 3D Layout on your website:\n` +
+        `• Style: ${currentPreset.toUpperCase()}\n` +
+        `• Dimensions: ${length}m x ${width}m (${area})\n` +
+        `• Cove Margin: ${gap}m\n` +
+        `• Estimated Quote: ${cost}\n` +
+        `Please contact me for site inspection & final drawing!`
+      );
+      window.open(`https://wa.me/916282278983?text=${message}`, '_blank');
+    });
+
+    // 14. Initial Build & Dynamic Client Site Parameters
+    function applyDynamicParams(data) {
+      if (!data) return;
+      if (data.room) {
+        const titleEl = document.querySelector('.brand-title');
+        if (titleEl) titleEl.textContent = `PCM WAYANAD • ${data.room}`;
+      }
+      if (data.length) {
+        const lVal = Number(data.length).toFixed(1);
+        document.getElementById('roomL').value = lVal;
+        document.getElementById('rangeL').value = lVal;
+      }
+      if (data.width) {
+        const wVal = Number(data.width).toFixed(1);
+        document.getElementById('roomW').value = wVal;
+        document.getElementById('rangeW').value = wVal;
+      }
+      if (data.gap) {
+        const gVal = Number(data.gap).toFixed(1);
+        document.getElementById('coveGap').value = gVal;
+        document.getElementById('rangeGap').value = gVal;
+      }
+      if (data.preset) {
+        currentPreset = data.preset;
+        document.querySelectorAll('.preset-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.preset === currentPreset);
+        });
+      }
+      if (data.color) {
+        currentCoveColor = Number.parseInt(String(data.color).replace('#', ''), 16) || 0xffaa33;
+        coveLight.color.setHex(currentCoveColor);
+      }
+      updateDesign();
+    }
+
+    // Read initial URL Query Parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    applyDynamicParams({
+      room: urlParams.get('room'),
+      length: urlParams.get('l') || urlParams.get('length'),
+      width: urlParams.get('w') || urlParams.get('width'),
+      gap: urlParams.get('gap'),
+      preset: urlParams.get('preset'),
+      color: urlParams.get('color')
+    });
+
+    // Listen for live parent portal postMessage updates
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'PCM_SET_ROOM') {
+        applyDynamicParams(event.data);
+      }
+    });
+
+    updateDesign();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // 15. Responsive Window Resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>

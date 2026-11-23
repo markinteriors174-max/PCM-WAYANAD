@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D House Studio</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #0e1117;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    canvas {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      touch-action: none;
+    }
+    #overlay-ui {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      color: #ffffff;
+      font-size: 13px;
+      pointer-events: none;
+      background: rgba(22, 25, 34, 0.75);
+      padding: 6px 12px;
+      border-radius: 6px;
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      z-index: 10;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-2d { background: #00c853; color: #000; }
+    .badge-3d { background: #ffab00; color: #000; }
+    #snap-status { color: #00e676; display: none; }
+  </style>
+  <!-- Three.js & OrbitControls Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpgeh6vom5Zm+M0DCKIdPTe5GVDe86CX507q32AgGIOQ1aHBQKkV2UV05MmHpqVVJUH5zs/CpqA==" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js" integrity="sha256-9Iu96c0F44p00p4gU6xHn4eA1G8x8Y6D8G0wG8h+J4o=" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="overlay-ui">
+    <span id="mode-badge" class="badge badge-2d">2D CAD MODE</span>
+    <span id="wall-count">Walls: 0</span>
+    <span id="snap-status">🧲 SNAPPED</span>
+  </div>
+
+  <script>
+    let scene, camera, renderer, controls;
+    let is3D = false;
+    let activeTool = 'wall';
+    let wallHeight = 2.8; // 9.2 അടി ഭിത്തി ഉയരം
+    let wallThickness = 0.22;
+    let wallColor = 0xe0ded8;
+    let floorColor = 0x2d1f18;
+    let walls = [];
+    let openings = [];
+    let activeCorners = []; // ഭിത്തികളുടെ അറ്റങ്ങൾ (Corners) സൂക്ഷിക്കുന്ന അറേ
+
+    let isDrawing = false, startPoint = null, tempWallMesh = null;
+    let floorMesh = null;
+    let snapIndicatorMesh = null;
+
+    function init() {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0e1117);
+
+      camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      document.body.appendChild(renderer.domElement);
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.08;
+      
+      // തുടക്കത്തിൽ 2D ടോപ്പ് വ്യൂ
+      set2DView();
+
+      // വെളിച്ചം (Lights)
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+      scene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0xfff5e6, 0.85);
+      dirLight.position.set(12, 22, 12);
+      dirLight.castShadow = true;
+      dirLight.shadow.mapSize.width = 1024;
+      dirLight.shadow.mapSize.height = 1024;
+      dirLight.shadow.camera.near = 0.5;
+      dirLight.shadow.camera.far = 60;
+      dirLight.shadow.camera.left = -15;
+      dirLight.shadow.camera.right = 15;
+      dirLight.shadow.camera.top = 15;
+      dirLight.shadow.camera.bottom = -15;
+      scene.add(dirLight);
+
+      // സോഫ്റ്റ് ആംബിയന്റ് ബ്ലൂ ലൈറ്റ്
+      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x1f2430, 0.4);
+      scene.add(hemiLight);
+
+      // ഗ്രിഡ് (Grid Helper)
+      const grid = new THREE.GridHelper(30, 30, 0x00e676, 0x232733);
+      grid.position.y = 0;
+      scene.add(grid);
+
+      // തറ (Floor)
+      const floorGeo = new THREE.PlaneGeometry(30, 30);
+      const floorMat = new THREE.MeshStandardMaterial({ 
+        color: floorColor, 
+        roughness: 0.6,
+        metalness: 0.1
+      });
+      floorMesh = new THREE.Mesh(floorGeo, floorMat);
+      floorMesh.rotation.x = -Math.PI / 2;
+      floorMesh.position.y = -0.01;
+      floorMesh.receiveShadow = true;
+      scene.add(floorMesh);
+
+      // സ്നാപ്പ് ഇൻഡിക്കേറ്റർ റിംഗ്
+      const snapGeo = new THREE.RingGeometry(0.12, 0.22, 16);
+      const snapMat = new THREE.MeshBasicMaterial({ color: 0x00e676, side: THREE.DoubleSide });
+      snapIndicatorMesh = new THREE.Mesh(snapGeo, snapMat);
+      snapIndicatorMesh.rotation.x = -Math.PI / 2;
+      snapIndicatorMesh.position.y = 0.05;
+      snapIndicatorMesh.visible = false;
+      scene.add(snapIndicatorMesh);
+
+      setupDrawing();
+      animate();
+
+      window.addEventListener('resize', onWindowResize);
+    }
+
+    function onWindowResize() {
+      if (!camera || !renderer) return;
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function set2DView() {
+      is3D = false;
+      const badge = document.getElementById('mode-badge');
+      if (badge) {
+        badge.className = 'badge badge-2d';
+        badge.innerText = '2D CAD MODE';
+      }
+      camera.position.set(0, 16, 0.001);
+      camera.lookAt(0, 0, 0);
+      controls.target.set(0, 0, 0);
+      controls.enableRotate = false; // 2D ൽ റൊട്ടേഷൻ ഓഫ്
+    }
+
+    function set3DView() {
+      is3D = true;
+      const badge = document.getElementById('mode-badge');
+      if (badge) {
+        badge.className = 'badge badge-3d';
+        badge.innerText = '3D PERSPECTIVE';
+      }
+      camera.position.set(9, 11, 13);
+      camera.lookAt(0, 1.4, 0);
+      controls.target.set(0, 1.4, 0);
+      controls.enableRotate = true; // 3D ൽ കൈകൊണ്ട് കറക്കി നോക്കാം
+      if (snapIndicatorMesh) snapIndicatorMesh.visible = false;
+    }
+
+    function applyOrthoSnap(currentPoint, origin, threshold = 0.35) {
+      if (!origin) return;
+      const dx = Math.abs(currentPoint.x - origin.x);
+      const dz = Math.abs(currentPoint.z - origin.z);
+      if (dx < threshold) {
+        currentPoint.x = origin.x;
+      } else if (dz < threshold) {
+        currentPoint.z = origin.z;
+      }
+    }
+
+    // 1. മാഗ്നറ്റിക് കോർണർ സ്നാപ്പിംഗ് (Magnetic Snapping Logic)
+    function snapToNearestCorner(currentPoint, snapDistance = 0.8) {
+      const snapBadge = document.getElementById('snap-status');
+      if (!currentPoint) return currentPoint;
+
+      for (const corner of activeCorners) {
+        if (currentPoint.distanceTo(corner) < snapDistance) {
+          if (snapIndicatorMesh) {
+            snapIndicatorMesh.position.set(corner.x, 0.05, corner.z);
+            snapIndicatorMesh.visible = true;
+          }
+          if (snapBadge) snapBadge.style.display = 'inline-block';
+          return corner.clone();
+        }
+      }
+
+      // ഓർത്തോഗണൽ ആക്സിസ് സ്നാപ്പിംഗ് (Ortho Snap - Horizontal / Vertical lines)
+      applyOrthoSnap(currentPoint, startPoint);
+
+      if (snapIndicatorMesh) snapIndicatorMesh.visible = false;
+      if (snapBadge) snapBadge.style.display = 'none';
+      return currentPoint;
+    }
+
+    function getSnappedPoint(rawPoint, existingCorners = activeCorners, threshold = 1.0) {
+      for (const corner of existingCorners) {
+        if (rawPoint.distanceTo(corner) < threshold) {
+          return corner.clone();
+        }
+      }
+      return rawPoint;
+    }
+
+    function setupDrawing() {
+      const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+
+      function getIntersect(e) {
+        let clientX = 0;
+        let clientY = 0;
+        if (e.clientX !== undefined) {
+          clientX = e.clientX;
+        } else if (e.touches && e.touches.length > 0) {
+          clientX = e.touches[0].clientX;
+        }
+        if (e.clientY !== undefined) {
+          clientY = e.clientY;
+        } else if (e.touches && e.touches.length > 0) {
+          clientY = e.touches[0].clientY;
+        }
+
+        mouse.x = (clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const pt = new THREE.Vector3();
+        raycaster.ray.intersectPlane(plane, pt);
+        return pt;
+      }
+
+      window.addEventListener('pointerdown', (e) => {
+        if (is3D) return;
+        const rawPt = getIntersect(e);
+        if (!rawPt) return;
+
+        isDrawing = true;
+        startPoint = snapToNearestCorner(rawPt);
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (!isDrawing || is3D || !startPoint) return;
+        const rawPt = getIntersect(e);
+        if (rawPt) {
+          const snappedPt = snapToNearestCorner(rawPt);
+          drawWallPreview(startPoint, snappedPt);
+        }
+      });
+
+      window.addEventListener('pointerup', (e) => {
+        if (!isDrawing || is3D || !startPoint) return;
+        const rawPt = getIntersect(e);
+        if (rawPt) {
+          const endPt = snapToNearestCorner(rawPt);
+          if (startPoint && endPt && startPoint.distanceTo(endPt) > 0.4) {
+            createPermanentWall(startPoint, endPt);
+          }
+        }
+        if (tempWallMesh) {
+          scene.remove(tempWallMesh);
+          tempWallMesh = null;
+        }
+        if (snapIndicatorMesh) snapIndicatorMesh.visible = false;
+        const snapBadge = document.getElementById('snap-status');
+        if (snapBadge) snapBadge.style.display = 'none';
+
+        isDrawing = false;
+        startPoint = null;
+      });
+    }
+
+    // വിരൽ കൊണ്ട് വരയ്ക്കുമ്പോൾ തത്സമയം 3D ഭിത്തി ഉയർത്തുന്നു
+    function createPermanentWall(p1, p2) {
+      const dist = p1.distanceTo(p2);
+      const wallGeo = new THREE.BoxGeometry(wallThickness, wallHeight, dist);
+      const wallMat = new THREE.MeshStandardMaterial({ 
+        color: wallColor,
+        roughness: 0.5,
+        metalness: 0.1
+      });
+      const mesh = new THREE.Mesh(wallGeo, wallMat);
+
+      const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+      mesh.position.set(mid.x, wallHeight / 2, mid.z);
+
+      const angle = Math.atan2(p2.x - p1.x, p2.z - p1.z);
+      mesh.rotation.y = angle;
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+
+      mesh.userData = {
+        p1: p1.clone(),
+        p2: p2.clone(),
+        length: dist,
+        angle: angle
+      };
+
+      scene.add(mesh);
+      walls.push(mesh);
+
+      // കോർണർ പോയിന്റുകൾ രജിസ്റ്റർ ചെയ്യുന്നു
+      activeCorners.push(p1.clone(), p2.clone());
+
+      updateUI();
+    }
+
+    // 2. വാതിലും ജനലും വെക്കുമ്പോൾ ഭിത്തി കട്ട് ചെയ്യുന്ന രീതി (Wall Cutout / Precision Hole)
+    function cutHoleInWall(originalWallMesh, holeWidth, holeHeight, holePosition) {
+      return insertOpeningIntoWall(originalWallMesh, {
+        width: holeWidth,
+        height: holeHeight,
+        position: holePosition,
+        type: holeHeight > 1.8 ? 'door' : 'window'
+      });
+    }
+
+    function insertOpeningIntoWall(wallMesh, openingData) {
+      const p1 = wallMesh.userData.p1;
+      const p2 = wallMesh.userData.p2;
+      const totalLen = wallMesh.userData.length;
+      const angle = wallMesh.userData.angle;
+
+      const openWidth = openingData.width || 1.0;
+      const openHeight = openingData.height || 2.1;
+      const isDoor = openingData.type === 'door';
+
+      if (totalLen <= openWidth + 0.3) return wallMesh;
+
+      const leftLen = (totalLen - openWidth) / 2;
+      const rightLen = leftLen;
+
+      scene.remove(wallMesh);
+      const wallIdx = walls.indexOf(wallMesh);
+      if (wallIdx > -1) walls.splice(wallIdx, 1);
+
+      // ഇടത് ഭിത്തി ഭാഗം
+      const leftGeo = new THREE.BoxGeometry(wallThickness, wallHeight, leftLen);
+      const leftMesh = new THREE.Mesh(leftGeo, wallMesh.material);
+      const leftPos = new THREE.Vector3().lerpVectors(p1, p2, (leftLen / 2) / totalLen);
+      leftMesh.position.set(leftPos.x, wallHeight / 2, leftPos.z);
+      leftMesh.rotation.y = angle;
+      leftMesh.castShadow = true;
+      scene.add(leftMesh);
+      walls.push(leftMesh);
+
+      // വലത് ഭിത്തി ഭാഗം
+      const rightGeo = new THREE.BoxGeometry(wallThickness, wallHeight, rightLen);
+      const rightMesh = new THREE.Mesh(rightGeo, wallMesh.material);
+      const rightPos = new THREE.Vector3().lerpVectors(p1, p2, 1 - (rightLen / 2) / totalLen);
+      rightMesh.position.set(rightPos.x, wallHeight / 2, rightPos.z);
+      rightMesh.rotation.y = angle;
+      rightMesh.castShadow = true;
+      scene.add(rightMesh);
+      walls.push(rightMesh);
+
+      // മുകളിലെ ലിന്റൽ ഭിത്തി ഭാഗം (Lintel Wall over Door/Window)
+      const lintelHeight = wallHeight - openHeight;
+      if (lintelHeight > 0.05) {
+        const lintelGeo = new THREE.BoxGeometry(wallThickness, lintelHeight, openWidth);
+        const lintelMesh = new THREE.Mesh(lintelGeo, wallMesh.material);
+        const midPos = new THREE.Vector3().lerpVectors(p1, p2, 0.5);
+        lintelMesh.position.set(midPos.x, openHeight + lintelHeight / 2, midPos.z);
+        lintelMesh.rotation.y = angle;
+        lintelMesh.castShadow = true;
+        scene.add(lintelMesh);
+        walls.push(lintelMesh);
+      }
+
+      // വാതിൽ അല്ലെങ്കിൽ ജനൽ ഫ്രെയിം
+      const frameGeo = new THREE.BoxGeometry(wallThickness * 1.1, openHeight, openWidth);
+      const frameMat = new THREE.MeshStandardMaterial({
+        color: isDoor ? 0x5d4037 : 0x81d4fa,
+        roughness: isDoor ? 0.4 : 0.1,
+        transparent: !isDoor,
+        opacity: isDoor ? 1.0 : 0.75
+      });
+      const frameMesh = new THREE.Mesh(frameGeo, frameMat);
+      const midPos = new THREE.Vector3().lerpVectors(p1, p2, 0.5);
+      frameMesh.position.set(midPos.x, openHeight / 2, midPos.z);
+      frameMesh.rotation.y = angle;
+      scene.add(frameMesh);
+      openings.push(frameMesh);
+
+      updateUI();
+      return frameMesh;
+    }
+
+    function drawWallPreview(p1, p2) {
+      if (tempWallMesh) scene.remove(tempWallMesh);
+      const dist = p1.distanceTo(p2);
+      const geo = new THREE.BoxGeometry(wallThickness, wallHeight, dist);
+      const mat = new THREE.MeshStandardMaterial({ 
+        color: 0x00e676, 
+        opacity: 0.65, 
+        transparent: true 
+      });
+      tempWallMesh = new THREE.Mesh(geo, mat);
+      const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+      tempWallMesh.position.set(mid.x, wallHeight / 2, mid.z);
+      tempWallMesh.rotation.y = Math.atan2(p2.x - p1.x, p2.z - p1.z);
+      scene.add(tempWallMesh);
+    }
+
+    function updateUI() {
+      const countEl = document.getElementById('wall-count');
+      if (countEl) countEl.innerText = 'Walls: ' + walls.length;
+    }
+
+    // ഫ്ലട്ടറിൽ നിന്ന് വിളിക്കാനുള്ള ഫംഗ്ഷനുകൾ (Flutter API)
+    window.toggleViewMode = function(to3D) {
+      if (to3D) set3DView();
+      else set2DView();
+    };
+
+    window.changeWallColor = function(hexColor) {
+      wallColor = Number.parseInt(hexColor.replace('#', '0x'), 16);
+      walls.forEach(w => {
+        if (w.material) {
+          w.material.color.setHex(wallColor);
+        }
+      });
+    };
+
+    window.changeFloorColor = function(hexColor) {
+      floorColor = Number.parseInt(hexColor.replace('#', '0x'), 16);
+      if (floorMesh && floorMesh.material) {
+        floorMesh.material.color.setHex(floorColor);
+      }
+    };
+
+    window.clearAllWalls = function() {
+      walls.forEach(w => scene.remove(w));
+      openings.forEach(o => scene.remove(o));
+      walls = [];
+      openings = [];
+      activeCorners = [];
+      updateUI();
+    };
+
+    window.undoLastWall = function() {
+      if (openings.length > 0 && activeTool !== 'wall') {
+        const lastOp = openings.pop();
+        scene.remove(lastOp);
+      } else if (walls.length > 0) {
+        const last = walls.pop();
+        scene.remove(last);
+        if (activeCorners.length >= 2) {
+          activeCorners.splice(-2, 2);
+        }
+      }
+      updateUI();
+    };
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if (controls) controls.update();
+      if (renderer && scene && camera) renderer.render(scene, camera);
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>

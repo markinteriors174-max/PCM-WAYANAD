@@ -1,0 +1,42 @@
+# Android & Gradle
+android/
+android/**
+*.hprof
+.gradle/
+
+# iOS & macOS
+ios/
+macos/
+
+# Windows & Linux
+windows/
+linux/
+
+# Flutter & Dart
+.dart_tool/
+lib/
+test/
+build/*
+!build/web/
+!build/web/**
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Git & IDE
+.git/
+.github/
+.idea/
+.vscode/
+.artifacts/
+
+# Node & API
+node_modules/
+.npm/
+api/
+
+# Assets & Temp
+assets/
+*.log
+*.tmp
+*.bak
+*.pdf

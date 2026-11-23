@@ -1,0 +1,70 @@
+/* ==========================================================================
+   PCM WAYANAD PORTAL - PROGRESS TRACKER STYLES (< 55 lines)
+   ========================================================================== */
+
+.prog-item {
+  margin-bottom: 12px;
+}
+
+.prog-txt-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 5px;
+}
+
+.prog-val-bold {
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.bar-bg {
+  width: 100%;
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: #4d7c0f;
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+.w-0 {
+  width: 0%;
+}
+
+.bg-green-overall {
+  background: #16a34a;
+}
+
+.overall-wrap {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 14px;
+  border: 1px solid #e2e8f0;
+}
+
+.overall-margin {
+  margin-bottom: 6px;
+}
+
+.overall-val {
+  font-weight: 900;
+  color: #15803d;
+}
+
+.badge-realtime {
+  font-size: 9px;
+  background: #dcfce7;
+  color: #14532d;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 800;
+}

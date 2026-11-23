@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PCM WAYANAD - Client Project Breakdown</title>
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3" integrity="sha256-U5uxwocnDRuaZGtKt6u8XeZ/GXMsR570wzovGIyeSlw=" crossorigin="anonymous"></script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; margin: 0; padding: 16px; }
+    .container { max-width: 600px; margin: 0 auto; }
+    
+    /* Header Auth Button */
+    .auth-header { display: flex; justify-content: flex-end; padding-bottom: 10px; }
+    #auth-btn { background: #2D5A27; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+    
+    .client-header { background: #2D5A27; color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin-bottom: 20px; }
+    .client-header h2 { margin: 0 0 8px 0; font-size: 22px; }
+    .client-info { font-size: 14px; opacity: 0.9; margin: 4px 0; }
+    
+    .room-card { background: white; border-radius: 10px; padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 5px solid #2D5A27; }
+    .room-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+    .room-name { font-size: 17px; font-weight: bold; color: #333; }
+    .room-cost { font-size: 18px; font-weight: bold; color: #2D5A27; }
+    
+    .room-details { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; color: #555; }
+    .design-badge { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px; font-weight: 600; }
+    
+    .total-summary { background: white; padding: 18px; border-radius: 10px; text-align: right; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .total-title { font-size: 15px; color: #777; }
+    .grand-total { font-size: 24px; font-weight: bold; color: #d32f2f; margin-top: 4px; }
+    
+    /* Modal styles */
+    #auth-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+    .modal-content { background: white; padding: 25px; border-radius: 10px; width: 300px; text-align: center; }
+    .modal-content h3 { margin-top: 0; color: #2D5A27; }
+    .modal-input { width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+    .modal-input.pass { margin-bottom: 15px; }
+    .btn-primary { width: 100%; background: #2D5A27; color: white; padding: 10px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    .btn-secondary { margin-top: 10px; background: transparent; border: none; color: #666; cursor: pointer; }
+    .loading-text { text-align: center; color: #888; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ഹെഡറിലെ അക്കൗണ്ട് ബട്ടൺ -->
+  <div class="auth-header">
+    <button id="auth-btn" onclick="toggleAuthModal()">
+      Login / Account
+    </button>
+  </div>
+
+  <!-- ക്ലയന്റ് പ്രൊജക്റ്റ് ഹെഡർ -->
+  <div class="client-header">
+    <h2 id="cust-name">Loading...</h2>
+    <div class="client-info" id="site-loc">Site: -</div>
+    <div class="client-info" id="proj-id">ID: -</div>
+  </div>
+
+  <!-- ഓരോ റൂമുകളും വരുന്ന കണ്ടെയ്നർ -->
+  <div id="rooms-container">
+    <p class="loading-text">റൂം വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു...</p>
+  </div>
+
+  <!-- ആകെ തുക സംഗ്രഹം -->
+  <div class="total-summary">
+    <div class="total-title">ആകെ പ്രൊജക്റ്റ് എസ്റ്റിമേറ്റ് (Grand Total)</div>
+    <div class="grand-total" id="grand-total">₹0.00</div>
+  </div>
+</div>
+
+<!-- ലോഗിൻ പോപ്പ്അപ്പ് ബോക്സ് -->
+<div id="auth-modal">
+  <div class="modal-content">
+    <h3>Account Login</h3>
+    <input type="email" id="user-email" class="modal-input" placeholder="Email" aria-label="Email" />
+    <input type="password" id="user-pass" class="modal-input pass" placeholder="Password" aria-label="Password" />
+    <button onclick="handleLogin()" class="btn-primary">Sign In</button>
+    <button onclick="toggleAuthModal()" class="btn-secondary">Close</button>
+  </div>
+</div>
+
+<script>
+  // 1. നിങ്ങളുടെ Supabase കോൺഫിഗറേഷൻ
+  const SUPABASE_URL = 'https://acszqttuqdvpgmwbtndw.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFjc3pxdHR1cWR2cGdtd2J0bmR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzODQ3NzksImV4cCI6MjA5OTk2MDc3OX0.8IohWgAWzeUromPsSE4YBu2ZTqn6wJZL7WYx637wBWE';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const projectId = urlParams.get('pid');
+
+  function toggleAuthModal() {
+    const modal = document.getElementById('auth-modal');
+    modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+  }
+
+  async function handleLogin() {
+    const email = document.getElementById('user-email').value;
+    const pass = document.getElementById('user-pass').value;
+    
+    if (!email || !pass) {
+      alert("ഇമെയിലും പാസ്‌വേഡും നൽകുക");
+      return;
+    }
+    
+    // Supabase Login
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: pass,
+    });
+    
+    if (error) {
+      alert('Login Failed: ' + error.message);
+    } else {
+      alert('Login Successful!');
+      toggleAuthModal();
+      // Reload to see authenticated data if necessary
+      initLiveEstimate();
+    }
+  }
+
+  async function initLiveEstimate() {
+    if (!projectId) {
+      document.getElementById('rooms-container').innerHTML = '<p style="color:red;text-align:center;">Project ID കാണാനില്ല!</p>';
+      return;
+    }
+
+    // A. പ്രൊജക്റ്റ് വിവരങ്ങൾ എടുക്കുന്നു
+    const { data: project } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('project_id', projectId)
+      .single();
+
+    if (project) {
+      document.getElementById('cust-name').innerText = project.customer_name || 'Client Project';
+      document.getElementById('site-loc').innerText = 'Site: ' + (project.site_location || '-');
+      document.getElementById('proj-id').innerText = 'Project ID: ' + project.project_id;
+    }
+
+    // B. റൂം & ഡിസൈൻ വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു
+    loadRoomsData();
+
+    // C. ആപ്പിൽ എന്തെങ്കിലും മാറ്റം വരുത്തിയാൽ തത്സമയം റീലോഡ് ചെയ്യാനുള്ള സബ്സ്ക്രിപ്ഷൻ
+    supabase
+      .channel('realtime-room-breakdown')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'estimate_items', filter: `project_id=eq.${projectId}` }, () => {
+        loadRoomsData();
+      })
+      .subscribe();
+  }
+
+  async function loadRoomsData() {
+    const { data: items, error } = await supabase
+      .from('estimate_items')
+      .select('*')
+      .eq('project_id', projectId);
+
+    if (error || !items || items.length === 0) {
+      document.getElementById('rooms-container').innerHTML = '<p style="text-align:center;">വിവരങ്ങൾ ലഭ്യമല്ല.</p>';
+      return;
+    }
+
+    let html = '';
+    let grandTotal = 0;
+
+    items.forEach((item) => {
+      grandTotal += (item.amount || 0);
+
+      html += `
+        <div class="room-card">
+          <div class="room-title">
+            <span class="room-name">${item.room_name || 'Room'}</span>
+            <span class="room-cost">₹${Number(item.amount || 0).toLocaleString('en-IN')}</span>
+          </div>
+          <div class="room-details">
+            <div><strong>ഡിസൈൻ:</strong> <span class="design-badge">${item.design_type || 'Standard Flat'}</span></div>
+            <div><strong>അളവുകൾ:</strong> ${item.length} x ${item.width} ${item.unit || 'm'}</div>
+            <div><strong>ആകെ വിസ്തീർണ്ണം:</strong> ${item.sqft || 0} SQFT</div>
+            <div><strong>നിരക്ക് (Rate):</strong> ₹${item.rate}/sqft</div>
+          </div>
+        </div>
+      `;
+    });
+
+    document.getElementById('rooms-container').innerHTML = html;
+    document.getElementById('grand-total').innerText = '₹' + Number(grandTotal).toLocaleString('en-IN');
+  }
+
+  window.addEventListener('DOMContentLoaded', initLiveEstimate);
+</script>
+</body>
+</html>

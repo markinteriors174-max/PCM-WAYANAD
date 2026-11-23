@@ -1,0 +1,63 @@
+/* ==========================================================================
+   PCM WAYANAD PORTAL - CARD & OVERVIEW STYLES (< 75 lines)
+   ========================================================================== */
+
+.card {
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  border: 1px solid #e2e8f0;
+  width: 100%;
+}
+
+.card-head-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 8px;
+}
+
+.head-details { color: #0369a1; }
+.head-gallery { color: #0f172a; }
+.head-progress { color: #c2410c; }
+.head-contract { color: #4338ca; }
+.head-qr { color: #15803d; text-align: center; }
+.head-chat { color: #0284c7; }
+.head-pdf { color: #0f172a; }
+
+.profile-row { display: flex; justify-content: space-between; align-items: flex-start; }
+.avatar-wrap { display: flex; gap: 12px; align-items: center; }
+.avatar { width: 44px; height: 44px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.client-title { font-size: 18px; font-weight: 900; color: #0f172a; }
+.site-badge-txt { font-size: 11px; font-weight: 800; color: #b45309; }
+.loc-txt { font-size: 11px; color: #475569; font-weight: 600; margin-top: 2px; }
+
+.badge-stage { background: #fef3c7; color: #92400e; font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 999px; }
+.badge-stage-progress { background: #dcfce7; color: #14532d; }
+.badge-stage-complete { background: #e0e7ff; color: #4338ca; }
+
+.pin-box {
+  background: #f0fdf4;
+  border: 1px dashed #86efac;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0;
+}
+.pin-lbl { font-size: 11px; font-weight: 900; color: #166534; }
+.pin-val { font-size: 16px; font-weight: 900; letter-spacing: 2px; color: #15803d; }
+
+.actions-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.btn-action { display: block; text-decoration: none; text-align: center; color: #ffffff; font-size: 11px; font-weight: 800; padding: 10px 4px; border-radius: 12px; }
+.btn-call { background: #4d7c0f; }
+.btn-wa { background: #15803d; }
+.btn-map { background: #334155; }

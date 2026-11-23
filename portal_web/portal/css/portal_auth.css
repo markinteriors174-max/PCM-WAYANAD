@@ -1,0 +1,50 @@
+/* ==========================================================================
+   PCM WAYANAD PORTAL - AUTH & SOFT PIN GATEWAY MODAL STYLES (< 70 lines)
+   ========================================================================== */
+
+#websiteAuthModal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#websiteAuthModal.hidden {
+  display: none !important;
+}
+
+.btn-lock-portal {
+  background: #334155;
+  border: 1px solid #475569;
+  color: #fbbf24;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-lock-portal:hover {
+  background: #1e293b;
+  border-color: #f59e0b;
+}
+
+.auth-modal-card {
+  background-color: #0f172a;
+  border: 1px solid #1e293b;
+  padding: 24px;
+  border-radius: 24px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+@media (min-width: 640px) {
+  .auth-modal-card {
+    padding: 32px;
+  }
+}

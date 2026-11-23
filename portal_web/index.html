@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>PCM WAYANAD | Luxury False Ceiling & Interior Design Studio | Live Client Portal</title>
+  <meta name="description" content="Kerala's premier False Ceiling & Interior Contracting Studio in Wayanad. Saint-Gobain Gyproc false ceilings, warm concealed LED cove lighting, instant budget calculator, and 24/7 live site tracking portal.">
+  <meta name="keywords" content="PCM Wayanad, False Ceiling Portal, Interior Design Wayanad, Gypsum Ceiling Kerala, Gyproc Saint Gobain Wayanad, False Ceiling Cost Kerala, Cove Lighting Wayanad, Padinjarathara Interior Contractor, PCM WAYANAD Client Portal">
+  <meta name="author" content="PCM Wayanad Studio">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <link rel="canonical" href="https://pcm-wayanad-portal.vercel.app/">
+
+  <!-- Geo Location Meta Tags for Google Local Search -->
+  <meta name="geo.region" content="IN-KL">
+  <meta name="geo.placename" content="Wayanad">
+  <meta name="geo.position" content="11.6854;75.9866">
+  <meta name="ICBM" content="11.6854, 75.9866">
+
+  <!-- Favicon & Touch Icons -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="192x192" href="logo-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="logo-512.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PCM WAYANAD">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:site_name" content="PCM WAYANAD">
+  <meta property="og:title" content="PCM WAYANAD | Luxury False Ceiling & Interior Studio">
+  <meta property="og:description" content="Kerala's premier False Ceiling & Interior Contracting Studio in Wayanad. Instant budget calculator, master gypsum gallery, and live site tracking portal.">
+  <meta property="og:image" content="https://pcm-wayanad-portal.vercel.app/logo.png">
+  <meta property="og:url" content="https://pcm-wayanad-portal.vercel.app/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_IN">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="PCM WAYANAD | Luxury False Ceiling Studio">
+  <meta name="twitter:description" content="Kerala's premier False Ceiling & Interior Contracting Studio in Wayanad. Live project tracking & instant budget calculator.">
+  <meta name="twitter:image" content="https://pcm-wayanad-portal.vercel.app/logo.png">
+
+  <!-- Schema.org Structured Data (JSON-LD LocalBusiness) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HomeAndConstructionBusiness",
+    "name": "PCM WAYANAD - Architectural False Ceiling & Interior Studio",
+    "image": "https://pcm-wayanad-portal.vercel.app/logo.png",
+    "@id": "https://pcm-wayanad-portal.vercel.app/#organization",
+    "url": "https://pcm-wayanad-portal.vercel.app",
+    "telephone": "+919383406185",
+    "priceRange": "₹₹",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Eranjanikunnu, Padinjarathara",
+      "addressLocality": "Wayanad",
+      "addressRegion": "Kerala",
+      "postalCode": "670731",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 11.6854,
+      "longitude": 75.9866
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "opens": "09:00",
+      "closes": "21:00"
+    },
+    "sameAs": [
+      "https://maps.google.com/?q=PCM+Wayanad+False+Ceiling",
+      "https://wa.me/919383406185"
+    ]
+  }
+  </script>
+
+  <!-- Supabase JS Client (v2) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.js" integrity="sha384-Tgoms7a53eyQOCcKXlBrA1X967mm3BHK43f3979dACl74tZlLW+O85pmfCuhfUtx" crossorigin="anonymous"></script>
+
+  <!-- Firebase Web SDK (v9/v10 Compat: App, Auth & Firestore) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
+
+  <!-- Cashfree Web JS SDK (v3) -->
+  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            outfit: ['Outfit', 'sans-serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              dark: '#0a0f1d',
+              navy: '#0f172a',
+              card: '#131d34',
+              surface: '#1e293b',
+              border: '#334155',
+              gold: '#d97706',
+              goldLight: '#f59e0b',
+              goldGlow: '#fbbf24',
+              emerald: '#059669',
+              emeraldLight: '#10b981',
+              accent: '#38bdf8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Modular Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* യഥാർത്ഥ വിസിറ്റിംഗ് കാർഡ് സൈസ് (ഉദാഹരണത്തിന്: 3.5 inch x 2 inch അല്ലെങ്കിൽ അനുയോജ്യമായ പ്രൊഫഷണൽ കാർഡ് സൈസ്) */
+    .printable-card {
+        width: 380px;
+        max-width: 100%;
+        height: 220px;
+        margin: 0 auto;
+        box-sizing: border-box;
+        background: linear-gradient(135deg, #152238 0%, #0d1527 100%);
+        border: 1.5px solid #d4af37;
+        border-radius: 12px;
+        padding: 16px;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* പ്രിന്റ് എടുക്കുമ്പോൾ A4 പേപ്പർ ബാക്ക്ഗ്രൗണ്ടും സൈസും ഒഴിവാക്കി കാർഡ് മാത്രം പ്രിന്റ് ആകാൻ */
+    @media print {
+        @page {
+            size: 3.5in 2in; /* പ്രിന്റർ പേജ് സൈസ് കാർഡിന്റെ അളവിലേക്ക് ചുരുക്കുന്നു */
+            margin: 0 !important;
+        }
+        html, body {
+            width: 3.5in !important;
+            height: 2in !important;
+            max-width: 3.5in !important;
+            max-height: 2in !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            overflow: hidden !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        body * {
+            visibility: hidden !important;
+        }
+        .printable-card, .printable-card * {
+            visibility: visible !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .printable-card {
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            margin: 0 !important;
+            width: 3.5in !important; /* യഥാർത്ഥ വിസിറ്റിംഗ് കാർഡ് ഇഞ്ച് അളവ് */
+            height: 2in !important;
+            border: 1px solid #d4af37 !important;
+            border-radius: 6px !important;
+            box-shadow: none !important;
+            page-break-after: avoid !important;
+            page-break-before: avoid !important;
+            page-break-inside: avoid !important;
+            z-index: 9999999 !important;
+        }
+    }
+  </style>
+</head>
+
+<body class="antialiased selection:bg-amber-500 selection:text-slate-950">
+
+  <!-- ========================================================================= -->
+  <!-- CRAWLING ANTS IDLE SIMULATION CANVAS                                      -->
+  <!-- ========================================================================= -->
+  <canvas id="antsCanvas" class="pointer-events-none fixed inset-0 z-40"></canvas>
+
+  <!-- ========================================================================= -->
+  <!-- HIGH-SPEED DRILL ROTATING LOGO REVEAL SPLASH OVERLAY                      -->
+  <!-- ========================================================================= -->
+  <div id="logoUnlockOverlay" class="fixed inset-0 z-50 hidden flex flex-col items-center justify-center bg-slate-950/95 backdrop-blur-xl transition-opacity duration-300">
+    <div class="relative flex flex-col items-center justify-center text-center p-8">
+      <div class="relative mb-6">
+        <!-- Ambient Gold Flare -->
+        <div class="absolute inset-0 bg-amber-500/30 blur-3xl rounded-full"></div>
+        <img id="revealLogoImg" src="logo.png" alt="PCM Wayanad" class="relative h-28 w-28 sm:h-36 sm:w-36 rounded-3xl border-2 border-amber-500/60 p-2 bg-slate-900 shadow-2xl object-contain">
+      </div>
+      <h2 class="text-xl sm:text-2xl font-black text-white tracking-wider flex items-center gap-2">
+        PCM <span class="text-amber-400">WAYANAD</span>
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-400 font-semibold mt-1 tracking-widest uppercase">
+        Architectural False Ceilings & Interiors
+      </p>
+      <div class="mt-4 flex items-center gap-2 text-amber-400/80 text-xs font-mono">
+        <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+        <span>Unlocking Kerala Luxury Studio...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- REGISTRATION SUCCESS -> YES / NO QUESTION CONFIRMATION MODAL              -->
+  <!-- ========================================================================= -->
+  <div id="ceilingConfirmModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/90 backdrop-blur-md p-4">
+    <div class="bg-slate-900 border border-amber-500/40 rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl relative overflow-hidden">
+      <!-- Ambient Backlight -->
+      <div class="absolute -top-12 left-1/2 -translate-x-1/2 w-40 h-40 bg-amber-500/10 blur-2xl rounded-full pointer-events-none"></div>
+
+      <!-- Logo -->
+      <img src="logo.png" alt="PCM" class="h-16 w-16 mx-auto rounded-2xl border border-amber-500/30 p-1.5 bg-slate-800 object-contain mb-4 shadow-lg">
+
+      <!-- Multilingual Question -->
+      <h3 class="text-white font-extrabold text-lg sm:text-xl leading-snug">
+        നിങ്ങൾ ഇപ്പോൾ ഫോൾസ് സീലിംഗ് ചെയ്യുന്നുണ്ടോ?
+      </h3>
+      <p class="text-amber-400 font-bold text-sm mt-1.5">
+        Are you doing False Ceiling work now?
+      </p>
+      <p class="text-slate-400 text-xs mt-1 font-medium">
+        क्या आप अभी फॉल्स सीलिंग का काम करवा रहे हैं?
+      </p>
+
+      <!-- YES / NO Buttons -->
+      <div class="grid grid-cols-2 gap-3.5 mt-6">
+        <button type="button" onclick="submitCeilingChoice(true)" class="py-3.5 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-black rounded-2xl text-sm sm:text-base shadow-lg shadow-emerald-500/20 active:scale-95 transition flex items-center justify-center gap-2">
+          <span>👍 അതെ / YES</span>
+        </button>
+        <button type="button" onclick="submitCeilingChoice(false)" class="py-3.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-2xl text-sm sm:text-base border border-slate-700 hover:border-slate-500 active:scale-95 transition flex items-center justify-center gap-2">
+          <span>❌ അല്ല / NO</span>
+        </button>
+      </div>
+
+      <p class="text-[11px] text-slate-400 mt-4">
+        🔒 നിമിഷങ്ങൾക്കകം സ്റ്റുഡിയോ പോർട്ടൽ ഓപ്പൺ ആകും
+      </p>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- FIRST-TIME REGISTRATION MODAL (AFTER GOOGLE LOGIN)                       -->
+  <!-- ========================================================================= -->
+  <div id="websiteAuthModal" class="fixed inset-0 bg-slate-950/95 z-50 flex items-center justify-center p-4 hidden">
+    <!-- Ambient Backdrop Glow -->
+    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+      <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-amber-500/10 blur-[120px] rounded-full"></div>
+    </div>
+
+    <div class="bg-slate-900/95 border border-slate-800/90 p-6 sm:p-8 rounded-3xl max-w-md w-full shadow-2xl relative z-10 backdrop-blur-xl">
+
+      <div class="text-center mb-5">
+        <div class="inline-flex p-3 bg-gradient-to-br from-amber-500/20 to-amber-500/5 border border-amber-500/30 rounded-2xl text-amber-400 mb-2.5 text-xl shadow-lg shadow-amber-500/10">
+          🏗️
+        </div>
+        <h3 class="text-white font-black text-sm uppercase tracking-wider">PCM WAYANAD - CLIENT REGISTRATION</h3>
+        <p class="text-[11px] text-slate-400 mt-1">സൈറ്റ് ഫോൾഡർ ക്രിയേറ്റ് ചെയ്യാൻ വിവരങ്ങൾ നൽകുക / Complete Site Details</p>
+      </div>
+
+      <!-- REGISTRATION FORM (3 CLEAN FIELDS: NAME, LOCATION, MOBILE) -->
+      <form id="authRegisterForm" onsubmit="completeFirstTimeRegistration(event)" class="space-y-4">
+        <div>
+          <label for="regClientName" class="flex items-center justify-between text-xs mb-1.5 font-medium">
+            <span class="text-slate-200 font-bold">1. Full Name <span class="text-amber-400">*</span></span>
+            <span class="text-amber-400/90 text-[11px] font-medium">പൂർണ്ണ നാമം</span>
+          </label>
+          <input type="text" id="regClientName" name="regName" required placeholder="Enter your full name"
+                class="w-full bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-500 px-4 py-3 rounded-xl focus:border-amber-500 focus:ring-1 focus:ring-amber-500/40 focus:outline-none text-sm transition shadow-inner leading-normal">
+        </div>
+
+        <div>
+          <label for="regClientLocation" class="flex items-center justify-between text-xs mb-1.5 font-medium">
+            <span class="text-slate-200 font-bold">2. Site Location <span class="text-amber-400">*</span></span>
+            <span class="text-amber-400/90 text-[11px] font-medium">സ്ഥലം / ലൊക്കേഷൻ</span>
+          </label>
+          <input type="text" id="regClientLocation" name="regLocation" required placeholder="Enter site town or location"
+                class="w-full bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-500 px-4 py-3 rounded-xl focus:border-amber-500 focus:ring-1 focus:ring-amber-500/40 focus:outline-none text-sm transition shadow-inner leading-normal">
+        </div>
+
+        <div>
+          <label for="regClientPhone" class="flex items-center justify-between text-xs mb-1.5 font-medium">
+            <span class="text-slate-200 font-bold">3. Mobile Number <span class="text-amber-400">*</span></span>
+            <span class="text-amber-400/90 text-[11px] font-medium">ഫോൺ നമ്പർ</span>
+          </label>
+          <input type="tel" id="regClientPhone" name="regPhone" required placeholder="10-digit mobile number" maxlength="10" pattern="[0-9]{10}" inputmode="numeric"
+                class="w-full bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-500 px-4 py-3 rounded-xl focus:border-amber-500 focus:ring-1 focus:ring-amber-500/40 focus:outline-none text-sm transition shadow-inner leading-normal">
+        </div>
+
+        <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black py-3.5 px-4 rounded-xl transition-all duration-200 text-xs sm:text-sm shadow-lg shadow-amber-500/20 mt-4 cursor-pointer tracking-wide flex items-center justify-center gap-2">
+          <span>COMPLETE REGISTRATION & OPEN HUB →</span>
+        </button>
+      </form>
+
+      <div class="mt-4 pt-3 border-t border-slate-800/80 text-center text-[11px] text-slate-400">
+        <span class="text-amber-400 font-bold">PCM WAYANAD</span> • Realtime Flutter Site Hub Sync
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MY PROJECT HUB MODAL (EXACT SPECIFICATIONS FROM SCREENSHOT)               -->
+  <!-- ========================================================================= -->
+  <div id="myProjectHubModal" class="fixed inset-0 bg-slate-950/95 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto backdrop-blur-md hidden">
+    <!-- Ambient Glow -->
+    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+      <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-amber-500/10 blur-[120px] rounded-full"></div>
+    </div>
+
+    <div class="bg-[#0B132B] border border-slate-800/90 rounded-3xl max-w-md w-full shadow-2xl overflow-hidden relative z-10 text-white my-auto max-h-[95vh] flex flex-col">
+
+      <!-- 1. TOP HEADER BAR -->
+      <div class="px-5 py-4 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/40 shrink-0">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse inline-block"></span>
+          <h2 class="text-amber-400 font-extrabold text-sm tracking-wider uppercase">MY PROJECT HUB</h2>
+        </div>
+        <button type="button" onclick="closeMyProjectHub()" class="text-slate-400 hover:text-white p-1 rounded-lg transition text-xl leading-none cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <!-- MODAL SCROLLABLE BODY -->
+      <div class="p-5 space-y-6 overflow-y-auto custom-scrollbar">
+
+        <!-- 2. HEADER & PROFILE SECTION -->
+        <div class="flex items-start gap-3.5 pb-2">
+          <!-- Profile Avatar with Camera Icon Badge -->
+          <div class="relative shrink-0">
+            <div id="hubClientAvatar" class="w-14 h-14 rounded-full bg-slate-900 border border-slate-700/80 flex items-center justify-center text-amber-400 font-black text-2xl shadow-md">
+              M
+            </div>
+            <div class="w-5 h-5 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center absolute -bottom-0.5 -right-0.5 text-[10px] shadow-sm font-bold">
+              📷
+            </div>
+          </div>
+
+          <!-- Profile Details -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <h3 id="hubClientName" class="font-black text-xl text-white tracking-wide uppercase truncate">
+                MADHU
+              </h3>
+              <span class="bg-emerald-950/90 text-emerald-400 border border-emerald-500/40 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shrink-0">
+                VERIFIED
+              </span>
+            </div>
+            <p id="hubClientSubtitle" class="text-xs text-slate-400 font-medium tracking-wide mt-0.5">
+              HCHFDGZDG • 8606415174
+            </p>
+            <div class="mt-2.5">
+              <button type="button" onclick="copyHubSiteId()" class="inline-flex items-center gap-1.5 border border-amber-500/60 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 text-xs font-bold px-3 py-1 rounded-lg transition-all active:scale-95 cursor-pointer">
+                <span id="hubSiteIdText">SITE ID: PCM-WAYANAD</span>
+                <span>📋</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="h-px bg-slate-800/80"></div>
+
+        <!-- 3. WORK LIVE STATUS (COLLAPSIBLE) -->
+        <div>
+          <button type="button" onclick="toggleHubSection('hubSecStatus', 'hubIconStatus')" class="w-full flex items-center justify-between py-1.5 text-left group cursor-pointer focus:outline-none mb-2">
+            <span class="text-[11px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-1.5 group-hover:text-amber-400 transition">
+              <span>🚀 WORK LIVE STATUS</span>
+            </span>
+            <span id="hubIconStatus" class="text-xs text-amber-400 font-bold transition-transform duration-300 transform rotate-180">▼</span>
+          </button>
+
+          <div id="hubSecStatus" class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-4 space-y-3 shadow-inner">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-400" id="hubStageBadge">STAGE 3:</span>
+              <span class="text-xs font-black text-amber-400 uppercase tracking-wide" id="hubStageTitle">3. CEILING FABRICATION</span>
+            </div>
+            <!-- Segmented Progress Bar -->
+            <div class="flex gap-1.5 h-2.5 w-full">
+              <div class="bg-emerald-500 rounded-full flex-1" title="Stage 1: Complete"></div>
+              <div class="bg-emerald-500 rounded-full flex-1" title="Stage 2: Complete"></div>
+              <div class="bg-amber-400 rounded-full flex-1 animate-pulse" title="Stage 3: In Progress"></div>
+              <div class="bg-slate-800 rounded-full flex-1" title="Stage 4: Pending"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. FINANCIAL SUMMARY (COLLAPSIBLE) -->
+        <div>
+          <button type="button" onclick="toggleHubSection('hubSecFinance', 'hubIconFinance')" class="w-full flex items-center justify-between py-1.5 text-left group cursor-pointer focus:outline-none mb-2">
+            <span class="text-[11px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-1.5 group-hover:text-amber-400 transition">
+              <span>💳 FINANCIAL SUMMARY</span>
+            </span>
+            <span id="hubIconFinance" class="text-xs text-amber-400 font-bold transition-transform duration-300 transform rotate-180">▼</span>
+          </button>
+
+          <div id="hubSecFinance" class="space-y-3">
+            <div class="grid grid-cols-3 gap-2.5">
+              <!-- Total Estimate -->
+              <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-3 text-center hover:border-amber-500/40 transition">
+                <p class="text-[10px] text-slate-400 font-medium mb-1">Total Estimate</p>
+                <p id="hubTotalEstimate" class="text-sm sm:text-base font-black text-sky-400">₹9,688</p>
+              </div>
+              <!-- Paid Amount -->
+              <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-3 text-center hover:border-amber-500/40 transition">
+                <p class="text-[10px] text-slate-400 font-medium mb-1">Paid Amount</p>
+                <p id="hubPaidAmount" class="text-sm sm:text-base font-black text-emerald-400">₹0</p>
+              </div>
+              <!-- Due Amount -->
+              <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-3 text-center hover:border-amber-500/40 transition">
+                <p class="text-[10px] text-slate-400 font-medium mb-1">Due Amount</p>
+                <p id="hubDueAmount" class="text-sm sm:text-base font-black text-rose-400">₹9,688</p>
+              </div>
+            </div>
+
+            <!-- Cashfree Payment Button -->
+            <button type="button" onclick="payViaCashfree()" class="w-full py-3.5 px-4 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all cursor-pointer border border-amber-400/50 active:scale-95">
+              <span>🛡️</span>
+              <span>PAY VIA CASHFREE (2.36% Fee)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 5. ROOM SPECIFICATIONS (COLLAPSIBLE) -->
+        <div>
+          <button type="button" onclick="toggleHubSection('hubSecRooms', 'hubIconRooms')" class="w-full flex items-center justify-between py-1.5 text-left group cursor-pointer focus:outline-none mb-2">
+            <span class="text-[11px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-1.5 group-hover:text-amber-400 transition">
+              <span>📐 ROOM SPECIFICATIONS</span>
+            </span>
+            <span id="hubIconRooms" class="text-xs text-amber-400 font-bold transition-transform duration-300 transform">▼</span>
+          </button>
+
+          <div id="hubSecRooms" class="hidden">
+            <div id="hubRoomsContainer" class="space-y-2.5">
+              <!-- Room Item Card -->
+              <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-3.5 space-y-2 hover:border-amber-500/40 transition">
+                <div class="flex items-center justify-between">
+                  <h5 class="font-bold text-sm text-white uppercase tracking-wide">MASTER BEDROOM 1</h5>
+                  <span class="font-black text-sm text-amber-400">₹9,687.60</span>
+                </div>
+                <p class="text-[11px] text-slate-400">Ground Floor • 3.0 × 5.0 Mtrs • 161.46 SQFT</p>
+                <div class="flex items-center gap-2 pt-1">
+                  <span class="bg-teal-950/90 border border-teal-500/40 text-teal-400 text-[10px] font-extrabold px-2.5 py-0.5 rounded-md">Channel: Expert</span>
+                  <span class="bg-amber-950/90 border border-amber-500/40 text-amber-400 text-[10px] font-extrabold px-2.5 py-0.5 rounded-md">Board: Gyproc</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. LIVE SITE PHOTO FEED & TEAM UPDATES (NEW DYNAMIC FEED) -->
+        <div>
+          <button type="button" onclick="toggleHubSection('hubSecPhotoFeed', 'hubIconPhotoFeed')" class="w-full flex items-center justify-between py-1.5 text-left group cursor-pointer focus:outline-none mb-2">
+            <span class="text-[11px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-1.5 group-hover:text-amber-400 transition">
+              <span>📸 LIVE SITE PHOTO FEED & UPDATES</span>
+            </span>
+            <span id="hubIconPhotoFeed" class="text-xs text-amber-400 font-bold transition-transform duration-300 transform rotate-180">▼</span>
+          </button>
+
+          <div id="hubSecPhotoFeed" class="space-y-3">
+            <div id="hubPhotoFeedContainer" class="grid grid-cols-2 gap-2.5">
+              <!-- Progress Photo Card 1 -->
+              <div class="relative group rounded-2xl overflow-hidden border border-slate-800 bg-slate-900 cursor-pointer shadow-md hover:border-amber-500/50 transition" onclick="openPhotoLightbox('images/after.jpg', 'Stage 3: Gyproc Cove Framing & Laser Alignment')">
+                <img src="images/after.jpg" alt="Site Progress Photo" class="w-full h-32 object-cover group-hover:scale-105 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+                <div class="absolute bottom-2.5 left-2.5 right-2.5">
+                  <span class="text-[9px] bg-amber-500/90 text-slate-950 font-black px-2 py-0.5 rounded-full uppercase">Stage 3 Progress</span>
+                  <p class="text-xs text-white font-bold truncate mt-1">Cove Framing Complete</p>
+                </div>
+              </div>
+              <!-- Progress Photo Card 2 -->
+              <div class="relative group rounded-2xl overflow-hidden border border-slate-800 bg-slate-900 cursor-pointer shadow-md hover:border-amber-500/50 transition" onclick="openPhotoLightbox('images/hero.jpg', 'Stage 2: Concealed Warm LED Channel Setup')">
+                <img src="images/hero.jpg" alt="Site Progress Photo" class="w-full h-32 object-cover group-hover:scale-105 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+                <div class="absolute bottom-2.5 left-2.5 right-2.5">
+                  <span class="text-[9px] bg-emerald-500/90 text-slate-950 font-black px-2 py-0.5 rounded-full uppercase">Stage 2 Verified</span>
+                  <p class="text-xs text-white font-bold truncate mt-1">Warm LED Channel Setup</p>
+                </div>
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-400 text-center font-medium">✨ Photos & site updates uploaded live by PCM Wayanad Site Supervisor</p>
+          </div>
+        </div>
+
+        <!-- 7. UPLOAD SITE PHOTO & NOTE FOR ADMIN (COLLAPSIBLE) -->
+        <div>
+          <button type="button" onclick="toggleHubSection('hubSecAdminNote', 'hubIconAdminNote')" class="w-full flex items-center justify-between py-1.5 text-left group cursor-pointer focus:outline-none mb-2">
+            <span class="text-[11px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-1.5 group-hover:text-amber-400 transition">
+              <span>💬 UPLOAD SITE PHOTO & NOTE FOR ADMIN</span>
+            </span>
+            <span id="hubIconAdminNote" class="text-xs text-amber-400 font-bold transition-transform duration-300 transform">▼</span>
+          </button>
+
+          <div id="hubSecAdminNote" class="hidden bg-slate-900/90 border border-slate-800/90 rounded-2xl p-3.5 space-y-3">
+            <textarea id="hubAdminNoteInput" rows="3" placeholder="സൈറ്റ് സംശയങ്ങൾ അല്ലെങ്കിൽ മാറ്റങ്ങൾ ഇവിടെ എഴുതാം..." class="w-full bg-slate-950 border border-slate-800 text-white placeholder-slate-500 text-xs p-3 rounded-xl focus:border-amber-500 focus:outline-none min-h-[75px] resize-none leading-relaxed"></textarea>
+
+            <input type="file" id="hubPhotoFileInput" accept="image/*" class="hidden" onchange="handleHubPhotoSelected(event)">
+
+            <div class="flex gap-2.5">
+              <button type="button" onclick="triggerHubPhotoUpload()" class="flex-1 py-2.5 px-2 bg-transparent border border-amber-500/80 hover:bg-amber-500/10 text-amber-400 font-extrabold rounded-xl text-xs flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-95">
+                <span>📷</span>
+                <span>ADD PHOTO</span>
+              </button>
+
+              <button type="button" onclick="submitHubNoteToAdmin()" class="flex-1 py-2.5 px-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md transition cursor-pointer active:scale-95">
+                <span>➤</span>
+                <span>SUBMIT TO ADMIN</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN WEBSITE APPLICATION (PUBLIC LANDING PAGE DEFAULT VIEW)              -->
+  <!-- ========================================================================= -->
+  <div id="mainWebsiteApp">
+
+    <!-- HEADER NAVIGATION -->
+    <header class="sticky top-0 z-40 bg-[#0f172a]/95 backdrop-blur-md border-b border-slate-800 px-4 md:px-6 py-3">
+      <div class="max-w-7xl mx-auto flex justify-between items-center">
+
+        <!-- PCM Brand Logo & Title -->
+        <a href="#" class="flex items-center gap-3 group" title="PCM Wayanad Home">
+          <img src="logo.png" alt="PCM Wayanad Logo" id="pcmHeaderLogo" class="h-10 w-auto object-contain rounded-lg border border-amber-500/30 p-0.5 bg-slate-900 shadow">
+          <div>
+            <div class="text-lg md:text-xl font-black tracking-wider text-white flex items-center gap-1.5">
+              PCM <span class="text-amber-400 text-xs md:text-sm uppercase font-extrabold tracking-widest">Wayanad</span>
+            </div>
+            <span class="text-[10px] tracking-wider text-slate-400 font-semibold block -mt-1">Architectural Ceilings & Interiors</span>
+          </div>
+        </a>
+
+        <!-- Desktop Nav Links -->
+        <nav class="hidden xl:flex items-center gap-5 text-xs uppercase font-bold text-slate-300 tracking-wider">
+          <a href="#gallery" class="hover:text-amber-400 transition-colors">Gallery</a>
+          <a href="#before-after" class="hover:text-amber-400 transition-colors">Before & After</a>
+          <a href="#room-selector" class="hover:text-amber-400 transition-colors">Room Selector</a>
+          <a href="#calculator" class="hover:text-amber-400 transition-colors">Calculator</a>
+          <a href="#team-showcase" class="hover:text-amber-400 transition-colors">Craftsmen</a>
+          <a href="#site-portal" class="hover:text-amber-400 transition-colors text-amber-400 flex items-center gap-1">🔑 Live Portal</a>
+          <a href="#process" class="hover:text-amber-400 transition-colors">Process</a>
+          <a href="#contact" class="hover:text-amber-400 transition-colors">Contact</a>
+        </nav>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2 md:gap-3">
+          <!-- Direct Call -->
+          <a href="tel:9383406185" title="Call PCM Wayanad" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold text-xs flex items-center gap-1.5 border border-slate-700 transition">
+            📞 <span class="hidden sm:inline">+91</span> 9383406185
+          </a>
+
+          <!-- WhatsApp Quick Chat -->
+          <a href="https://wa.me/919383406185?text=Hello%20PCM%20Wayanad,%20I%20need%20a%20gypsum%20ceiling%20estimate" target="_blank" rel="noopener noreferrer" title="Chat on WhatsApp" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 transition">
+            💬 <span class="hidden md:inline">WhatsApp</span>
+          </a>
+
+          <!-- PWA Install Button (Shown on beforeinstallprompt event) -->
+          <button type="button" id="pwaInstallBtn" onclick="triggerPwaInstall()" title="Install PCM Wayanad App" class="hidden px-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-md border border-amber-400 transition-all cursor-pointer flex items-center gap-1.5 animate-pulse">
+            📲 <span class="hidden sm:inline">Install App</span>
+          </button>
+
+          <!-- Guest Auth State -->
+          <div id="navAuthGuest" class="flex items-center gap-2">
+            <button type="button" id="headerGoogleLoginBtn" onclick="handleGoogleSignIn()" class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs shadow-md border border-slate-200 transition-all cursor-pointer flex items-center gap-2">
+              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+              </svg>
+              <span>Login with Google</span>
+            </button>
+          </div>
+
+          <!-- Logged-In User State -->
+          <div id="navAuthUser" class="hidden items-center gap-2">
+            <button type="button" onclick="openMyProjectHub()" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/40 text-amber-400 text-xs font-extrabold transition cursor-pointer active:scale-95">
+              <span>🔑</span> <span id="headerClientName" class="truncate max-w-[120px]">MADHU</span>
+            </button>
+            <button type="button" onclick="handleSignOut()" title="Sign Out from Client Portal" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs border border-slate-700 transition flex items-center gap-1 cursor-pointer">
+              🚪 <span class="hidden sm:inline">Sign Out</span>
+            </button>
+          </div>
+
+          <!-- Mobile Hamburger -->
+          <button type="button" onclick="toggleMobileMenu()" title="Toggle Menu" class="xl:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white border border-slate-700">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Mobile Slide-out Menu -->
+      <div id="mobile-menu" class="hidden xl:hidden bg-slate-950/95 border-b border-slate-800 px-6 py-5 space-y-3.5">
+        <a href="#gallery" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-200 hover:text-amber-400 py-1">Design Gallery</a>
+        <a href="#before-after" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-200 hover:text-amber-400 py-1">Before & After</a>
+        <a href="#room-selector" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-200 hover:text-amber-400 py-1">Room Selector</a>
+        <a href="#calculator" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-200 hover:text-amber-400 py-1">Budget Calculator</a>
+        <a href="#team-showcase" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-200 hover:text-amber-400 py-1">Master Craftsmen</a>
+        <a href="#site-portal" onclick="toggleMobileMenu()" class="block text-sm font-bold text-amber-400 hover:text-amber-300 py-1">🔑 Live Client Portal</a>
+        <a href="#process" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-200 hover:text-amber-400 py-1">Work Process</a>
+        <a href="#contact" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-200 hover:text-amber-400 py-1">Contact</a>
+
+        <!-- Mobile Guest State -->
+        <div id="mobileAuthGuest" class="pt-3 border-t border-slate-800 flex flex-col gap-2">
+          <button type="button" onclick="toggleMobileMenu(); handleGoogleSignIn();" class="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs text-center border border-slate-200 shadow-md flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span>Login with Google</span>
+          </button>
+        </div>
+
+        <!-- Mobile Logged-in State -->
+        <div id="mobileAuthUser" class="hidden pt-3 border-t border-slate-800 flex flex-col gap-2.5">
+          <div class="flex items-center justify-between">
+            <div class="text-xs text-emerald-400 font-bold flex items-center gap-1.5">
+              <span>👤</span> <span id="mobileHeaderClientName">Client</span>
+            </div>
+            <button type="button" onclick="toggleMobileMenu(); handleSignOut();" class="px-3 py-1.5 rounded-lg bg-red-600/20 text-red-400 hover:bg-red-600/40 font-bold text-xs border border-red-500/30 cursor-pointer transition">
+              Sign Out
+            </button>
+          </div>
+          <button type="button" onclick="toggleMobileMenu(); handleSelfServiceAccountDeletion();" class="w-full py-2 px-3 rounded-xl bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/50 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+            🗑️ <span>Delete Account (അക്കൗണ്ട് നീക്കം ചെയ്യുക)</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 1. HERO SECTION -->
+    <section class="relative min-h-[85vh] flex items-center justify-center pt-16 pb-16 overflow-hidden">
+      <!-- Background Image with Overlay -->
+      <div class="absolute inset-0 z-0">
+        <img src="images/hero.jpg" alt="PCM Wayanad Ceiling" class="w-full h-full object-cover object-center animate-subtle-zoom brightness-[0.38] contrast-[1.1]">
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0a0f1d] via-[#0a0f1d]/60 to-transparent"></div>
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-3/4 h-96 bg-amber-500/10 blur-[130px] rounded-full pointer-events-none"></div>
+      </div>
+
+      <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <!-- Live Badge -->
+        <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-slate-900/80 border border-amber-500/30 backdrop-blur-md mb-6 shadow-xl">
+          <span class="flex h-2 w-2 relative">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+          </span>
+          <span id="heroBannerAnnouncement" class="text-xs sm:text-sm font-bold text-amber-300">Kerala's Premier False Ceiling & Interior Studio</span>
+        </div>
+
+        <!-- Headline -->
+        <h1 id="heroTitle" class="font-heading font-black text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-white leading-[1.1] max-w-4xl mx-auto mb-6">
+          Transform Your Ceiling, <br class="hidden sm:inline">
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-600">Transform Your Home.</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p id="heroSubtitle" class="text-base sm:text-lg md:text-xl text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed mb-10">
+          Saint-Gobain Gyproc false ceilings, precision laser alignment, and warm concealed LED cove lighting engineered for contemporary Kerala residences.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 mb-12">
+          <a href="#calculator" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-heading font-extrabold text-base tracking-wide uppercase shadow-2xl shadow-amber-500/30 active:scale-95 transition-all duration-300 flex items-center justify-center gap-3">
+            <span id="heroPrimaryCtaText">Calculate Budget Estimate</span>
+          </a>
+          <a href="#site-portal" class="w-full sm:w-auto px-7 py-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800 text-white font-heading font-bold text-base border border-slate-700 hover:border-amber-500/60 shadow-xl backdrop-blur-md active:scale-95 transition-all duration-300 flex items-center justify-center gap-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <span id="heroSecondaryCtaText">Live Site Portal 🔑</span>
+          </a>
+        </div>
+        <!-- Dynamic Star Rating & Client Reviews Bar (4.5 Baseline) -->
+        <div class="inline-flex items-center justify-center gap-3 px-5 py-2.5 rounded-2xl bg-slate-900/80 border border-amber-500/40 backdrop-blur-md mb-8 shadow-xl" id="businessStarRatingBadge">
+          <div class="flex items-center text-amber-400 text-base sm:text-lg tracking-tight" id="heroStarsContainer" title="4.5 Star Rated Client Satisfaction">
+            ★★★★½
+          </div>
+          <span class="font-extrabold text-white text-sm sm:text-base font-mono" id="heroRatingNumber">4.5</span>
+          <span class="text-xs text-slate-300 font-semibold" id="heroRatingSub">· Based on <span id="heroReviewsCount" class="text-amber-400 font-bold">128+</span> Verified Client Reviews</span>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto pt-6 border-t border-slate-800/80 text-left">
+          <div class="glass-panel p-4 rounded-2xl flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 font-black">450+</div>
+            <div>
+              <div class="font-heading font-extrabold text-lg text-white">450+</div>
+              <div class="text-[11px] text-slate-400 font-semibold">Homes Finished</div>
+            </div>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 font-black">100%</div>
+            <div>
+              <div class="font-heading font-extrabold text-lg text-white">Saint-Gobain</div>
+              <div class="text-[11px] text-slate-400 font-semibold">Gyproc Materials</div>
+            </div>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 font-black">10Y</div>
+            <div>
+              <div class="font-heading font-extrabold text-lg text-white">10 Years</div>
+              <div class="text-[11px] text-slate-400 font-semibold">Warranty Support</div>
+            </div>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 font-black">24/7</div>
+            <div>
+              <div class="font-heading font-extrabold text-lg text-white">Live Site</div>
+              <div class="text-[11px] text-slate-400 font-semibold">Portal Tracking</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 2. DESIGN GALLERY WITH LIKES, DISLIKES & ASK PRICE ENQUIRIES -->
+    <section id="gallery" class="py-20 bg-slate-950/70 border-t border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-10 gap-4">
+          <div>
+            <span class="text-xs font-black tracking-widest text-amber-400 uppercase">Original Kerala Work Portfolio</span>
+            <h2 class="text-2xl sm:text-4xl font-heading font-black text-white mt-1">
+              Master Gypsum Design Gallery
+            </h2>
+            <p class="text-sm text-slate-400 mt-1.5 max-w-xl">
+              Authentic Kerala residential works completed in Wayanad. Vote with Likes/Dislikes and tap "എത്രയാകും?" for instant rate enquiries.
+            </p>
+          </div>
+          <a href="tel:9383406185" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold text-xs border border-slate-700 flex items-center gap-2">
+            📞 Custom Design Consultation
+          </a>
+        </div>
+
+        <!-- DYNAMIC GYPSUM DESIGN SLIDESHOW / CAROUSEL -->
+        <div class="mb-14 relative rounded-3xl overflow-hidden border border-amber-500/30 bg-slate-900 shadow-2xl group">
+          <!-- Slides Track Container -->
+          <div id="gypsumSlideshowContainer" class="relative w-full h-[280px] sm:h-[400px] md:h-[480px] overflow-hidden bg-slate-950 flex items-center justify-center">
+            <!-- Loading Indicator -->
+            <div id="slideshowLoader" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/90 text-slate-400">
+              <span class="inline-block w-8 h-8 border-3 border-amber-400 border-t-transparent rounded-full animate-spin mb-3"></span>
+              <span class="text-xs uppercase tracking-widest text-amber-300 font-bold">Loading Gypsum Design Slideshow...</span>
+            </div>
+            <!-- Dynamic slides dynamically rendered here -->
+            <div id="gypsumSlidesTrack" class="w-full h-full relative"></div>
+          </div>
+
+          <!-- Prev & Next Controls -->
+          <button type="button" onclick="prevGypsumSlide()" aria-label="Previous Design Slide" class="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3.5 rounded-2xl bg-slate-950/70 hover:bg-amber-500 text-white hover:text-slate-950 border border-white/10 hover:border-amber-400 backdrop-blur-md transition-all active:scale-95 shadow-xl cursor-pointer">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <button type="button" onclick="nextGypsumSlide()" aria-label="Next Design Slide" class="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3.5 rounded-2xl bg-slate-950/70 hover:bg-amber-500 text-white hover:text-slate-950 border border-white/10 hover:border-amber-400 backdrop-blur-md transition-all active:scale-95 shadow-xl cursor-pointer">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+          </button>
+
+          <!-- Dots Pagination Indicator -->
+          <div id="slideshowDotsContainer" class="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/10"></div>
+        </div>
+
+        <!-- Section Subtitle for All Gallery Items Grid -->
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-white font-bold text-base sm:text-lg flex items-center gap-2">
+            <span>✨ All Finished Work Showcase</span>
+          </h3>
+          <span class="text-xs text-slate-400">Tap photo to view full details</span>
+        </div>
+
+        <!-- Realtime Grid Container -->
+        <div id="websiteGalleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="col-span-full py-12 text-center text-slate-500">
+            Loading PCM Portfolio Gallery...
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 3. BEFORE / AFTER INTERACTIVE COMPARISON -->
+    <section id="before-after" class="py-20 bg-[#0a0f1d] border-t border-slate-800">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
+        <!-- Header & Dynamic Slide Meta -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+          <span id="baActiveTag" class="text-xs font-black tracking-widest text-amber-400 uppercase">Live Transformation Visualizer</span>
+          <span id="baCycleStatus" class="text-[11px] font-bold text-slate-400 bg-slate-900/80 px-2.5 py-1 rounded-full border border-slate-800">● Auto-Cycling Active</span>
+        </div>
+
+        <h2 id="baActiveTitle" class="text-2xl sm:text-4xl font-heading font-black text-white mt-1 mb-2">
+          Before & After Transformation
+        </h2>
+        <p id="baActiveDesc" class="text-sm text-slate-400 max-w-xl mx-auto mb-6">
+          Drag the center gold slider left and right to inspect the bare concrete ceiling vs the finished Saint-Gobain gypsum cove lighting.
+        </p>
+
+        <!-- Slide Navigation Buttons (Top Bar) -->
+        <div class="flex items-center justify-between mb-4 px-1">
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="baPrevSlide()" class="w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-amber-500 hover:text-slate-950 text-white font-black text-sm flex items-center justify-center border border-slate-700 transition" aria-label="Previous Slide">
+              ‹
+            </button>
+            <button type="button" onclick="baNextSlide()" class="w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-amber-500 hover:text-slate-950 text-white font-black text-sm flex items-center justify-center border border-slate-700 transition" aria-label="Next Slide">
+              ›
+            </button>
+            <span class="text-xs text-slate-400 font-semibold ml-1 hidden sm:inline">Swipe / drag or click arrows</span>
+          </div>
+
+          <!-- Split Presets -->
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <button type="button" onclick="baSetPercent(100)" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-[11px] sm:text-xs border border-slate-700 transition">100% Before</button>
+            <button type="button" onclick="baSetPercent(50)" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500 text-amber-400 hover:text-slate-950 font-bold text-[11px] sm:text-xs border border-amber-500/30 transition">50/50 Split</button>
+            <button type="button" onclick="baSetPercent(0)" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-[11px] sm:text-xs border border-slate-700 transition">100% After</button>
+          </div>
+        </div>
+
+        <!-- Slider Container -->
+        <div id="baSliderContainer" class="ba-container w-full h-80 sm:h-[480px] rounded-3xl border border-amber-500/30 shadow-2xl overflow-hidden cursor-ew-resize relative">
+          <!-- After (Full Background) -->
+          <img id="baAfterImg" src="images/after.jpg" alt="After False Ceiling" class="ba-after-img" draggable="false">
+          <div class="ba-tag-badge bottom-4 right-4 text-emerald-400 border border-emerald-500/40">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span> AFTER: PCM GYPSUM FINISH
+          </div>
+
+          <!-- Before (Clipped Left Wrapper) -->
+          <div id="baBeforeWrapper" class="ba-before-wrapper">
+            <img id="baBeforeImg" src="images/before.jpg" alt="Before False Ceiling" class="ba-before-img" draggable="false">
+            <div class="ba-tag-badge bottom-4 left-4 text-amber-400 border border-amber-500/40">
+              <span class="w-2 h-2 rounded-full bg-amber-400 inline-block"></span> BEFORE: BARE SLAB
+            </div>
+          </div>
+
+          <!-- Handle -->
+          <div id="baSliderHandle" class="ba-handle">
+            <div class="ba-handle-btn">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 9l-4 3 4 3m8-6l4 3-4 3"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dots Indicator Navigation -->
+        <div id="baDotsContainer" class="flex items-center justify-center gap-2 mt-5"></div>
+      </div>
+    </section>
+
+    <!-- 4. ROOM DESIGN SELECTOR -->
+    <section id="room-selector" class="py-20 bg-slate-950/70 border-t border-slate-800">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="text-center mb-10">
+          <span class="text-xs font-black tracking-widest text-amber-400 uppercase">Tailored Room Architectural Styles</span>
+          <h2 class="text-2xl sm:text-4xl font-heading font-black text-white mt-1">
+            Explore Designs by Room Type
+          </h2>
+        </div>
+
+        <!-- Room Tabs -->
+        <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-8">
+          <button type="button" id="roomTab_bedroom" onclick="selectRoomTab('bedroom')" class="px-4 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-black text-xs transition">
+            🛏️ Master Bedroom
+          </button>
+          <button type="button" id="roomTab_living" onclick="selectRoomTab('living')" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs transition">
+            🛋️ Living Room
+          </button>
+          <button type="button" id="roomTab_dining" onclick="selectRoomTab('dining')" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs transition">
+            🍽️ Dining Hall
+          </button>
+          <button type="button" id="roomTab_theatre" onclick="selectRoomTab('theatre')" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs transition">
+            🎬 Home Theatre
+          </button>
+          <button type="button" id="roomTab_kitchen" onclick="selectRoomTab('kitchen')" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs transition">
+            🍳 Modern Kitchen
+          </button>
+        </div>
+
+        <!-- Room Content Showcase -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center shadow-xl">
+          <div>
+            <div class="inline-block px-3 py-1 bg-amber-500/20 text-amber-400 font-black text-xs rounded-lg mb-3" id="roomDesignRate">
+              ₹135 / sq.ft
+            </div>
+            <h3 id="roomDesignTitle" class="text-xl sm:text-3xl font-heading font-black text-white mb-3">
+              Master Bedroom - Warm Ambient Cove
+            </h3>
+            <p id="roomDesignDesc" class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
+              Soft 3000K warm LED illumination bouncing off matte gypsum finish, creating a serene, glare-free relaxing space.
+            </p>
+            <div class="flex gap-3">
+              <a href="#calculator" class="px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs tracking-wider uppercase shadow-md transition">
+                Estimate Cost For This Room 📐
+              </a>
+              <a href="https://wa.me/919383406185?text=I%20am%20interested%20in%20Master%20Bedroom%20Cove%20Ceiling" target="_blank" rel="noopener noreferrer" class="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition">
+                WhatsApp Enquiry
+              </a>
+            </div>
+          </div>
+
+          <div class="relative rounded-2xl overflow-hidden border border-slate-700 shadow-2xl">
+            <img id="roomDesignImg" src="images/hero.jpg" alt="Room Design" class="w-full h-72 sm:h-80 object-cover">
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 5. REALTIME BUDGET CALCULATOR -->
+    <section id="calculator" class="py-20 bg-[#0a0f1d] border-t border-slate-800">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="text-center mb-10">
+          <span class="text-xs font-black tracking-widest text-amber-400 uppercase">Transparent Wayanad Pricing</span>
+          <h2 class="text-2xl sm:text-4xl font-heading font-black text-white mt-1">
+            Instant False Ceiling Budget Calculator
+          </h2>
+          <p class="text-sm text-slate-400 max-w-xl mx-auto mt-1.5">
+            Select room dimensions and design grade to get live cost estimates based on genuine Saint-Gobain Gyproc rates.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+          <!-- Left: Controls (7 cols) -->
+          <div class="lg:col-span-7 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl">
+
+            <!-- Preset Buttons -->
+            <div>
+              <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Room Presets</span>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <button type="button" onclick="applyRoomPreset('bedroom')" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700">Bedroom (14x12)</button>
+                <button type="button" onclick="applyRoomPreset('living')" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700">Living (20x16)</button>
+                <button type="button" onclick="applyRoomPreset('dining')" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700">Dining (14x10)</button>
+                <button type="button" onclick="applyRoomPreset('kitchen')" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700">Kitchen (11x9)</button>
+              </div>
+            </div>
+
+            <!-- Length Slider -->
+            <div>
+              <div class="flex justify-between items-center mb-1.5">
+                <label for="calcLength" class="text-xs font-bold text-white uppercase tracking-wider">Room Length</label>
+                <span id="calcLengthVal" class="text-amber-400 font-bold text-sm">12.0 ft</span>
+              </div>
+              <input type="range" id="calcLength" name="calcLength" aria-label="Room Length in feet" title="Room Length in feet" placeholder="12.0" min="6" max="40" step="0.5" value="12" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+            </div>
+
+            <!-- Width Slider -->
+            <div>
+              <div class="flex justify-between items-center mb-1.5">
+                <label for="calcWidth" class="text-xs font-bold text-white uppercase tracking-wider">Room Width</label>
+                <span id="calcWidthVal" class="text-amber-400 font-bold text-sm">11.0 ft</span>
+              </div>
+              <input type="range" id="calcWidth" name="calcWidth" aria-label="Room Width in feet" title="Room Width in feet" placeholder="11.0" min="6" max="30" step="0.5" value="11" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+            </div>
+
+            <!-- Ceiling Design Grade Selector -->
+            <div>
+              <span class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">Select Design Package</span>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <button type="button" id="btnType_simple" onclick="selectCeilingType('simple')" class="p-3.5 rounded-2xl bg-slate-900 border border-slate-700 text-left transition flex flex-col justify-between">
+                  <div>
+                    <div class="font-bold text-xs text-white">Simple Flat</div>
+                    <div class="text-[10px] text-slate-400 mt-0.5">Plain perimeter finish</div>
+                  </div>
+                  <div id="rateCardSimple" class="text-amber-400 font-black text-sm mt-2">₹115/sq.ft</div>
+                </button>
+
+                <button type="button" id="btnType_cove" onclick="selectCeilingType('cove')" class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500 text-left transition flex flex-col justify-between">
+                  <div>
+                    <div class="font-bold text-xs text-amber-400">Single Cove Light</div>
+                    <div class="text-[10px] text-slate-300 mt-0.5">Concealed LED pocket</div>
+                  </div>
+                  <div id="rateCardCove" class="text-amber-400 font-black text-sm mt-2">₹135/sq.ft</div>
+                </button>
+
+                <button type="button" id="btnType_luxury" onclick="selectCeilingType('luxury')" class="p-3.5 rounded-2xl bg-slate-900 border border-slate-700 text-left transition flex flex-col justify-between">
+                  <div>
+                    <div class="font-bold text-xs text-white">Luxury Multi-Tier</div>
+                    <div class="text-[10px] text-slate-400 mt-0.5">Double step tray profile</div>
+                  </div>
+                  <div id="rateCardLuxury" class="text-amber-400 font-black text-sm mt-2">₹160/sq.ft</div>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right: Detailed Estimate Summary (5 cols) -->
+          <div class="lg:col-span-5 bg-gradient-to-b from-slate-900 to-slate-950 border border-amber-500/30 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden">
+            <div class="space-y-4">
+              <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <span class="text-xs uppercase font-bold text-slate-400 tracking-wider">Total Area</span>
+                <span id="calcTotalSqFt" class="text-lg font-black text-white">132 sq.ft</span>
+              </div>
+
+              <!-- Estimated Budget Headline -->
+              <div>
+                <span class="text-xs font-bold text-amber-400 uppercase tracking-widest block">Estimated Total</span>
+                <div id="calcTotalCost" class="text-3xl sm:text-4xl font-heading font-black text-white mt-1">
+                  ₹17,820
+                </div>
+                <span class="text-[11px] text-slate-400 block mt-1">Includes materials, laser framing, and labor</span>
+              </div>
+
+              <!-- Itemized Material Breakdown -->
+              <div class="pt-3 border-t border-slate-800 text-xs space-y-2 text-slate-300">
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Gyproc Board:</span>
+                  <span id="breakdownGyproc" class="font-semibold text-white">6 Sheets (12.5mm)</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">GI Channels:</span>
+                  <span id="breakdownPerimeter" class="font-semibold text-white">48 R.Ft</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">LED Lighting:</span>
+                  <span id="breakdownLed" class="font-semibold text-amber-400">14m (Warm White 3000K)</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Finishing & Labor:</span>
+                  <span id="breakdownLabor" class="font-semibold text-white">₹7,484</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-6">
+              <button type="button" onclick="sendWhatsAppQuote()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-emerald-500/20 active:scale-95 transition flex items-center justify-center gap-2">
+                <span>💬 Send Detailed WhatsApp Quote</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- FOUNDER MEMORIAL TRIBUTE: PHOTO FIRST, THEN DETAILS      -->
+    <!-- ======================================================== -->
+    <section id="memorial-tribute" class="my-12 px-4 max-w-4xl mx-auto">
+      <div class="relative rounded-3xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border border-amber-500/40 p-8 sm:p-10 shadow-2xl text-center overflow-hidden">
+
+        <!-- 1. ആദ്യം ഫോട്ടോ (PHOTO FIRST) -->
+        <div class="flex flex-col items-center justify-center">
+          <div class="relative mb-5">
+            <div class="w-40 h-40 sm:w-48 sm:h-48 rounded-full overflow-hidden border-4 border-amber-400 shadow-2xl p-1 bg-slate-800">
+              <img id="founderImage" data-id="founderMemorialImg" src="founder_memorial.jpg" alt="Files - Founder & Mentor" class="w-full h-full object-cover rounded-full">
+            </div>
+            <span class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-slate-950 text-amber-300 border border-amber-400/60 text-[11px] font-bold px-4 py-0.5 rounded-full shadow-lg whitespace-nowrap">
+              In Loving Memory
+            </span>
+          </div>
+
+          <!-- 2. ഫോട്ടോയ്ക്ക് താഴെ പേര് (NAME BELOW PHOTO) -->
+          <h3 id="founderName" data-id="founderMemorialName" class="text-2xl sm:text-3xl font-black text-white tracking-wide">
+            ഫയൽസ്
+          </h3>
+          <p class="text-xs text-amber-400 font-extrabold uppercase tracking-widest mt-1">
+            Founder & Our Guiding Mentor
+          </p>
+
+          <!-- 2-ാം ഓർമ്മദിനവും 20 വർഷ പാരമ്പര്യവും -->
+          <div class="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full mt-3">
+            <span id="founderMemorialYearsNote" class="text-amber-300 font-bold text-xs">
+              2nd Year Remembrance • 20 Years Ceiling Legacy
+            </span>
+          </div>
+
+          <!-- സ്മരണാഞ്ജലി കുറിപ്പ് -->
+          <div class="max-w-2xl mx-auto mt-4 text-slate-300 text-xs sm:text-sm leading-relaxed">
+            <p id="founderMessage" data-id="founderMemorialMsg">
+              "20 വർഷം മുൻപ് ഈ രംഗത്ത് ഞങ്ങൾക്ക് കൈപിടിച്ച് അടിത്തറയിട്ടു തന്ന ഞങ്ങളുടെ പ്രിയപ്പെട്ട വലിയ മുതലാളി ഞങ്ങളെ വിട്ടുപിരിഞ്ഞിട്ട് ഇപ്പോൾ രണ്ട് വർഷം തികയുന്നു. അദ്ദേഹം പഠിപ്പിച്ചു തന്ന ആത്മാർത്ഥതയും അളവുകളിലെ സൂക്ഷ്മതയും സത്യസന്ധതയും ഒട്ടും ചോർന്നുപോകാതെ കാത്തുസൂക്ഷിക്കുക എന്നതാണ് ഞങ്ങൾ അദ്ദേഹത്തിന് നൽകുന്ന ഏറ്റവും വലിയ ആദരം."
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 7. HIERARCHICAL CRAFTSMEN TEAM SHOWCASE (TIERED SIZING) -->
+    <section id="team-showcase" class="py-20 bg-slate-950/70 border-t border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="text-center mb-12">
+          <span class="text-xs font-black tracking-widest text-amber-400 uppercase">Certified Wayanad Artisans</span>
+          <h2 class="text-2xl sm:text-4xl font-heading font-black text-white mt-1">
+            PCM Master Craftsmen Hierarchy
+          </h2>
+          <p class="text-sm text-slate-400 max-w-xl mx-auto mt-2">
+            Divided into 3 distinct craftsmanship tiers: Chief Leaders, Core Senior Specialists, and Precision Artisans.
+          </p>
+        </div>
+
+        <!-- Dynamic Craftsmen Hierarchy from Supabase -->
+        <div id="craftsmenContainer">
+          <div class="text-center py-12 text-slate-500 text-sm">
+            <span class="inline-block w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin mr-2"></span>
+            Loading master craftsmen...
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 7. LIVE CLIENT SITE PORTAL & REALTIME WORKSPACE -->
+    <section id="site-portal" class="py-20 bg-slate-950/80 border-t border-slate-800">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Portal Main Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-emerald-400 text-xs font-bold mb-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span id="portalLiveStatusIndicator">Live Client Workspace</span>
+            </div>
+            <h2 class="text-2xl sm:text-4xl font-heading font-black text-white">
+              Realtime Client Site Portal
+            </h2>
+            <p class="text-sm text-slate-400 mt-1 max-w-xl">
+              Track your itemized room calculations, payment history, site milestones, and supervisor chat live from Supabase.
+            </p>
+          </div>
+
+          <!-- Dynamic Header Badges (Visible When Authenticated) -->
+          <div id="portalHeaderBadges" class="flex flex-wrap items-center gap-2">
+            <span id="portalSitePinBadge" class="hidden px-3.5 py-1.5 rounded-xl bg-slate-900 border border-amber-500/40 text-amber-400 font-mono font-bold text-xs"></span>
+            <span id="portalClientNameBadge" class="hidden px-3.5 py-1.5 rounded-xl bg-slate-800 text-slate-200 font-bold text-xs"></span>
+            <span id="portalSiteLocationBadge" class="hidden px-3 py-1.5 rounded-xl bg-slate-900/90 text-slate-300 font-semibold text-xs border border-slate-700"></span>
+            <button type="button" id="portalRefreshBtn" onclick="initRealtimePortalSync()" title="Refresh Live Data" class="hidden p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 transition active:scale-95 text-xs">
+              🔄 Sync
+            </button>
+          </div>
+        </div>
+
+        <!-- STATE 1: GUEST / UNAUTHENTICATED PROMPT (Strictly NO dummy data) -->
+        <div id="portalGuestPrompt" class="rounded-3xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border border-amber-500/30 p-8 sm:p-12 text-center shadow-2xl relative overflow-hidden">
+          <div class="max-w-md mx-auto relative z-10">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-3xl mb-5 shadow-lg">
+              🔐
+            </div>
+            <h3 class="text-xl sm:text-2xl font-black text-white tracking-wide">
+              Client Portal Protected
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
+              ഫോൺ നമ്പറും 4 അക്ക സോഫ്റ്റ് പിനും അല്ലെങ്കിൽ രജിസ്റ്റർ ചെയ്ത അക്കൗണ്ടും ഉപയോഗിച്ച് ലോഗിൻ ചെയ്താൽ നിങ്ങളുടെ റൂം ബ്രേക്ക്ഡൗൺ, പേയ്‌മെന്റ് വിവരങ്ങൾ, സൈറ്റ് പുരോഗതി എന്നിവ ലൈവായി കാണാം.
+            </p>
+            <p class="text-[11px] text-slate-500 mt-1 font-medium">
+              Please authenticate to access your personal site dashboard and supervisor chat.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-8">
+              <button type="button" onclick="openAuthModal('login')" class="w-full sm:w-auto px-6 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs sm:text-sm tracking-wider uppercase shadow-lg shadow-amber-500/20 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer">
+                <span>🔑 ലോഗിൻ / Login with Soft PIN</span>
+              </button>
+              <button type="button" onclick="openAuthModal('register')" class="w-full sm:w-auto px-6 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs sm:text-sm border border-slate-700 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer">
+                <span>📝 പുതിയ രജിസ്ട്രേഷൻ / Register</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STATE 2: AUTHENTICATED CLIENT WORKSPACE VIEW -->
+        <div id="portalAuthenticatedView" class="hidden space-y-8">
+
+          <!-- 0. DIGITAL VISITING CARD & CLIENT ACCESS PASS (3.5" x 2.0" PRINTABLE) -->
+          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-800 pb-4 mb-6 gap-3">
+              <div>
+                <span class="text-xs font-bold uppercase tracking-widest text-amber-400">Official Client Pass</span>
+                <h3 class="text-lg sm:text-xl font-black text-white mt-0.5">
+                  Digital Visiting Card & Access Pass (3.5" x 2.0")
+                </h3>
+              </div>
+              <button type="button" onclick="window.print()" title="Print Visiting Card (3.5 x 2.0 in)" class="px-4 py-2.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black rounded-xl text-xs transition shadow-md flex items-center gap-1.5 cursor-pointer">
+                <span>🖨️ വിസിറ്റിംഗ് കാർഡ് പ്രിന്റ് ചെയ്യുക / Print Card</span>
+              </button>
+            </div>
+
+            <!-- The Printable Visiting Card -->
+            <div class="printable-card flex flex-col justify-between shadow-2xl">
+              <!-- Card Header -->
+              <div class="flex justify-between items-start">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/50 flex items-center justify-center font-black text-amber-400 text-sm">
+                    PCM
+                  </div>
+                  <div>
+                    <div class="text-xs font-black tracking-wider text-amber-300 uppercase leading-none">PCM WAYANAD</div>
+                    <div class="text-[9px] text-slate-400 tracking-wide mt-0.5 font-medium">INTERIOR & FALSE CEILING</div>
+                  </div>
+                </div>
+                <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300">
+                  PORTAL PASS
+                </span>
+              </div>
+
+              <!-- Card Body: Client Details -->
+              <div class="my-auto py-1">
+                <div class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">CLIENT NAME / പേര്</div>
+                <div id="cardClientName" class="text-base font-black text-white tracking-wide truncate">Client Name</div>
+                <div class="flex items-center justify-between text-[11px] text-slate-300 mt-1">
+                  <div>
+                    <span class="text-amber-400 font-bold">SITE:</span>
+                    <span id="cardSiteId" class="font-mono font-bold text-white">PCM-SITE</span>
+                  </div>
+                  <div>
+                    <span class="text-amber-400 font-bold">SOFT PIN:</span>
+                    <span id="cardSitePin" class="font-mono font-bold text-amber-300 tracking-wider">••••</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Footer: Contact & Location -->
+              <div class="pt-2 border-t border-amber-500/30 flex justify-between items-center text-[10px] text-slate-300">
+                <div class="flex items-center gap-1 truncate max-w-[180px]">
+                  <span>📍</span> <span id="cardLocation" class="truncate">Wayanad, Kerala</span>
+                </div>
+                <div class="flex items-center gap-1 font-bold text-amber-400">
+                  <span>📞</span> <span>+91 9383406185</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 1. ITEMIZED ROOM BREAKDOWN & CEILING DIMENSIONS -->
+          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-800 pb-4 mb-6 gap-3">
+              <div>
+                <span class="text-xs font-bold uppercase tracking-widest text-amber-400">Precision Room Measurements</span>
+                <h3 class="text-lg sm:text-xl font-black text-white mt-0.5">
+                  Itemized Room Breakdown & Dimensions
+                </h3>
+              </div>
+              <div id="portalRoomSummaryBadges" class="flex items-center gap-2 text-xs">
+                <span id="portalTotalRoomsBadge" class="px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-300 font-bold">0 Rooms</span>
+                <span id="portalTotalSqFtBadge" class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 font-black">0 SQ.FT</span>
+              </div>
+            </div>
+
+            <!-- Dynamic Room Items Container -->
+            <div id="portalRoomsContainer">
+              <div class="py-8 text-center text-slate-500 text-xs sm:text-sm">
+                <span class="inline-block w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin mr-2"></span>
+                Fetching room measurements from Supabase...
+              </div>
+            </div>
+          </div>
+
+          <!-- 1.5. 3D GYPSUM CEILING ARCHITECTURAL STUDIO -->
+          <div id="portal3DSection" class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-800 pb-4 mb-6 gap-3">
+              <div>
+                <span class="text-xs font-bold uppercase tracking-widest text-amber-400">Interactive 3D Architectural Studio</span>
+                <h3 class="text-lg sm:text-xl font-black text-white mt-0.5">
+                  Custom Gypsum Ceiling 3D Preview
+                </h3>
+                <p class="text-xs text-slate-400 mt-1">
+                  Explore your room's customized false ceiling, warm cove lighting, and framing in 3D.
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="portal3DRoomBadge" class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold text-xs">Loading Room...</span>
+                <a id="portal3DFullscreenBtn" href="gypsum_3d_designer.html" target="_blank" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition flex items-center gap-1.5 border border-slate-700">
+                  <span>⤢ Fullscreen Studio</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Dynamic Room Tabs Bar -->
+            <div id="portal3DRoomTabs" class="flex gap-2 overflow-x-auto pb-3 mb-4">
+              <!-- Populated dynamically based on client rooms_data -->
+            </div>
+
+            <!-- 3D Studio Embedded Frame -->
+            <div class="relative w-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#121824] h-[480px] sm:h-[540px]">
+              <iframe id="portal3DIframe" src="gypsum_3d_designer.html" class="w-full h-full border-none" title="PCM 3D Gypsum Studio"></iframe>
+            </div>
+          </div>
+
+          <!-- 2. FINANCIAL SUMMARY & COMPLETE PAYMENT HISTORY -->
+          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-800 pb-4 mb-6 gap-3">
+              <div>
+                <span class="text-xs font-bold uppercase tracking-widest text-amber-400">Financial Ledger</span>
+                <h3 class="text-lg sm:text-xl font-black text-white mt-0.5">
+                  Contract Financials & Payment History
+                </h3>
+              </div>
+              <!-- Generated PDF Estimate Link -->
+              <div id="portalPdfContainer" class="hidden">
+                <a id="portalPdfDownloadBtn" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black rounded-xl text-xs transition shadow-md flex items-center gap-1.5">
+                  <span>📄 View / Download Estimate PDF</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- 3 Main Financial Metrics Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+              <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Contract</span>
+                <div id="portalTotalContract" class="text-2xl sm:text-3xl font-black text-white mt-1">₹0</div>
+                <span class="text-[10px] text-slate-500 block mt-1">Total Agreed Project Value</span>
+              </div>
+              <div class="bg-slate-950 border border-emerald-500/30 rounded-2xl p-4 sm:p-5">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Total Paid / Received</span>
+                <div id="portalTotalReceived" class="text-2xl sm:text-3xl font-black text-emerald-400 mt-1">₹0</div>
+                <span class="text-[10px] text-slate-500 block mt-1">Verified Received Amount</span>
+              </div>
+              <div class="bg-slate-950 border border-amber-500/30 rounded-2xl p-4 sm:p-5">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-amber-400">Balance Due</span>
+                <div id="portalBalanceDue" class="text-2xl sm:text-3xl font-black text-amber-400 mt-1">₹0</div>
+                <span class="text-[10px] text-slate-500 block mt-1">Remaining to be Settled</span>
+              </div>
+            </div>
+
+            <!-- Transaction History Ledger -->
+            <div>
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-2">
+                <span>💳 Payment Receipts & Transaction Log</span>
+              </h4>
+              <div id="portalPaymentsContainer" class="overflow-x-auto">
+                <div class="py-6 text-center text-slate-500 text-xs">
+                  No payment transactions recorded yet.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. MILESTONES & SUPERVISOR CHAT (GRID) -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <!-- Left: Installation Milestones (6 cols) -->
+            <div class="lg:col-span-6 bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-4 shadow-xl">
+              <div class="flex justify-between items-center mb-2">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400">
+                  Site Installation Milestones
+                </h3>
+                <span id="portalMilestonesSummary" class="text-[11px] text-slate-400 font-bold"></span>
+              </div>
+
+              <!-- Dynamically Populated Milestones -->
+              <div id="portalMilestonesContainer" class="space-y-3">
+                <div class="py-6 text-center text-slate-500 text-xs">
+                  Loading site progress...
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Direct Site Supervisor Chat (6 cols) -->
+            <div class="lg:col-span-6 bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xl h-[460px]">
+              <div>
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3">
+                  <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400">Direct Engineer Chat</h3>
+                  <span class="text-[10px] text-emerald-400 flex items-center gap-1 font-bold">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Online
+                  </span>
+                </div>
+
+                <!-- Scrollable Messages (Strictly Real Messages) -->
+                <div id="portalChatContainer" class="overflow-y-auto max-h-[300px] pr-1 space-y-2">
+                  <div class="py-12 text-center text-slate-500 text-xs">
+                    No messages yet. Send a message below to reach your site supervisor.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Message Input Form -->
+              <form onsubmit="sendPortalChatMessage(event)" class="mt-3 pt-3 border-t border-slate-800 flex gap-2">
+                <label for="portalChatInput" class="sr-only">Type a message to engineer</label>
+                <input type="text" id="portalChatInput" name="portalChatInput" aria-label="Type a message to engineer" title="Type a message to engineer" placeholder="Type a message to engineer..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white text-xs sm:text-sm focus:border-amber-500 focus:outline-none">
+                <button type="submit" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs transition cursor-pointer">
+                  Send 🚀
+                </button>
+              </form>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 8. CRAFTSMANSHIP PROCESS -->
+    <section id="process" class="py-20 bg-[#0a0f1d] border-t border-slate-800">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="text-center mb-12">
+          <span class="text-xs font-black tracking-widest text-amber-400 uppercase">Precision Engineering</span>
+          <h2 class="text-2xl sm:text-4xl font-heading font-black text-white mt-1">
+            The 4-Step PCM Craftsmanship Workflow
+          </h2>
+        </div>
+
+        <div id="craftsmanshipStepsGrid" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl relative">
+            <span class="text-3xl font-black text-amber-500/30 font-heading">01</span>
+            <h4 class="text-white font-bold text-base mt-2 mb-1">Laser Leveling</h4>
+            <p class="text-slate-400 text-xs leading-relaxed">360-degree green laser calibration ensuring zero sagging or uneven ceiling planes.</p>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl relative">
+            <span class="text-3xl font-black text-amber-500/30 font-heading">02</span>
+            <h4 class="text-white font-bold text-base mt-2 mb-1">GI Heavy Framing</h4>
+            <p class="text-slate-400 text-xs leading-relaxed">0.50mm hot-dip galvanized steel grid resistant to Wayanad monsoon humidity.</p>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl relative">
+            <span class="text-3xl font-black text-amber-500/30 font-heading">03</span>
+            <h4 class="text-white font-bold text-base mt-2 mb-1">Gyproc Boarding</h4>
+            <p class="text-slate-400 text-xs leading-relaxed">Genuine Saint-Gobain 12.5mm boards fastened with anti-rust phosphated screws.</p>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl relative">
+            <span class="text-3xl font-black text-amber-500/30 font-heading">04</span>
+            <h4 class="text-white font-bold text-base mt-2 mb-1">Cove & Painting</h4>
+            <p class="text-slate-400 text-xs leading-relaxed">Seamless 3-coat joint finish and premium warm 3000K concealed LED profile illumination.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 9. CONSULTATION DESK & CONTACT -->
+    <section id="contact" class="py-20 bg-slate-950/90 border-t border-slate-800">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="text-xs font-black tracking-widest text-amber-400 uppercase">Consultation Desk</span>
+        <h2 class="text-2xl sm:text-4xl font-heading font-black text-white mt-1 mb-4">
+          Ready to Elevate Your Kerala Home?
+        </h2>
+        <p class="text-sm text-slate-400 max-w-xl mx-auto mb-8">
+          Get in touch with our Wayanad master ceiling team for direct site measurements, 3D cove design previews, and itemized quotations.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="tel:9383406185" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm uppercase tracking-wider shadow-xl shadow-amber-500/20 active:scale-95 transition flex items-center justify-center gap-2">
+            <span>📞 Call +91 9383406185</span>
+          </a>
+          <a href="https://wa.me/919383406185?text=Hello%20PCM%20Wayanad,%20I%20would%20like%20to%20book%20a%20site%20visit" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm uppercase tracking-wider shadow-xl shadow-emerald-600/20 active:scale-95 transition flex items-center justify-center gap-2">
+            <span>💬 Book WhatsApp Site Visit</span>
+          </a>
+        </div>
+
+        <div class="mt-12 pt-8 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left text-xs text-slate-400">
+          <div>
+            <span class="text-white font-bold block mb-1">📍 Studio Location</span>
+            <span id="footerStudioLocation"></span>
+          </div>
+          <div>
+            <span class="text-white font-bold block mb-1">📞 Direct Phone</span>
+            <span id="footerDirectPhone"></span>
+          </div>
+          <div>
+            <span class="text-white font-bold block mb-1">⏰ Operating Hours</span>
+            <span id="footerOperatingHours"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-950 border-t border-slate-900 py-8 px-4 text-center text-xs text-slate-500">
+      <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-2 text-slate-400 font-bold">
+          <img src="logo.png" alt="PCM" class="h-6 w-6 rounded-md object-contain">
+          <span>PCM WAYANAD © 2026. All rights reserved.</span>
+        </div>
+        <div class="flex gap-4">
+          <a href="#gallery" class="hover:text-amber-400">Gallery</a>
+          <a href="#calculator" class="hover:text-amber-400">Calculator</a>
+          <a href="#site-portal" class="hover:text-amber-400">Client Portal</a>
+          <a href="tel:9383406185" class="hover:text-amber-400">+91 9383406185</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- PHOTO LIGHTBOX DIALOG                                                     -->
+  <!-- ========================================================================= -->
+  <dialog id="photoLightboxDialog" class="modal-dialog">
+    <div class="relative bg-slate-900 border border-amber-500/40 rounded-3xl p-4 max-w-4xl max-h-[90vh] flex flex-col items-center overflow-hidden shadow-2xl">
+      <button type="button" onclick="closePhotoLightbox()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-slate-950/80 text-white flex items-center justify-center hover:bg-amber-500 hover:text-slate-950 transition">
+        ✕
+      </button>
+      <img id="lightboxImg" src="" alt="Portfolio Design" class="max-h-[70vh] w-auto rounded-2xl object-contain">
+      <h4 id="lightboxCaption" class="text-white font-bold text-sm sm:text-base mt-3 text-center" aria-live="polite">PCM Kerala Architectural Ceiling Portfolio</h4>
+    </div>
+  </dialog>
+
+  <!-- ========================================================================= -->
+  <!-- PWA AUTO INSTALL PROMPT BANNER                                             -->
+  <!-- ========================================================================= -->
+  <aside id="pwaInstallBanner" aria-label="Install PCM Wayanad App" class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-sm z-50 bg-slate-900/95 backdrop-blur-2xl border border-amber-500/40 rounded-2xl p-4 shadow-2xl transition-all duration-500 transform translate-y-28 opacity-0 pointer-events-none flex flex-col gap-3">
+    <div class="flex items-center gap-3">
+      <img src="logo-192.png" alt="PCM Wayanad App" class="w-12 h-12 rounded-xl border border-amber-500/30 object-contain bg-slate-950 p-1 shadow-md">
+      <div class="flex-1 min-w-0">
+        <h4 class="text-xs font-black text-white tracking-wide truncate">Install PCM Wayanad App</h4>
+        <p class="text-[11px] text-slate-300 mt-0.5 leading-snug">Add to Home Screen for fast offline access to quotations & live site portal.</p>
+      </div>
+      <button type="button" onclick="dismissPwaPrompt()" class="text-slate-400 hover:text-white p-1 text-sm font-bold cursor-pointer" title="Close">✕</button>
+    </div>
+    <div class="flex items-center gap-2">
+      <button type="button" onclick="triggerPwaInstall()" class="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs text-center shadow-lg shadow-amber-500/20 active:scale-95 transition cursor-pointer">
+        📲 Install App Now
+      </button>
+      <button type="button" onclick="dismissPwaPrompt()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition cursor-pointer">
+        Later
+      </button>
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- MODULAR JAVASCRIPT BUNDLES & PWA CONTROLLER                                -->
+  <!-- ========================================================================= -->
+  <script src="ants.js"></script>
+  <script src="auth.js"></script>
+  <script src="calculator.js"></script>
+  <script src="portal.js"></script>
+  <script src="before_after_slider.js"></script>
+  <script src="router.js"></script>
+
+  <!-- Service Worker Registration & beforeinstallprompt Native Hook -->
+  <script>
+    // 1. Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('✅ PCM PWA ServiceWorker active:', reg.scope))
+          .catch(err => console.warn('⚠️ ServiceWorker error:', err));
+      });
+    }
+
+    // 2. Native beforeinstallprompt capture & triggers
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+
+      // Reveal navbar and mobile menu Install buttons
+      ['pwaInstallBtn', 'mobilePwaInstallBtn'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('hidden');
+      });
+
+      // Automatically present modern floating install prompt
+      const banner = document.getElementById('pwaInstallBanner');
+      if (banner) {
+        banner.classList.remove('translate-y-28', 'opacity-0', 'pointer-events-none');
+        banner.classList.add('translate-y-0', 'opacity-100');
+      }
+    });
+
+    window.triggerPwaInstall = async function () {
+      if (!deferredPrompt) {
+        alert('To install the PCM Wayanad App, open your browser menu (⋮ or Share icon) and select "Add to Home Screen" or "Install App".');
+        return;
+      }
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`PWA install choice: ${outcome}`);
+      deferredPrompt = null;
+      dismissPwaPrompt();
+    };
+
+    window.dismissPwaPrompt = function () {
+      const banner = document.getElementById('pwaInstallBanner');
+      if (banner) {
+        banner.classList.add('translate-y-28', 'opacity-0', 'pointer-events-none');
+        banner.classList.remove('translate-y-0', 'opacity-100');
+      }
+    };
+
+    window.addEventListener('appinstalled', () => {
+      console.log('✅ PCM Wayanad PWA successfully installed');
+      deferredPrompt = null;
+      dismissPwaPrompt();
+      ['pwaInstallBtn', 'mobilePwaInstallBtn'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    });
+  </script>
+
+</body>
+</html>

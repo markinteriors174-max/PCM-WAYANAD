@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "772399780137",
+    "project_id": "premier-ceiling-master",
+    "storage_bucket": "premier-ceiling-master.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772399780137:android:d6f5b81acf354a8d68a738",
+        "android_client_info": {
+          "package_name": "com.example.pcm_wayanad"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAiDOzQxkTeOFFtutELxh4HzDwYKbRv3Dw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,55 @@
+/* ==========================================================================
+   PCM WAYANAD PORTAL - DETAILS & FINANCIAL STYLES (< 60 lines)
+   ========================================================================== */
+
+/* CLIENT & GST DETAILS CARD */
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.detail-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px; }
+.detail-item-full { grid-column: span 2; }
+.detail-label { font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; }
+.detail-val { font-size: 12px; font-weight: 800; color: #0f172a; margin-top: 4px; word-break: break-all; }
+
+.gst-tag { display: inline-block; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-top: 4px; }
+.gst-no { background: #f1f5f9; color: #475569; }
+.gst-yes { background: #dcfce7; color: #166534; }
+.badge-verified-blue { font-size: 9px; background: #e0f2fe; color: #075985; padding: 2px 6px; border-radius: 4px; font-weight: 800; }
+
+/* FINANCIAL STATS */
+.finance-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; }
+.fin-box {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 14px 4px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2e8f0;
+}
+.fin-lbl { font-size: 9px; font-weight: 800; text-transform: uppercase; white-space: nowrap; }
+.fin-val { font-size: 12px; font-weight: 900; margin-top: 5px; white-space: nowrap; transition: color 0.3s; }
+.col-contract { color: #0369a1; }
+.col-paid { color: #15803d; }
+.col-due { color: #be123c; }
+
+.pill-receipts { color: #0c4a6e; background: #e0f2fe; padding: 4px 8px; border-radius: 6px; font-weight: 800; font-size: 11px; }
+.btn-pdf-active { background: #166534 !important; color: #ffffff !important; }
+
+/* STANDALONE LEDGER CARD */
+.ledger-card { padding: 0 !important; overflow: hidden; margin-top: 2px; }
+.ledger-head { margin-bottom: 0; padding: 14px 16px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+.ledger-title { font-weight: 900; font-size: 12px; color: #0f172a; letter-spacing: 0.8px; }
+.ledger-badge { font-size: 10px; font-weight: 900; background: #fef3c7; color: #92400e; padding: 3px 8px; border-radius: 999px; }
+.ledger-body { display: flex; flex-direction: column; }
+.ledger-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid #f1f5f9; }
+.ledger-row-highlight { background: #fafafa; }
+.ledger-lbl { font-size: 12px; font-weight: 700; color: #475569; }
+.ledger-lbl-bold { font-size: 12px; font-weight: 800; color: #1e293b; }
+.ledger-lbl-blue { font-size: 12px; font-weight: 700; color: #0369a1; }
+.ledger-lbl-orange { font-size: 12px; font-weight: 700; color: #c2410c; }
+.ledger-val { font-size: 14px; font-weight: 900; color: #0f172a; font-family: monospace; }
+.ledger-val-muted { font-size: 14px; font-weight: 900; color: #334155; font-family: monospace; }
+.ledger-val-total { font-size: 15px; font-weight: 900; color: #0f172a; font-family: monospace; }
+.ledger-val-blue { font-size: 14px; font-weight: 900; color: #0284c7; font-family: monospace; }
+.ledger-val-orange { font-size: 14px; font-weight: 900; color: #d97706; font-family: monospace; }
+.ledger-row-due { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: #fff1f2; border-top: 2px solid #fecdd3; }
+.ledger-lbl-due { font-size: 13px; font-weight: 900; color: #881337; text-transform: uppercase; }
+.ledger-val-due { font-size: 17px; font-weight: 900; color: #e11d48; font-family: monospace; }

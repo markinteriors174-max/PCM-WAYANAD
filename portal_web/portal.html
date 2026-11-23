@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PCM WAYANAD | Client Live Portal & Quotation</title>
+  <!-- Favicon & Touch Icons -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="192x192" href="logo-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="logo-512.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PCM WAYANAD">
+  <meta name="theme-color" content="#0f172a">
+  <!-- Supabase JS Client (v2) & Tailwind CSS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.js" integrity="sha384-Tgoms7a53eyQOCcKXlBrA1X967mm3BHK43f3979dACl74tZlLW+O85pmfCuhfUtx" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Immediate Pre-render Auth Guard -->
+  <script>
+    (function() {
+      const activePin = localStorage.getItem('pcm_active_site_pin');
+      const user = localStorage.getItem('pcm_portal_user');
+      const phone = localStorage.getItem('pcm_client_phone');
+      const siteId = localStorage.getItem('pcm_client_site_id');
+      const urlParams = new URLSearchParams(window.location.search);
+      const allowPreview = urlParams.get('preview') === 'true';
+      if (!activePin && !user && !phone && !siteId && !allowPreview) {
+        console.warn('[PCM Portal] Unauthenticated access blocked. Redirecting to sign in.');
+        window.location.replace('index.html?auth=login');
+      }
+    })();
+  </script>
+  <script>tailwind.config = { corePlugins: { preflight: false } };</script>
+  <!-- Modular CSS Modules -->
+  <link rel="stylesheet" href="portal/css/portal_base.css">
+  <link rel="stylesheet" href="portal/css/portal_header.css">
+  <link rel="stylesheet" href="portal/css/portal_cards.css">
+  <link rel="stylesheet" href="portal/css/portal_details_finance.css">
+  <link rel="stylesheet" href="portal/css/portal_progress.css">
+  <link rel="stylesheet" href="portal/css/portal_gallery.css">
+  <link rel="stylesheet" href="portal/css/portal_chat.css">
+  <link rel="stylesheet" href="portal/css/portal_contract_upi.css">
+  <link rel="stylesheet" href="portal/css/portal_auth.css">
+</head>
+<body>
+  <!-- Modal & Header Mounts -->
+  <div id="websiteAuthModalMount"></div>
+  <header class="header" id="portalHeaderMount"></header>
+
+  <!-- Main Portal Content Container -->
+  <main class="container hidden" id="mainPortalContent">
+    <div id="overviewMount"></div>
+    <div id="detailsMount"></div>
+    <div id="ledgerMount"></div>
+    <div id="financialsMount"></div>
+    <div id="statementMount"></div>
+    <div id="pdfMount"></div>
+    <div id="progressMount"></div>
+    <div id="roomsMount"></div>
+    <div id="studio3DMount"></div>
+    <div id="galleryMount"></div>
+    <div id="chatMount"></div>
+    <div id="contractMount"></div>
+    <div id="upiMount"></div>
+  </main>
+
+  <a href="#chatSection" class="floating-chat-btn">💬 Live Chat</a>
+
+  <!-- Modular Javascript Utilities & Services -->
+  <script src="portal/js/portal_state.js"></script>
+  <script src="portal/js/portal_api.js"></script>
+  <script src="portal/js/components/portal_auth_modal.js"></script>
+  <script src="portal/js/components/portal_client_lookup.js"></script>
+  <script src="portal/js/components/portal_header.js"></script>
+  <script src="portal/js/components/portal_overview.js"></script>
+  <script src="portal/js/components/portal_details.js"></script>
+  <script src="portal/js/components/portal_ledger.js"></script>
+  <script src="portal/js/components/portal_financials.js"></script>
+  <script src="portal/js/components/portal_statement.js"></script>
+  <script src="portal/js/components/portal_pdf.js"></script>
+  <script src="portal/js/components/portal_progress.js"></script>
+  <script src="portal/js/components/portal_rooms.js"></script>
+  <script src="portal/js/components/portal_3d.js"></script>
+  <script src="portal/js/components/portal_gallery.js"></script>
+  <script src="portal/js/components/portal_chat.js"></script>
+  <script src="portal/js/components/portal_contract.js"></script>
+  <script src="portal/js/components/portal_upi.js"></script>
+  <script src="portal/js/portal_chat_service.js"></script>
+  <script src="portal/js/portal_realtime.js"></script>
+  <script src="portal/js/portal_auth_service.js"></script>
+  <script src="portal/js/portal_app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

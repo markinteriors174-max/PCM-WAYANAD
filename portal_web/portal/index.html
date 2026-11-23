@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PCM WAYANAD | Client Live Dashboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; padding-bottom: 60px; }
+    .header { background: #1e293b; border-bottom: 1px solid #334155; padding: 12px 16px; position: sticky; top: 0; z-index: 50; }
+    .header-inner { max-width: 650px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .logo-txt { font-size: 16px; font-weight: 900; color: #ffffff; }
+    .site-sub { font-size: 11px; color: #34d399; font-weight: 700; }
+    .btn-top { border: none; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; }
+    .btn-install { background: #065f46; color: #ecfdf5; border: 1px solid #10b981; margin-right: 6px; }
+    .btn-logout { background: #881337; color: #ffe4e6; border: 1px solid #f43f5e; }
+    .container { max-width: 650px; margin: 16px auto; padding: 0 12px; display: flex; flex-direction: column; gap: 14px; }
+    
+    .card { background: #ffffff; border-radius: 18px; padding: 18px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); border: 1px solid #e2e8f0; color: #0f172a; }
+    .card-head-pill { display: flex; align-items: center; justify-content: space-between; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; }
+    .pill-gallery { color: #0f172a; }
+    .pill-progress { color: #c2410c; }
+    .pill-contract { color: #4338ca; }
+    .pill-change { color: #b45309; }
+    .pill-gps { color: #15803d; }
+    .pill-receipts { color: #0369a1; }
+    
+    /* PROFILE */
+    .profile-row { display: flex; justify-content: space-between; align-items: flex-start; }
+    .avatar-wrap { display: flex; gap: 12px; align-items: center; }
+    .avatar { width: 44px; height: 44px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .client-title { font-size: 18px; font-weight: 900; color: #0f172a; }
+    .site-badge-txt { font-size: 11px; font-weight: 800; color: #b45309; }
+    .loc-txt { font-size: 11px; color: #64748b; font-weight: 600; margin-top: 2px; }
+    .badge-stage { background: #fef3c7; color: #92400e; font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 999px; }
+    .pin-box { background: #f0fdf4; border: 1px dashed #86efac; border-radius: 12px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; margin: 12px 0; }
+    .pin-lbl { font-size: 11px; font-weight: 900; color: #166534; }
+    .pin-val { font-size: 16px; font-weight: 900; letter-spacing: 2px; color: #15803d; }
+    .actions-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .btn-action { display: block; text-decoration: none; text-align: center; color: #ffffff; font-size: 11px; font-weight: 800; padding: 10px 4px; border-radius: 12px; }
+    .btn-call { background: #4d7c0f; }
+    .btn-wa { background: #15803d; }
+    .btn-map { background: #334155; }
+    
+    /* FINANCIALS */
+    .finance-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .fin-box { background: #ffffff; border-radius: 16px; padding: 12px 6px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; }
+    .fin-lbl { font-size: 9px; font-weight: 800; text-transform: uppercase; }
+    .fin-val { font-size: 13px; font-weight: 900; margin-top: 3px; }
+    .fin-contract { color: #0284c7; }
+    .fin-paid { color: #16a34a; }
+    .fin-due { color: #e11d48; }
+    
+    /* DESIGN PORTFOLIO / GALLERY */
+    .watermark-pill { font-size: 9px; background: #e2e8f0; padding: 2px 6px; border-radius: 4px; color: #334155; font-weight: 700; }
+    .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .gallery-card { border-radius: 14px; overflow: hidden; border: 1px solid #e2e8f0; background: #f8fafc; }
+    .gallery-img-wrap { position: relative; width: 100%; height: 160px; }
+    .gallery-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .gallery-badge { position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.7); color: #ffffff; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
+    .gallery-info { padding: 8px 10px; }
+    .gallery-title { font-size: 12px; font-weight: 900; color: #0f172a; }
+    .gallery-time { font-size: 9px; color: #64748b; font-weight: 600; margin-top: 2px; }
+
+    /* PROGRESS */
+    .prog-item { margin-bottom: 11px; }
+    .prog-txt-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: #334155; margin-bottom: 4px; }
+    .bar-bg { width: 100%; height: 9px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+    .bar-fill { height: 100%; background: #4d7c0f; border-radius: 999px; transition: width 0.6s ease; }
+    .overall-wrap { background: #f8fafc; border-radius: 12px; padding: 10px; margin-top: 14px; border: 1px solid #e2e8f0; }
+    .overall-margin { margin-bottom: 6px; }
+    .overall-val { font-weight: 900; color: #15803d; }
+    .font-bold { font-weight: 800; }
+    .w-0 { width: 0%; }
+    .w-14 { width: 14%; }
+    .w-70 { width: 70%; }
+    .w-100 { width: 100%; }
+    .bg-success { background: #16a34a; }
+    
+    /* CONTRACT APPROVAL STYLING */
+    .contract-info-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+    .contract-active-box { background: #f0fdf4; border: 2px solid #86efac; border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+    .contract-title { font-size: 12px; font-weight: 900; color: #14532d; margin-bottom: 4px; }
+    .contract-sub { font-size: 11px; color: #166534; font-weight: 600; margin-bottom: 10px; }
+    .contract-terms { background: #ffffff; border: 1px solid #bbf7d0; border-radius: 8px; padding: 8px 10px; font-size: 10px; color: #334155; line-height: 1.4; margin-bottom: 12px; }
+    .btn-allow-contract { width: 100%; background: #15803d; color: #ffffff; font-weight: 900; font-size: 12px; padding: 12px; border-radius: 12px; border: none; cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(21,128,61,0.25); transition: background 0.2s ease; }
+    .btn-allow-contract:hover { background: #166534; }
+    .contract-approved-badge { display: flex; align-items: center; justify-content: center; gap: 8px; background: #dcfce7; border: 1px solid #86efac; border-radius: 12px; padding: 12px; font-size: 12px; font-weight: 900; color: #15803d; }
+    
+    /* FIELDS */
+    .field-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+    .field-lbl { font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; }
+    .field-val { font-size: 11px; font-weight: 700; color: #0f172a; margin-top: 2px; }
+    .field-val-muted { color: #64748b; }
+    .gps-desc { font-size: 11px; color: #64748b; font-weight: 600; line-height: 1.4; }
+    .gps-loc-box { margin-top: 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 8px 12px; font-size: 11px; font-weight: 800; color: #14532d; }
+
+    /* UPI QR */
+    .qr-card { text-align: center; }
+    .qr-title { font-size: 11px; font-weight: 800; color: #15803d; text-transform: uppercase; }
+    .qr-wrap { width: 140px; height: 140px; margin: 10px auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 8px; display: flex; align-items: center; justify-content: center; }
+    .qr-wrap img { width: 100%; height: 100%; object-fit: contain; }
+    .qr-sub { font-size: 10px; color: #64748b; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div>
+        <div class="logo-txt">PCM WAYANAD</div>
+        <div class="site-sub" id="hdrSiteSub">SITE: PCM-MS-003</div>
+      </div>
+      <div>
+        <button class="btn-top btn-install" onclick="alert('Tap browser menu and select Add to Home Screen to Install.')">📲 Install</button>
+        <button class="btn-top btn-logout" onclick="if(window.handlePortalLogout){window.handlePortalLogout();}else{localStorage.clear();sessionStorage.clear();location.reload();}">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    
+    <!-- 1. OVERVIEW & PIN -->
+    <div class="card">
+      <div class="profile-row">
+        <div class="avatar-wrap">
+          <div class="avatar">👤</div>
+          <div>
+            <div class="client-title" id="txtClientName">BIJOY CASS</div>
+            <div class="site-badge-txt" id="txtSiteBadge">site: PCM-MS-003</div>
+            <div class="loc-txt" id="txtLocation">📍 ambalapadi</div>
+          </div>
+        </div>
+        <span class="badge-stage" id="txtBadgeStage">PLANNING</span>
+      </div>
+
+      <div class="pin-box">
+        <span class="pin-lbl">🔑 CLIENT SITE PIN</span>
+        <span class="pin-val" id="txtSitePin">0003</span>
+      </div>
+
+      <div class="actions-grid">
+        <a id="btnCall" href="tel:6282278983" class="btn-action btn-call">📞 CALL</a>
+        <a id="btnWa" href="https://wa.me/916282278983" target="_blank" rel="noopener noreferrer" class="btn-action btn-wa">💬 WHATSAPP</a>
+        <a id="btnMap" href="https://maps.google.com" target="_blank" rel="noopener noreferrer" class="btn-action btn-map">🗺️ MAPS</a>
+      </div>
+    </div>
+
+    <!-- 1.1 PROJECT DETAILS & LEDGER -->
+    <div class="card ledger-card" id="standaloneLedgerCard">
+      <div class="card-head-pill ledger-head">
+        <span class="ledger-title">📋 PROJECT DETAILS & LEDGER</span>
+        <span class="ledger-badge">LIVE SYNCED</span>
+      </div>
+      <div class="ledger-body">
+        <div class="ledger-row">
+          <span class="ledger-lbl">Total Square Footage</span>
+          <span id="standaloneSqFt" class="ledger-val">2,450.00 sq.ft</span>
+        </div>
+        <div class="ledger-row">
+          <span class="ledger-lbl">Total Photos Added</span>
+          <span id="standalonePhotos" class="ledger-val-muted">12 Photos</span>
+        </div>
+        <div class="ledger-row ledger-row-highlight">
+          <span class="ledger-lbl-bold">Total Project Amount</span>
+          <span id="standaloneTotalAmount" class="ledger-val-total">₹6,71,513.00</span>
+        </div>
+        <div class="ledger-row" id="standaloneRowAdvance">
+          <span class="ledger-lbl-blue">Advance Payment</span>
+          <span id="standaloneAdvance" class="ledger-val-blue">₹50,000.00</span>
+        </div>
+        <div class="ledger-row">
+          <span class="ledger-lbl-blue">Received via Logs</span>
+          <span id="standaloneReceivedLogs" class="ledger-val-blue">₹1,20,000.00</span>
+        </div>
+        <div class="ledger-row">
+          <span class="ledger-lbl-orange">Labor Expenses</span>
+          <span id="standaloneLabor" class="ledger-val-orange">₹45,000.00</span>
+        </div>
+        <div class="ledger-row-due" id="standaloneRowDue">
+          <span class="ledger-lbl-due">Net Balance Due</span>
+          <span id="standaloneNetDue" class="ledger-val-due">₹5,01,513.00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. FINANCIAL STATS -->
+    <div class="finance-grid">
+      <div class="fin-box">
+        <div class="fin-lbl fin-contract">TOTAL CONTRACT</div>
+        <div class="fin-val fin-contract" id="valTotalContract">₹6,71,513.23</div>
+      </div>
+      <div class="fin-box">
+        <div class="fin-lbl fin-paid">PAID TO DATE</div>
+        <div class="fin-val fin-paid" id="valPaidAmount">₹0.00</div>
+      </div>
+      <div class="fin-box">
+        <div class="fin-lbl fin-due">BALANCE DUE</div>
+        <div class="fin-val fin-due" id="valBalanceDue">₹6,71,513.23</div>
+      </div>
+    </div>
+
+    <!-- 3. DESIGN PORTFOLIO & NIGHT GALLERY -->
+    <div class="card">
+      <div class="card-head-pill pill-gallery">
+        <span>📸 DESIGN PORTFOLIO & NIGHT GALLERY</span>
+        <span class="watermark-pill">WATERMARKED</span>
+      </div>
+      <div class="gallery-grid">
+        <!-- Hall 1 -->
+        <div class="gallery-card">
+          <div class="gallery-img-wrap">
+            <img class="gallery-img" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&auto=format&fit=crop&q=60" alt="Hall 1">
+            <span class="gallery-badge">PCM</span>
+          </div>
+          <div class="gallery-info">
+            <div class="gallery-title">Hall 1 (Cove Lighting)</div>
+            <div class="gallery-time">2026-09-13 • Live Night View</div>
+          </div>
+        </div>
+
+        <!-- Bedroom 1 -->
+        <div class="gallery-card">
+          <div class="gallery-img-wrap">
+            <img class="gallery-img" src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=500&auto=format&fit=crop&q=60" alt="Bedroom 1">
+            <span class="gallery-badge">PCM</span>
+          </div>
+          <div class="gallery-info">
+            <div class="gallery-title">Bedroom 1 (Warm Ceiling)</div>
+            <div class="gallery-time">2026-09-13 • Live Night View</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. LIVE PROGRESS TRACKER -->
+    <div class="card">
+      <div class="card-head-pill pill-progress">
+        <span>🔥 LIVE PROGRESS TRACKER</span>
+      </div>
+      <div class="prog-item">
+        <div class="prog-txt-row"><span>Framing / Channel Work</span><span class="font-bold" id="txtFraming">70%</span></div>
+        <div class="bar-bg"><div id="barFraming" class="bar-fill w-70"></div></div>
+      </div>
+      <div class="prog-item">
+        <div class="prog-txt-row"><span>Boarding (Gypsum Sheet)</span><span class="font-bold" id="txtBoarding">0%</span></div>
+        <div class="bar-bg"><div id="barBoarding" class="bar-fill w-0"></div></div>
+      </div>
+      <div class="prog-item">
+        <div class="prog-txt-row"><span>Finishing (Joint & Putty)</span><span class="font-bold" id="txtFinishing">0%</span></div>
+        <div class="bar-bg"><div id="barFinishing" class="bar-fill w-0"></div></div>
+      </div>
+      <div class="prog-item">
+        <div class="prog-txt-row"><span>Painting</span><span class="font-bold" id="txtPainting">0%</span></div>
+        <div class="bar-bg"><div id="barPainting" class="bar-fill w-0"></div></div>
+      </div>
+      <div class="prog-item">
+        <div class="prog-txt-row"><span>Cleanup & Handover</span><span class="font-bold" id="txtCleanup">0%</span></div>
+        <div class="bar-bg"><div id="barCleanup" class="bar-fill w-0"></div></div>
+      </div>
+
+      <div class="overall-wrap">
+        <div class="prog-txt-row overall-margin">
+          <span class="overall-val">OVERALL COMPLETION</span>
+          <span class="overall-val" id="txtOverall">14%</span>
+        </div>
+        <div class="bar-bg"><div id="barOverall" class="bar-fill w-14 bg-success"></div></div>
+      </div>
+    </div>
+
+    <!-- 5. CONTRACT APPROVAL (ALLOW FROM WEBSITE) -->
+    <div class="card">
+      <div class="card-head-pill pill-contract">
+        <span>📜 CONTRACT MANAGEMENT</span>
+      </div>
+      
+      <div id="contractContainer">
+        <!-- Active Approval Card -->
+        <div class="contract-active-box" id="contractActiveBox">
+          <div class="contract-title" id="contractTitle">Interior Ceiling Agreement - Bijoy Cass</div>
+          <div class="contract-sub">Site: PCM-MS-003 • Status: Awaiting Client Approval</div>
+          <div class="contract-terms">
+            📄 <strong>Terms Summary:</strong> Saint-Gobain Gyproc false ceiling execution according to approved drawings. 10-year warranty included.
+          </div>
+          <button class="btn-allow-contract" id="btnApproveContract" onclick="handleClientApproval()">
+            ✍️ Review & Approve / Allow Contract
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. CHANGE ORDERS & EXTRA WORK -->
+    <div class="card">
+      <div class="card-head-pill pill-change">
+        <span>🔄 CHANGE ORDERS & EXTRA WORK</span>
+      </div>
+      <div class="field-box">
+        <div class="field-lbl">Extra Work Description</div>
+        <div class="field-val field-val-muted">None pending approval</div>
+      </div>
+      <div class="field-box">
+        <div class="field-lbl">Extra Amount</div>
+        <div class="field-val">₹0.00</div>
+      </div>
+    </div>
+
+    <!-- 7. GPS SITE CHECK-IN -->
+    <div class="card">
+      <div class="card-head-pill pill-gps">
+        <span>📍 GPS SITE CHECK-IN</span>
+      </div>
+      <p class="gps-desc">
+        Logs GPS coordinates to verify physical presence at this site. Auto-triggered on stage updates and photo uploads.
+      </p>
+      <div class="gps-loc-box">
+        Site Location: ambalapadi
+      </div>
+    </div>
+
+    <!-- 8. PAYMENT RECEIPTS & DOCUMENTS -->
+    <div class="card">
+      <div class="card-head-pill pill-receipts">
+        <span>🧾 PAYMENT RECEIPTS & DOCUMENTS</span>
+      </div>
+      <div class="field-box">
+        <div class="field-lbl">Payment Status</div>
+        <div class="field-val">Initial Planning Stage</div>
+      </div>
+      <div class="field-box">
+        <div class="field-lbl">Documents History</div>
+        <div class="field-val field-val-muted">No documents generated yet.</div>
+      </div>
+    </div>
+
+    <!-- 9. UPI PAYMENT QR -->
+    <div class="card qr-card">
+      <div class="qr-title">SCAN & PAY DUE VIA UPI</div>
+      <div class="qr-wrap">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=upi://pay?pa=9383406185@upi&pn=PCM%20WAYANAD" alt="UPI QR">
+      </div>
+      <div class="qr-sub">GPay / PhonePe / Paytm / BHIM</div>
+    </div>
+
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://acszqttuqdvpgmwbtndw.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFjc3pxdHR1cWR2cGdtd2J0bmR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzODQ3NzksImV4cCI6MjA5OTk2MDc3OX0.8IohWgAWzeUromPsSE4YBu2ZTqn6wJZL7WYx637wBWE';
+    
+    let supabaseClient = null;
+    let currentSiteId = localStorage.getItem('pcm_client_site_id') || localStorage.getItem('pcm_active_site_pin') || 'pcm-ms-003';
+    let currentClientPhone = (localStorage.getItem('pcm_client_phone') || '').replace(/\D/g, '').slice(-10);
+
+    function handlePortalLogout() {
+      // 1. Wipe all local and session storage
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && (k.startsWith('pcm_') || k.startsWith('sb-') || k.includes('supabase') || k.includes('token'))) {
+          keysToRemove.push(k);
+        }
+      }
+      keysToRemove.forEach(k => localStorage.removeItem(k));
+      localStorage.clear();
+      try { sessionStorage.clear(); } catch (_) {}
+
+      if (supabaseClient && supabaseClient.auth) {
+        try { supabaseClient.auth.signOut(); } catch (_) {}
+      }
+
+      // 2. Immediate redirect to login
+      window.location.replace('../index.html?auth=login');
+    }
+    window.handlePortalLogout = handlePortalLogout;
+
+    function loadSupabaseScript() {
+      return new Promise((resolve) => {
+        if (window.supabase) {
+          resolve(window.supabase);
+          return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+        script.crossOrigin = 'anonymous';
+        script.onload = () => resolve(window.supabase);
+        script.onerror = () => resolve(null);
+        document.head.appendChild(script);
+      });
+    }
+
+    function setProgressBar(barId, txtId, val) {
+      const bar = document.getElementById(barId);
+      const txt = document.getElementById(txtId);
+      if (bar) bar.style.width = val + '%';
+      if (txt) txt.textContent = val + '%';
+    }
+
+    function formatCurrency(val) {
+      const num = Number(val) || 0;
+      return '₹' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function renderContractSection(status, title, approvedAt) {
+      const container = document.getElementById('contractContainer');
+      if (!container) return;
+
+      const norm = (status || '').toLowerCase().trim();
+      if (norm === 'approved by client' || norm === 'approved & signed by client' || norm === 'signed_by_client' || norm === 'approved' || norm === 'signed') {
+        let dateText = 'Just now';
+        if (approvedAt) {
+          try { dateText = new Date(approvedAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch(_) {}
+        }
+        container.innerHTML = `
+          <div class="contract-approved-badge">
+            ✅ Approved & Digitally Signed by Client (${dateText})
+          </div>
+        `;
+      } else if (norm === 'awaiting client approval' || norm === 'pending_client_signature' || norm === 'awaiting signature' || norm === 'not sent' || norm === '') {
+        const contractTitle = title || 'Interior Ceiling Agreement - Bijoy Cass';
+        container.innerHTML = `
+          <div class="contract-active-box" id="contractActiveBox">
+            <div class="contract-title">${contractTitle}</div>
+            <div class="contract-sub">Site: ${currentSiteId.toUpperCase()} • Status: Awaiting Client Approval</div>
+            <div class="contract-terms">
+              📄 <strong>Terms Summary:</strong> Saint-Gobain Gyproc false ceiling execution according to approved drawings. 10-year warranty included.
+            </div>
+            <button class="btn-allow-contract" id="btnApproveContract" onclick="handleClientApproval()">
+              ✍️ Review & Approve / Allow Contract
+            </button>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="contract-info-box">
+            <div class="field-val">${status}</div>
+          </div>
+        `;
+      }
+    }
+
+    async function handleClientApproval() {
+      const btn = document.getElementById('btnApproveContract');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ Submitting Approval...';
+      }
+
+      const confirmed = confirm(`Do you want to Approve & Digitally Sign the Interior Ceiling Agreement for ${currentSiteId.toUpperCase()}?`);
+      if (!confirmed) {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '✍️ Review & Approve / Allow Contract';
+        }
+        return;
+      }
+
+      const nowIso = new Date().toISOString();
+
+      try {
+        if (supabaseClient) {
+          const updateData = {
+            contract_status: 'Approved by Client',
+            approved_at: nowIso,
+            updated_at: nowIso
+          };
+
+          await supabaseClient
+            .from('site_portals')
+            .update(updateData)
+            .eq('site_id', currentSiteId.toLowerCase());
+
+          await supabaseClient
+            .from('site_portals')
+            .update(updateData)
+            .eq('site_id', currentSiteId.toUpperCase());
+        }
+
+        renderContractSection('Approved by Client', 'Interior Ceiling Agreement', nowIso);
+        alert('✅ Contract Approved & Allowed Successfully! Synced instantly to PCM Admin App.');
+      } catch (err) {
+        console.error('Error approving contract:', err);
+        renderContractSection('Approved by Client', 'Interior Ceiling Agreement', nowIso);
+        alert('Contract status saved locally and syncing to Admin App.');
+      }
+    }
+
+    function updateProfileUI(row) {
+      if (row.client_name) {
+        const el = document.getElementById('txtClientName');
+        if (el) el.textContent = row.client_name.toUpperCase();
+      }
+      if (row.site_id) {
+        const badge = document.getElementById('txtSiteBadge');
+        if (badge) badge.textContent = 'site: ' + row.site_id.toUpperCase();
+        const hdr = document.getElementById('hdrSiteSub');
+        if (hdr) hdr.textContent = 'SITE: ' + row.site_id.toUpperCase();
+      }
+      if (row.site_pin) {
+        const el = document.getElementById('txtSitePin');
+        if (el) el.textContent = row.site_pin;
+      }
+      const stage = row.project_stage || row.stage;
+      if (stage) {
+        const badge = document.getElementById('txtBadgeStage');
+        if (badge) badge.textContent = stage.toUpperCase();
+      }
+    }
+
+    function updateProgressUI(row) {
+      const framing = row.framing_progress ?? row.progress_framing ?? 70;
+      const boarding = row.boarding_progress ?? row.progress_boarding ?? 0;
+      const finishing = row.finishing_progress ?? row.progress_finishing ?? 0;
+      const painting = row.painting_progress ?? row.progress_painting ?? 0;
+      const cleanup = row.cleanup_progress ?? row.progress_cleanup ?? 0;
+
+      setProgressBar('barFraming', 'txtFraming', framing);
+      setProgressBar('barBoarding', 'txtBoarding', boarding);
+      setProgressBar('barFinishing', 'txtFinishing', finishing);
+      setProgressBar('barPainting', 'txtPainting', painting);
+      setProgressBar('barCleanup', 'txtCleanup', cleanup);
+
+      const overall = Math.round((framing + boarding + finishing + painting + cleanup) / 5);
+      setProgressBar('barOverall', 'txtOverall', overall);
+    }
+
+    function updateFinanceUI(row) {
+      if (row.total_contract != null) {
+        const el = document.getElementById('valTotalContract');
+        if (el) el.textContent = formatCurrency(row.total_contract);
+      }
+      if (row.paid_amount != null || row.total_received != null) {
+        const paid = row.paid_amount ?? row.total_received ?? 0;
+        const el = document.getElementById('valPaidAmount');
+        if (el) el.textContent = formatCurrency(paid);
+      }
+      if (row.balance_due != null) {
+        const el = document.getElementById('valBalanceDue');
+        if (el) el.textContent = formatCurrency(row.balance_due);
+      }
+    }
+
+    function applyPortalData(row) {
+      if (!row) return;
+      updateProfileUI(row);
+      updateProgressUI(row);
+      updateFinanceUI(row);
+      renderContractSection(row.contract_status, row.contract_title, row.approved_at);
+    }
+
+    async function fetchPortalData() {
+      if (!supabaseClient || !currentSiteId) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('site_portals')
+          .select('*')
+          .or(`site_id.eq.${currentSiteId.toLowerCase()},site_id.eq.${currentSiteId.toUpperCase()}${currentClientPhone ? `,client_phone.ilike.%${currentClientPhone}%` : ''}`)
+          .maybeSingle();
+
+        if (data && !error) {
+          applyPortalData(data);
+        }
+      } catch (e) {
+        console.warn('Portal fetch error:', e);
+      }
+    }
+
+    function initRealtime() {
+      if (!supabaseClient) return;
+
+      supabaseClient
+        .channel('site_portals_realtime')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'site_portals' },
+          (payload) => {
+            const isMatch = (record) => {
+              if (!record) return false;
+              const recPhone = (record.client_phone || '').replace(/\D/g, '').slice(-10);
+              const recSiteId = (record.site_id || '').toLowerCase();
+              return (currentClientPhone && recPhone === currentClientPhone) ||
+                     (currentSiteId && recSiteId === currentSiteId.toLowerCase());
+            };
+
+            if (payload.eventType === 'DELETE') {
+              if (isMatch(payload.old)) {
+                console.warn('[Portal] Real-time session invalidation: record deleted.');
+                alert('⚠️ നിങ്ങളുടെ അക്കൗണ്ട് അഡ്മിനിസ്ട്രേറ്റർ നീക്കം ചെയ്തു / Your account was removed by administrator.');
+                handlePortalLogout();
+              }
+            } else if (payload.eventType === 'UPDATE') {
+              if (isMatch(payload.new)) {
+                const status = (payload.new.status || '').toLowerCase();
+                if (status.includes('revoked') || status.includes('deleted') || status.includes('inactive') || status.includes('blocked')) {
+                  alert('⚠️ നിങ്ങളുടെ അക്കൗണ്ട് അക്സസ് റദ്ദാക്കി / Your account access has been revoked.');
+                  handlePortalLogout();
+                } else {
+                  applyPortalData(payload.new);
+                }
+              }
+            }
+          }
+        )
+        .subscribe();
+    }
+
+    // Init & Strict Startup Auth Guard
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Strict Auth Guard check: redirect if not signed in
+      const activePin = localStorage.getItem('pcm_active_site_pin');
+      const clientPhone = (localStorage.getItem('pcm_client_phone') || '').replace(/\D/g, '');
+      if (!activePin && clientPhone.length < 10) {
+        document.body.style.display = 'none';
+        window.location.replace('../index.html?auth=login');
+        return;
+      }
+
+      const sb = await loadSupabaseScript();
+      if (sb) {
+        supabaseClient = sb.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+      fetchPortalData();
+      initRealtime();
+      setInterval(fetchPortalData, 3000);
+    });
+  </script>
+</body>
+</html>

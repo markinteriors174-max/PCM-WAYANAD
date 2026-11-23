@@ -1,0 +1,73 @@
+/* PCM WAYANAD PORTAL - LIVE CHAT STYLES */
+.chat-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px;
+  max-height: 320px;
+  min-height: 180px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+  scroll-behavior: smooth;
+}
+.chat-empty { text-align: center; color: #334155; font-size: 11px; font-weight: 700; margin: auto; padding: 20px 0; }
+.chat-bubble { max-width: 84%; padding: 8px 12px; border-radius: 14px; font-size: 12px; line-height: 1.4; display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+.chat-bubble-admin { align-self: flex-start; background: #ecfdf5; border: 1px solid #a7f3d0; color: #064e3b; border-bottom-left-radius: 2px; }
+.chat-bubble-client { align-self: flex-end; background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a; border-bottom-right-radius: 2px; }
+.chat-sender-tag { font-size: 8.5px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 3px; display: inline-block; }
+.tag-admin { color: #059669; }
+.tag-client { color: #2563eb; }
+.chat-msg-txt { font-size: 12.5px; font-weight: 600; overflow-wrap: break-word; }
+.chat-time { font-size: 8.5px; color: #334155; align-self: flex-end; margin-top: 3px; font-weight: 800; }
+.chat-form { display: flex; gap: 8px; }
+.chat-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 12px;
+  outline: none;
+  background: #ffffff;
+  color: #0f172a;
+  transition: border-color 0.2s;
+}
+.chat-input:focus { border-color: #0284c7; }
+.btn-send-chat {
+  background: #075985;
+  color: #ffffff;
+  border: none;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.btn-send-chat:hover { background: #0369a1; }
+.floating-chat-btn {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: #075985;
+  color: #ffffff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 11.5px;
+  box-shadow: 0 4px 14px rgba(7, 89, 133, 0.5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 100;
+  text-decoration: none;
+}
+.floating-chat-btn:hover { background: #0369a1; transform: scale(1.02); }

@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "framework": null,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/(portal/css/.*|portal/js/.*|assets/.*|images/.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/portal/?$", "dest": "/portal.html" },
+    { "src": "/portal/(.*)", "dest": "/portal/$1" },
+    { "src": "/gypsum_3d_designer/?$", "dest": "/gypsum_3d_designer.html" },
+    { "src": "/gypsum_3d_designer.html", "dest": "/gypsum_3d_designer.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
