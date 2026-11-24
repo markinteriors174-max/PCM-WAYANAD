@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../models/quotation.dart';
 import 'pdf_widgets.dart';
 import 'quotation_row_builder.dart';
+import 'pdf_design_category_helper.dart';
 
 class QuotationTableBuilder {
   static pw.Widget buildTable({
@@ -101,7 +102,7 @@ class QuotationTableBuilder {
 
             Map<String, List<QuotationItem>> designGroups = {};
             for (var item in roomItems) {
-              final design = item.designName.trim().isEmpty ? 'Standard Design' : item.designName.trim();
+              final design = PdfDesignCategoryHelper.getDesignCategory(item);
               if (!designGroups.containsKey(design)) {
                 designGroups[design] = [];
               }

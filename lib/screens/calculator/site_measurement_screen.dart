@@ -788,7 +788,7 @@ class _SiteMeasurementScreenState extends State<SiteMeasurementScreen> {
           area: itemTotalArea,
           rate: roomRate,
           amount: itemTotalAmount,
-          brandName: '$boardToUse • $channelToUse',
+          brandName: CalculatorUtils.sanitizeBrandName('$boardToUse • $channelToUse'),
           hasCove: r.hasCove,
           coveLength: r.effectiveCoveLength,
           coveWidth: r.effectiveCoveWidth,

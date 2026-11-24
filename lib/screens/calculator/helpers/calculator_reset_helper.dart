@@ -87,30 +87,64 @@ class CalculatorResetHelper {
     ctrl.rateController.text = item.rate > 0 ? item.rate.toString() : '';
     
     ctrl.isCeilingDesign = item.isCeilingDesign || item.hasCentralDesign || item.hasCove;
-    ctrl.hasCentralDesign = item.hasCentralDesign;
+    ctrl.hasCentralDesign = false;
+    ctrl.hasCove = false;
+    ctrl.isPlainCeilingOn = false;
+    ctrl.isCoveCeilingOn = false;
+    ctrl.isCenterCeilingOn = false;
+
+    if (item.hasCove || item.designName.toLowerCase().contains('cove')) {
+      ctrl.hasCove = true;
+      ctrl.isCoveCeilingOn = true;
+    } else if (item.hasCentralDesign) {
+      ctrl.hasCentralDesign = true;
+      ctrl.isCenterCeilingOn = true;
+      final name = item.designName.toLowerCase();
+      if (name.contains('round') || name.contains('curve') || name.contains('custom') || name.contains('circle') || name.contains('radius')) {
+        ctrl.activeCenterType = 'Custom Center';
+      } else {
+        ctrl.activeCenterType = 'Standard (Center)';
+      }
+    } else {
+      ctrl.isPlainCeilingOn = true;
+      ctrl.isCeilingDesign = item.isCeilingDesign;
+    }
     
     double centralL = item.centralLength > 0 ? item.centralLength : (item.hasCentralDesign ? item.length : 0.0);
     double centralW = item.centralWidth > 0 ? item.centralWidth : (item.hasCentralDesign ? item.width : 0.0);
-    ctrl.centralLengthController.text = centralL > 0 ? centralL.toString() : '';
-    ctrl.centralWidthController.text = centralW > 0 ? centralW.toString() : '';
-    ctrl.centralAreaController.text = item.centralArea > 0 ? item.centralArea.toString() : '';
-    ctrl.centralRateController.text = item.centralRate > 0 ? item.centralRate.toString() : '';
-    ctrl.centralQuantityController.text = item.centralQuantity > 0 ? item.centralQuantity.toString() : '1';
-    ctrl.centralUnit = item.centralUnit.isNotEmpty ? item.centralUnit : 'Meter';
+    if (ctrl.activeCenterType == 'Custom Center') {
+      ctrl.customCenterLengthController.text = centralL > 0 ? centralL.toString() : '';
+      ctrl.customCenterWidthController.text = centralW > 0 ? centralW.toString() : '';
+      ctrl.customCenterAreaController.text = item.centralArea > 0 ? item.centralArea.toString() : '';
+      ctrl.customCenterRateController.text = item.rate > 0 ? item.rate.toString() : '';
+      ctrl.customCenterQuantityController.text = item.centralQuantity > 0 ? item.centralQuantity.toString() : '1';
+      ctrl.customCenterUnit = item.centralUnit.isNotEmpty ? item.centralUnit : 'Meter';
+    } else {
+      ctrl.centralLengthController.text = centralL > 0 ? centralL.toString() : '';
+      ctrl.centralWidthController.text = centralW > 0 ? centralW.toString() : '';
+      ctrl.centralAreaController.text = item.centralArea > 0 ? item.centralArea.toString() : '';
+      ctrl.centralRateController.text = item.rate > 0 ? item.rate.toString() : '';
+      ctrl.centralQuantityController.text = item.centralQuantity > 0 ? item.centralQuantity.toString() : '1';
+      ctrl.centralUnit = item.centralUnit.isNotEmpty ? item.centralUnit : 'Meter';
+    }
     ctrl.customCenterUnit = item.centralUnit.isNotEmpty ? item.centralUnit : 'Meter';
     
     ctrl.hasCove = item.hasCove;
-    double coveL = item.coveLength > 0 ? item.coveLength : (item.hasCove ? item.length : 0.0);
-    double coveW = item.coveWidth > 0 ? item.coveWidth : (item.hasCove ? item.width : 0.0);
-    ctrl.coveLengthController.text = coveL > 0 ? coveL.toString() : '';
-    ctrl.coveWidthController.text = coveW > 0 ? coveW.toString() : '';
+    double coveL = item.coveLength > 0 ? item.coveLength : (item.hasCove ? item.length : (double.tryParse(ctrl.lengthController.text) ?? 0.0));
+    double coveW = item.coveWidth > 0 ? item.coveWidth : (item.hasCove ? item.width : (double.tryParse(ctrl.widthController.text) ?? 0.0));
+    
+    if (ctrl.coveLengthController.text.isEmpty) {
+      ctrl.coveLengthController.text = coveL > 0 ? coveL.toString() : (ctrl.lengthController.text.isNotEmpty ? ctrl.lengthController.text : '');
+    }
+    if (ctrl.coveLength2Controller.text.isEmpty) {
+      ctrl.coveLength2Controller.text = coveW > 0 ? coveW.toString() : (ctrl.widthController.text.isNotEmpty ? ctrl.widthController.text : '');
+    }
+    
+    ctrl.coveWidthController.text = item.coveWidth > 0 ? item.coveWidth.toString() : '';
     ctrl.coveRftController.text = item.coveRft > 0 ? item.coveRft.toString() : '';
     ctrl.coveRateController.text = item.coveRate > 0 ? item.coveRate.toString() : '';
     ctrl.isCoveRateCustomized = item.coveRate > 0 && item.rate > 0 && item.coveRate != item.rate;
-    ctrl.coveLengthController.text = coveL > 0 ? coveL.toString() : '';
-    ctrl.coveWidthController.text = coveW > 0 ? coveW.toString() : '';
     ctrl.coveQuantityController.text = item.coveQuantity > 0 ? item.coveQuantity.toString() : '1';
-    ctrl.coveLength2Controller.text = item.coveLength2 > 0 ? item.coveLength2.toString() : '';
     ctrl.coveWidth2Controller.text = item.coveWidth2 > 0 ? item.coveWidth2.toString() : '';
     ctrl.coveQuantity2Controller.text = item.coveQuantity2 > 0 ? item.coveQuantity2.toString() : '1';
     ctrl.coveUnit = item.coveUnit.isNotEmpty ? item.coveUnit : 'Meter';

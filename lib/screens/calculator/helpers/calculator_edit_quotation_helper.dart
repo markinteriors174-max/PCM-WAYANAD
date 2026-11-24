@@ -1,5 +1,8 @@
 import '../calculator_controller.dart';
 import '../../../models/quotation.dart';
+import '../../../utils/calculator_utils.dart';
+import 'square_center_quotation_helper.dart';
+import 'round_center_quotation_helper.dart';
 
 class CalculatorEditQuotationHelper {
   static bool updateQuotationItem(CalculatorController ctrl, int index, Function(String) onError) {
@@ -31,9 +34,9 @@ class CalculatorEditQuotationHelper {
         : (ctrl.selectedCeilingType ?? 'Gypsum Board');
     final rawBrand = (ctrl.selectedBrand == 'Other' || ctrl.selectedBrand == 'More') ? ctrl.brandController.text : (ctrl.selectedBrand ?? ctrl.brandController.text);
     final rawChannel = (ctrl.selectedChannel == 'Other' || ctrl.selectedChannel == 'More') ? ctrl.channelController.text : (ctrl.selectedChannel ?? ctrl.channelController.text);
-    final brandName = (rawBrand.isNotEmpty && rawChannel.isNotEmpty)
+    final brandName = CalculatorUtils.sanitizeBrandName((rawBrand.isNotEmpty && rawChannel.isNotEmpty)
         ? '$rawBrand • $rawChannel'
-        : (rawBrand.isNotEmpty ? rawBrand : rawChannel);
+        : (rawBrand.isNotEmpty ? rawBrand : rawChannel));
     
     String baseDesignName = ctrl.selectedDesign == 'Other' 
         ? (ctrl.designController.text.isEmpty ? roomName : ctrl.designController.text) 
@@ -144,42 +147,30 @@ class CalculatorEditQuotationHelper {
       }
     }
 
-    // 3. Central Items
+    // 3. Center Items (Square Design / Round Design -> exactly 2 measurement rows/entries)
     if (ctrl.hasCentralDesign) {
-      double cL = double.tryParse(ctrl.centralLengthController.text) ?? 0.0;
-      double cW = double.tryParse(ctrl.centralWidthController.text) ?? 0.0;
-      double cQ = double.tryParse(ctrl.centralQuantityController.text) ?? 0.0;
-      double primaryCentralArea = cL * cW * cQ;
-      
-      if (primaryCentralArea > 0) {
-        double itemArea = primaryCentralArea * q;
-        newItems.add(QuotationItem(
-          roomName: roomName, ceilingType: ceilingType, unit: ctrl.unit, 
-          length: cL, width: cW, height: 0,
-          quantity: q, area: itemArea, rate: userRate, amount: itemArea * factor * userRate, brandName: brandName, designName: 'Center Design',
-          hasCentralDesign: true, centralArea: primaryCentralArea,
-          centralLength: cL, centralWidth: cW, centralQuantity: cQ,
-          centralUnit: ctrl.centralUnit,
-        ));
-      }
-
-      for (var r in ctrl.extraCentralRows) {
-        double len = double.tryParse(r.lengthController.text) ?? 0.0;
-        double wid = double.tryParse(r.widthController.text) ?? 0.0;
-        double qty = double.tryParse(r.quantityController.text) ?? 0.0;
-        double area = len * wid * qty;
-        if (area > 0) {
-          double itemArea = area * q;
-          newItems.add(QuotationItem(
-            roomName: roomName, ceilingType: ceilingType, unit: ctrl.unit, 
-            length: len, width: wid, height: 0,
-            quantity: q, area: itemArea, rate: userRate, amount: itemArea * factor * userRate,
-            brandName: brandName, designName: 'Center Design',
-            hasCentralDesign: true, centralArea: area,
-            centralLength: len, centralWidth: wid, centralQuantity: qty,
-            centralUnit: ctrl.centralUnit,
-          ));
-        }
+      if (ctrl.activeCenterType == 'Custom Center') {
+        RoundCenterQuotationHelper.addRoundCenterItems(
+          ctrl,
+          newItems,
+          roomName: roomName,
+          ceilingType: ceilingType,
+          brandName: brandName,
+          factor: factor,
+          userRate: userRate,
+          q: q,
+        );
+      } else {
+        SquareCenterQuotationHelper.addSquareCenterItems(
+          ctrl,
+          newItems,
+          roomName: roomName,
+          ceilingType: ceilingType,
+          brandName: brandName,
+          factor: factor,
+          userRate: userRate,
+          q: q,
+        );
       }
     }
 

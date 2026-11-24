@@ -19,8 +19,6 @@ class QuickAddCeilingToggle extends StatefulWidget {
 }
 
 class _QuickAddCeilingToggleState extends State<QuickAddCeilingToggle> {
-  String _activeCenterType = 'Standard (Center)';
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -36,14 +34,14 @@ class _QuickAddCeilingToggleState extends State<QuickAddCeilingToggle> {
           onChanged: () => setState(() {}),
         ),
         const SizedBox(height: 6),
-        if (_activeCenterType == 'Standard (Center)')
+        if (widget.ctrl.activeCenterType == 'Standard (Center)')
           StandardCenterWidget(
             ctrl: widget.ctrl,
             isActive: widget.ctrl.isCenterCeilingOn,
             linearUnitLabel: 'Feet',
             areaUnitLabel: 'SqFt',
-            activeType: _activeCenterType,
-            onTypeChanged: (type) => setState(() => _activeCenterType = type),
+            activeType: widget.ctrl.activeCenterType,
+            onTypeChanged: (type) => setState(() => widget.ctrl.activeCenterType = type),
             onToggle: (val) {
               setState(() {
                 widget.ctrl.isCenterCeilingOn = val;
@@ -63,8 +61,8 @@ class _QuickAddCeilingToggleState extends State<QuickAddCeilingToggle> {
             isActive: widget.ctrl.isCenterCeilingOn,
             linearUnitLabel: 'Feet',
             areaUnitLabel: 'SqFt',
-            activeType: _activeCenterType,
-            onTypeChanged: (type) => setState(() => _activeCenterType = type),
+            activeType: widget.ctrl.activeCenterType,
+            onTypeChanged: (type) => setState(() => widget.ctrl.activeCenterType = type),
             onToggle: (val) {
               setState(() {
                 widget.ctrl.isCenterCeilingOn = val;

@@ -8,6 +8,7 @@ import '../../../../models/rate_tier.dart';
 import '../../../../utils/calculator_utils.dart';
 import '../../../../providers/language_provider.dart';
 import '../../../../services/pdf_service.dart';
+import '../../../../services/pdf_utils/pdf_design_category_helper.dart';
 import '../../../../services/material_engine.dart';
 import '../calculator_controller.dart';
 import 'quick_add_bottom_sheet.dart';
@@ -1031,7 +1032,7 @@ class _CalculatorTableWidgetState extends State<CalculatorTableWidget> {
                         final curChan = parts.length > 1 ? parts[1].trim() : '';
                         final b = applyBoard ? bulkBoard : (curBoard.isNotEmpty ? curBoard : bulkBoard);
                         final c = applyChannel ? bulkChannel : (curChan.isNotEmpty ? curChan : bulkChannel);
-                        updatedBrandName = '$b • $c';
+                        updatedBrandName = CalculatorUtils.sanitizeBrandName('$b • $c');
                       }
 
                       bool updatedHasCove = item.hasCove;
@@ -1919,6 +1920,17 @@ class _CalculatorTableWidgetState extends State<CalculatorTableWidget> {
       roomTotalAmount += it.amount > 0 ? it.amount : (it.area * factor * it.rate);
     }
 
+    final firstItem = indices.isNotEmpty ? widget.ctrl.currentItems[indices.first] : null;
+    final floorName = firstItem?.floor.isNotEmpty == true ? firstItem!.floor : 'Ground Floor';
+    final roomNum = firstItem?.roomNumber.isNotEmpty == true ? 'Room #${firstItem!.roomNumber}' : '';
+
+    final designTypesInRoom = <String>{};
+    for (final idx in indices) {
+      final it = widget.ctrl.currentItems[idx];
+      designTypesInRoom.add(PdfDesignCategoryHelper.getDesignCategory(it));
+    }
+    final designsSummary = designTypesInRoom.join(' • ');
+
     final isChecked = (_roomCheckboxes[roomName] ?? false) || (indices.isNotEmpty && indices.every((i) => _itemCheckboxes[i] == true));
     final isRoomAllHidden = indices.isNotEmpty && indices.every((i) => widget.ctrl.currentItems[i].isHidden);
 
@@ -2037,9 +2049,9 @@ class _CalculatorTableWidgetState extends State<CalculatorTableWidget> {
                       spacing: 6,
                       runSpacing: 2,
                       children: [
-                        const Text(
-                          'Ground Floor',
-                          style: TextStyle(
+                        Text(
+                          '$floorName${roomNum.isNotEmpty ? ' • $roomNum' : ''}',
+                          style: const TextStyle(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w500,
                             color: Color(0xFF94A3B8),
@@ -2052,11 +2064,11 @@ class _CalculatorTableWidgetState extends State<CalculatorTableWidget> {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
-                            '${indices.length} ${indices.length == 1 ? 'STEP' : 'STEPS'}',
+                            '${indices.length} ${indices.length == 1 ? 'Entry' : 'Entries'}: $designsSummary',
                             style: const TextStyle(
                               fontSize: 9.5,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF475569),
+                              color: Color(0xFF0284C7),
                             ),
                           ),
                         ),
@@ -2184,26 +2196,56 @@ class _CalculatorTableWidgetState extends State<CalculatorTableWidget> {
 
   Widget _buildEntrySubCard(BuildContext context, int itemIndex, int stepIndex, String roomName, List<int> roomIndices) {
     final item = widget.ctrl.currentItems[itemIndex];
-    final isEven = (stepIndex % 2 == 0);
 
-    final cardBorderColor = item.isHidden
-        ? const Color(0xFFFCA5A5)
-        : (isEven ? const Color(0xFF67E8F9) : const Color(0xFFFDE68A));
-    final cardBgColor = item.isHidden
-        ? const Color(0xFFFFF5F5)
-        : (isEven ? const Color(0xFFECFEFF) : const Color(0xFFFFFBEB));
-    final badgeBgColor = item.isHidden
-        ? const Color(0xFFFEE2E2)
-        : (isEven ? const Color(0xFFA5F3FC) : const Color(0xFFFEF3C7));
-    final badgeTextColor = item.isHidden
-        ? Colors.red.shade700
-        : (isEven ? const Color(0xFF0E7490) : const Color(0xFFB45309));
+    final String cardRoomName = item.roomName.isNotEmpty ? item.roomName.toUpperCase() : roomName.toUpperCase();
+    final String cardFloor = item.floor.isNotEmpty ? item.floor : 'Ground Floor';
+    final String cardRoomNum = item.roomNumber.isNotEmpty ? 'Room #${item.roomNumber}' : '';
+    final String roomInfoLabel = '$cardFloor${cardRoomNum.isNotEmpty ? ' • $cardRoomNum' : ''} • $cardRoomName';
 
-    String designBadgeText = item.designName.isNotEmpty ? item.designName : (item.ceilingType.isNotEmpty ? item.ceilingType : 'Plain Ceiling');
+    Color cardBorderColor;
+    Color cardBgColor;
+    Color badgeBgColor;
+    Color badgeTextColor;
+
+    if (item.isHidden) {
+      cardBorderColor = Colors.red.shade300;
+      cardBgColor = const Color(0xFFFFF5F5);
+      badgeBgColor = const Color(0xFFFEE2E2);
+      badgeTextColor = Colors.red.shade700;
+    } else if (item.hasCove || item.designName.toLowerCase().contains('cove')) {
+      // Cove / Cove Design -> Orange
+      cardBorderColor = Colors.orange.shade300;
+      cardBgColor = const Color(0xFFFFFBEB);
+      badgeBgColor = Colors.orange.shade100;
+      badgeTextColor = Colors.orange.shade900;
+    } else if (item.hasCentralDesign) {
+      final name = item.designName.toLowerCase();
+      if (name.contains('round') || name.contains('curve') || name.contains('custom') || name.contains('circle') || name.contains('radius')) {
+        // Center Round / Curve -> Purple
+        cardBorderColor = Colors.purple.shade300;
+        cardBgColor = const Color(0xFFFAF5FF);
+        badgeBgColor = Colors.purple.shade100;
+        badgeTextColor = Colors.purple.shade900;
+      } else {
+        // Center -> Green
+        cardBorderColor = Colors.green.shade300;
+        cardBgColor = const Color(0xFFF0FDF4);
+        badgeBgColor = Colors.green.shade100;
+        badgeTextColor = Colors.green.shade900;
+      }
+    } else {
+      // Plain -> Red
+      cardBorderColor = Colors.red.shade300;
+      cardBgColor = const Color(0xFFFEF2F2);
+      badgeBgColor = Colors.red.shade100;
+      badgeTextColor = Colors.red.shade800;
+    }
+
+    String designBadgeText = item.designName.isNotEmpty ? item.designName : (item.ceilingType.isNotEmpty ? item.ceilingType : 'Plain Design');
     if (item.hasCentralDesign && !item.isCeilingDesign) {
       designBadgeText = 'Center Design';
-    } else if (designBadgeText == 'Plain' || designBadgeText == 'Ceiling Design' || designBadgeText == 'Plain Design') {
-      designBadgeText = 'Plain Ceiling';
+    } else if (designBadgeText == 'Plain' || designBadgeText == 'Ceiling Design' || designBadgeText == 'Plain Design' || designBadgeText == 'Standard Design' || designBadgeText == 'Plain Ceiling' || (!item.hasCove && !item.hasCentralDesign)) {
+      designBadgeText = 'Plain Design';
     }
     double factor = 1.0;
     if (item.unit == 'Meters' || item.unit == 'SqM') {
@@ -2247,6 +2289,40 @@ class _CalculatorTableWidgetState extends State<CalculatorTableWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 5),
+            child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 4,
+              children: [
+                InkWell(
+                  onTap: () => _showFloorSummaryDialog(context, cardFloor),
+                  child: Text(
+                    cardFloor,
+                    style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: Color(0xFF0284C7), decoration: TextDecoration.underline),
+                  ),
+                ),
+                if (cardRoomNum.isNotEmpty) ...[
+                  const Text('•', style: TextStyle(fontSize: 10.5, color: Color(0xFF64748B))),
+                  InkWell(
+                    onTap: () => _showRoomNumberSummaryDialog(context, item.roomNumber, cardFloor),
+                    child: Text(
+                      cardRoomNum,
+                      style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: Color(0xFFD97706), decoration: TextDecoration.underline),
+                    ),
+                  ),
+                ],
+                const Text('•', style: TextStyle(fontSize: 10.5, color: Color(0xFF64748B))),
+                InkWell(
+                  onTap: () => _showRoomSummaryDialog(context, cardRoomName),
+                  child: Text(
+                    cardRoomName,
+                    style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: Color(0xFF16A34A), decoration: TextDecoration.underline),
+                  ),
+                ),
+              ],
+            ),
+          ),
           if (isMobile) ...[
             // Mobile Top Row: Checkbox, Badge, Action Icons
             Row(
@@ -2643,6 +2719,115 @@ class _CalculatorTableWidgetState extends State<CalculatorTableWidget> {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  void _showRoomSummaryDialog(BuildContext context, String roomName) {
+    final itemsInRoom = widget.ctrl.currentItems.where((i) => i.roomName.toUpperCase() == roomName.toUpperCase()).toList();
+    final counts = <String, int>{};
+    for (var it in itemsInRoom) {
+      final cat = PdfDesignCategoryHelper.getDesignCategory(it);
+      counts[cat] = (counts[cat] ?? 0) + 1;
+    }
+    final breakdown = counts.entries.map((e) => '${e.key}: ${e.value}').join('\n• ');
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.meeting_room, color: Color(0xFF0284C7)),
+            const SizedBox(width: 8),
+            Expanded(child: Text('Room Summary: $roomName', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Total Entries: ${itemsInRoom.length}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B))),
+            const SizedBox(height: 8),
+            const Text('Design Breakdown:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF64748B))),
+            const SizedBox(height: 4),
+            Text(counts.isEmpty ? 'No entries' : '• $breakdown', style: const TextStyle(fontSize: 12, color: Color(0xFF334155))),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+        ],
+      ),
+    );
+  }
+
+  void _showFloorSummaryDialog(BuildContext context, String floorName) {
+    final itemsOnFloor = widget.ctrl.currentItems.where((i) => (i.floor.isNotEmpty ? i.floor : 'Ground Floor').toUpperCase() == floorName.toUpperCase()).toList();
+    final roomsOnFloor = itemsOnFloor.map((i) => i.roomName).toSet();
+    final counts = <String, int>{};
+    for (var it in itemsOnFloor) {
+      final cat = PdfDesignCategoryHelper.getDesignCategory(it);
+      counts[cat] = (counts[cat] ?? 0) + 1;
+    }
+    final breakdown = counts.entries.map((e) => '${e.key}: ${e.value}').join('\n• ');
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.layers, color: Color(0xFF16A34A)),
+            const SizedBox(width: 8),
+            Expanded(child: Text('Floor Summary: $floorName', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Rooms on Floor: ${roomsOnFloor.length} (${roomsOnFloor.join(', ')})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B))),
+            const SizedBox(height: 6),
+            Text('Total Entries: ${itemsOnFloor.length}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF64748B))),
+            const SizedBox(height: 8),
+            const Text('Design Breakdown:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF64748B))),
+            const SizedBox(height: 4),
+            Text(counts.isEmpty ? 'No entries' : '• $breakdown', style: const TextStyle(fontSize: 12, color: Color(0xFF334155))),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+        ],
+      ),
+    );
+  }
+
+  void _showRoomNumberSummaryDialog(BuildContext context, String roomNum, String floorName) {
+    final itemsWithNum = widget.ctrl.currentItems.where((i) => i.roomNumber == roomNum && (i.floor.isNotEmpty ? i.floor : 'Ground Floor').toUpperCase() == floorName.toUpperCase()).toList();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.tag, color: Color(0xFFD97706)),
+            const SizedBox(width: 8),
+            Expanded(child: Text('Room #$roomNum Summary ($floorName)', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Associated Entries: ${itemsWithNum.length}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B))),
+            const SizedBox(height: 8),
+            ...itemsWithNum.map((it) => Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text('• ${it.roomName} (${PdfDesignCategoryHelper.getDesignCategory(it)}): ${it.area.toStringAsFixed(1)} SQFT', style: const TextStyle(fontSize: 12, color: Color(0xFF334155))),
+            )),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
         ],
       ),
     );

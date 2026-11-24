@@ -92,6 +92,12 @@ class CalculatorUtils {
     // നേരിട്ട് SQFT തിരികെ നൽകുന്നു (double conversion ഒഴിവാക്കാൻ).
     return rawArea;
   }
+
+  static String sanitizeBrandName(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return '';
+    final parts = raw.split('•').map((p) => p.trim()).where((p) => p.isNotEmpty).toSet().toList();
+    return parts.join(' • ');
+  }
 }
 
 /// LOCKED SINGLE-PASS BACKEND CALCULATOR

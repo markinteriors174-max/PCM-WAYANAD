@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pcm_wayanad/screens/calculator/calculator_controller.dart';
 import 'package:pcm_wayanad/utils/calculator_utils.dart';
+import '../../../helpers/round_center_quotation_helper.dart';
 
 class CustomCenterSummaryWidget extends StatelessWidget {
   final CalculatorController ctrl;
@@ -33,17 +34,39 @@ class CustomCenterSummaryWidget extends StatelessWidget {
             onPressed: () async {
               try {
                 ctrl.updateLivePreview();
+                ctrl.updateProjectTotals();
+
+                final roomName = ctrl.selectedRoom == 'Other' ? (ctrl.roomController.text.isEmpty ? 'Custom Room' : ctrl.roomController.text) : (ctrl.selectedRoom ?? 'General');
+                final ceilingType = ctrl.selectedCeilingType ?? 'Gypsum Board';
+                final brandName = ctrl.selectedBrand ?? 'Gypsum Board';
+                double factor = 1.0;
+                double userRate = double.tryParse(ctrl.customCenterRateController.text.replaceAll(',', '.')) ?? 105.0;
+                double q = double.tryParse(ctrl.customCenterQuantityController.text.replaceAll(',', '.')) ?? 1.0;
+
+                RoundCenterQuotationHelper.addRoundCenterItems(
+                  ctrl,
+                  ctrl.currentItems,
+                  roomName: roomName,
+                  ceilingType: ceilingType,
+                  brandName: brandName,
+                  factor: factor,
+                  userRate: userRate,
+                  q: q,
+                );
+
                 // 1. Save to database first
                 await ctrl.saveToDatabase(showSnackBar: false);
 
                 // 2. Only if DB save succeeds, apply and sum into bottom total
                 ctrl.isCustomCenterApplied = true;
                 ctrl.updateLivePreview();
+                ctrl.updateProjectTotals();
                 ctrl.triggerAutoSave();
+                ctrl.notifyUI();
 
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('✓ Custom Center Design Saved & Applied!')),
+                    const SnackBar(content: Text('✓ Round Design Saved & Applied to Sheet!')),
                   );
                 }
               } catch (e) {

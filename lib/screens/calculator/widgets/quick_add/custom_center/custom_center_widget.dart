@@ -56,6 +56,10 @@ class _CustomCenterWidgetState extends State<CustomCenterWidget> {
   Widget build(BuildContext context) {
     const themeColor = Color(0xFF15803D); // Rich green theme
 
+    if (ctrl.extraCustomCentralRows.isEmpty) {
+      ctrl.extraCustomCentralRows.add(CentralDesignRow());
+    }
+
     final rVal = double.tryParse(ctrl.customCenterRadiusController.text.replaceAll(',', '.')) ?? 0.0;
     final deductionVal = double.tryParse(ctrl.customCenterDeductionController.text.replaceAll(',', '.')) ?? 0.0;
     final unit = CalculatorUnitHelper.availableUnits.contains(ctrl.customCenterUnit) ? ctrl.customCenterUnit : 'Meter';

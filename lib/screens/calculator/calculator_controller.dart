@@ -166,6 +166,7 @@ class CalculatorController extends ChangeNotifier {
   bool isPlainCeilingOn = true;
   bool isCoveCeilingOn = false;
   bool isCenterCeilingOn = false;
+  String activeCenterType = 'Standard (Center)';
   bool get isDesignCeilingOn => isCoveCeilingOn;
   set isDesignCeilingOn(bool val) => isCoveCeilingOn = val;
   bool get isCenterDesignOn => isCenterCeilingOn;

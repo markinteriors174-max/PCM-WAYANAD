@@ -33,9 +33,12 @@ class StandardCenterSummaryWidget extends StatelessWidget {
             onPressed: () async {
               try {
                 ctrl.updateLivePreview();
+                ctrl.updateProjectTotals();
                 await ctrl.saveToDatabase(showSnackBar: false);
                 ctrl.updateLivePreview();
+                ctrl.updateProjectTotals();
                 ctrl.triggerAutoSave();
+                ctrl.notifyUI();
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('✓ Center Design Saved & Applied!')),

@@ -138,7 +138,7 @@ class QuotationRowBuilder {
         pw.Padding(
           padding: const pw.EdgeInsets.only(left: 16, top: 4, bottom: 4, right: 4),
           child: pw.Text(
-            '${item.ceilingType} (PLAIN CEILING)',
+            'PLAIN DESIGN',
             style: pw.TextStyle(font: boldFont, fontSize: 8),
           ),
         ),
@@ -203,7 +203,7 @@ class QuotationRowBuilder {
         pw.Padding(
           padding: const pw.EdgeInsets.only(left: 24, top: 4, bottom: 4, right: 4),
           child: pw.Text(
-            'COVE DESIGN (L+W)',
+            'COVE DESIGN',
             style: pw.TextStyle(font: boldFont, fontSize: 8, color: PdfColors.black),
           ),
         ),
@@ -245,13 +245,17 @@ class QuotationRowBuilder {
         ? '${totalUnits.toStringAsFixed(2)} $unitLabel (${totalSqFt.toStringAsFixed(2)} SqFt)'
         : '${totalSqFt.toStringAsFixed(2)} SqFt';
 
+    final name = item.designName.toLowerCase();
+    final isRound = name.contains('round') || name.contains('curve') || name.contains('custom') || name.contains('circle') || name.contains('radius');
+    final String centerLabel = isRound ? 'ROUND DESIGN' : 'CENTER DESIGN';
+
     return pw.TableRow(
       decoration: const pw.BoxDecoration(color: PdfColors.blue50),
       children: [
         pw.Padding(
           padding: const pw.EdgeInsets.only(left: 24, top: 4, bottom: 4, right: 4),
           child: pw.Text(
-            'CENTER DESIGN',
+            centerLabel,
             style: pw.TextStyle(font: boldFont, fontSize: 8, color: PdfColors.black),
           ),
         ),

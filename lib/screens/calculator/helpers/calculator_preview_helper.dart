@@ -1,4 +1,5 @@
 import '../calculator_controller.dart';
+import 'cove_calculation_helper.dart';
 
 class CalculatorPreviewHelper {
   static void updateLivePreview(CalculatorController ctrl) {
@@ -18,28 +19,18 @@ class CalculatorPreviewHelper {
 
     double cove1 = 0;
     if (ctrl.hasCove) {
-      double cL = double.tryParse(ctrl.coveLengthController.text.replaceAll(',', '.')) ?? 0.0;
-      double cW = double.tryParse(ctrl.coveLength2Controller.text.replaceAll(',', '.')) ?? 0.0;
-      double cH1 = double.tryParse(ctrl.coveWidthController.text.replaceAll(',', '.')) ?? 0.0;
-      double cH2 = double.tryParse(ctrl.coveWidth2Controller.text.replaceAll(',', '.')) ?? 0.0;
-      if (cH2 == 0.0) cH2 = cH1;
-      if (cH1 == 0.0) cH1 = cH2;
-      double qL = double.tryParse(ctrl.coveQuantityController.text.replaceAll(',', '.')) ?? 0.0;
-      double qW = double.tryParse(ctrl.coveQuantity2Controller.text.replaceAll(',', '.')) ?? 0.0;
-
-      // UI handles corner deduction (cW = W - 2H). Helpers use value as-is.
-      cove1 = (cL * cH1 * qL) + (cW * cH2 * qW);
-
-      for (var r in ctrl.extraCoveRows) {
-        double len = double.tryParse(r.lengthController.text.replaceAll(',', '.')) ?? 0.0;
-        double hgt = double.tryParse(r.widthController.text.replaceAll(',', '.')) ?? 0.0;
-        double qty = double.tryParse(r.quantityController.text.replaceAll(',', '.')) ?? 0.0;
-        cove1 += len * hgt * qty;
+      double recordedCove = double.tryParse(ctrl.coveRftController.text.replaceAll(',', '.')) ?? 0.0;
+      if (recordedCove > 0) {
+        cove1 = recordedCove;
+      } else {
+        double totalCoveArea = CoveCalculationHelper.getLengthRowSqft(ctrl) +
+            CoveCalculationHelper.getWidthRowSqft(ctrl) +
+            CoveCalculationHelper.getExtraRowsTotalSqft(ctrl);
+        ctrl.coveRftController.text = totalCoveArea.toStringAsFixed(2);
+        cove1 = totalCoveArea;
       }
-
-      // Sync display field with the same conversion factor and quantity used in total area
-      double totalCoveArea = cove1 * conversionFactor * q;
-      ctrl.coveRftController.text = totalCoveArea.toStringAsFixed(2);
+      double coveRate = CoveCalculationHelper.getCustomRate(ctrl);
+      if (coveRate > 0 && userRate == 0) userRate = coveRate;
     } else {
       ctrl.coveRftController.clear();
     }
@@ -179,7 +170,7 @@ class CalculatorPreviewHelper {
         q == 0;
 
     double ceilingAreaSqFt = (ceilingArea + extraPlainSum) * conversionFactor * q;
-    double totalArea = ceilingAreaSqFt + (cove1 * conversionFactor * q) + (cove2 * conversionFactor * q) + customCenterArea;
+    double totalArea = ceilingAreaSqFt + cove1 + (cove2 * conversionFactor * q) + customCenterArea;
 
     ctrl.livePreviewMainAreaSqFt = (isInputsEmptyOrZero && extraPlainSum == 0 && !ctrl.hasCentralDesign && !ctrl.hasCove && !ctrl.isCenterCeilingOn) ? 0.0 : ceilingAreaSqFt;
     ctrl.livePreviewAreaSqFt = totalArea;

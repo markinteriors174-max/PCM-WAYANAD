@@ -27,7 +27,7 @@ class CustomCenterTypeSelector extends StatelessWidget {
             const Text('Type: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.labelColor)),
             const SizedBox(width: 8),
             ChoiceChip(
-              label: const Text('Standard (Center)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+              label: const Text('Square Design', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
               selected: activeType == 'Standard (Center)',
               selectedColor: themeColor.withValues(alpha: 0.3),
               backgroundColor: Colors.grey.shade200,
@@ -36,7 +36,7 @@ class CustomCenterTypeSelector extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             ChoiceChip(
-              label: const Text('Custom Center', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+              label: const Text('Round Design', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
               selected: activeType == 'Custom Center',
               selectedColor: themeColor.withValues(alpha: 0.3),
               backgroundColor: Colors.grey.shade200,

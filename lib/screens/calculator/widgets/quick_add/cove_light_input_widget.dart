@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../../utils/calculator_utils.dart';
 import '../../calculator_controller.dart';
+import '../../helpers/cove_calculation_helper.dart';
 import 'quick_add_unit_rate_selector.dart';
 
 class CoveLightInputWidget extends StatefulWidget {
@@ -22,10 +23,7 @@ class CoveLightInputWidget extends StatefulWidget {
 
 class _CoveLightInputWidgetState extends State<CoveLightInputWidget> {
   int _curveQty = 0;
-  // Controllers for deduction extra row
-  late TextEditingController _deductionLengthController;
-  late TextEditingController _deductionBorderController;
-  late TextEditingController _deductionQtyController;
+
 
   // Dynamic Cove Arch & Curve parameters
   late TextEditingController _radiusController;
@@ -41,12 +39,10 @@ class _CoveLightInputWidgetState extends State<CoveLightInputWidget> {
   void initState() {
     super.initState();
     _radiusController = TextEditingController(text: '2.0');
-    _deductionLengthController = TextEditingController();
-    _deductionBorderController = TextEditingController();
-    _deductionQtyController = TextEditingController(text: '1');
+
     _girthController = TextEditingController(text: '1.39');
 
-    final initialW = double.tryParse(widget.ctrl.coveLength2Controller.text.trim()) ?? 0.0;
+    final initialW = double.tryParse(widget.ctrl.coveLength2Controller.text.replaceAll(',', '.')) ?? 0.0;
     _userEnteredWidth = initialW > 0 ? initialW : 0.0;
 
     if (widget.ctrl.coveRateController.text.trim().isEmpty) {
@@ -59,9 +55,7 @@ class _CoveLightInputWidgetState extends State<CoveLightInputWidget> {
   void dispose() {
     _radiusController.dispose();
     _girthController.dispose();
-    _deductionLengthController.dispose();
-    _deductionBorderController.dispose();
-    _deductionQtyController.dispose();
+
     super.dispose();
   }
 
@@ -84,115 +78,34 @@ class _CoveLightInputWidgetState extends State<CoveLightInputWidget> {
     }
   }
 
-  /// Calculates dynamic SQFT per single arch / curve based on Radius & Height
-  double get _singleCurveSqft {
-    final r = double.tryParse(_radiusController.text.trim()) ?? 2.0;
-    final h = double.tryParse(_girthController.text.trim()) ?? 1.39;
-    if (r <= 0 || h <= 0) return 4.36;
-
-    final rInFeet = _toFeet(r, _radiusUnit);
-    final hInFeet = _toFeet(h, _girthUnit);
-
-    double angleFactor = 3.1415926535 / 2.0; // 90° corner
-    if (_archType.contains('180')) {
-      angleFactor = 3.1415926535; // 180° semi-arch
-    } else if (_archType.contains('360')) {
-      angleFactor = 2.0 * 3.1415926535; // 360° full circular ring
-    }
-
-    final arcLengthFeet = angleFactor * rInFeet;
-    return arcLengthFeet * hInFeet;
-  }
-
-  double get _conversionFactor {
-    final u = widget.ctrl.coveUnit.isNotEmpty ? widget.ctrl.coveUnit : widget.ctrl.unit;
-    if (u == 'Meters' || u == 'SqM' || u == 'Meter') {
-      return 10.7639104;
-    } else if (u == 'Inches') {
-      return 1.0 / 144.0;
-    } else if (u == 'mm') {
-      return 10.7639104 / 1000000.0;
-    }
-    return 1.0;
-  }
-
-  double get _lengthRowSqft {
-    final l = double.tryParse(widget.ctrl.coveLengthController.text.trim()) ?? 0.0;
-    final b = double.tryParse(widget.ctrl.coveWidthController.text.trim()) ?? 0.0;
-    final qText = widget.ctrl.coveQuantityController.text.trim();
-    final q = qText.isEmpty ? 1.0 : (double.tryParse(qText) ?? 1.0);
-    return (l * b * q) * _conversionFactor;
-  }
-
+  double get _singleCurveSqft => CoveCalculationHelper.getSingleCurveSqft(_radiusController.text, _radiusUnit, _girthController.text, _girthUnit, _archType);
+  double get _lengthRowSqft => CoveCalculationHelper.getLengthRowSqft(widget.ctrl);
   double get _effectiveWidth {
-    final border1 = double.tryParse(widget.ctrl.coveWidthController.text.trim()) ?? 0.0;
-    final border2Text = widget.ctrl.coveWidth2Controller.text.trim();
-    final border2 = border2Text.isEmpty ? 0.0 : (double.tryParse(border2Text) ?? 0.0);
+    final border1 = CoveCalculationHelper.parseNum(widget.ctrl.coveWidthController.text);
+    final border2 = CoveCalculationHelper.parseNum(widget.ctrl.coveWidth2Controller.text);
     final deductionSum = border1 + border2;
-
     return (_userEnteredWidth - deductionSum) > 0 ? (_userEnteredWidth - deductionSum) : 0.0;
   }
-
-  double get _widthRowSqft {
-    final border1 = double.tryParse(widget.ctrl.coveWidthController.text.trim()) ?? 0.0;
-    final border2Text = widget.ctrl.coveWidth2Controller.text.trim();
-    final border2 = border2Text.isEmpty ? border1 : (double.tryParse(border2Text) ?? border1);
-
-    final effW = _effectiveWidth;
-    final qText = widget.ctrl.coveQuantity2Controller.text.trim();
-    final q = qText.isEmpty ? 1.0 : (double.tryParse(qText) ?? 1.0);
-    return (effW * border2 * q) * _conversionFactor;
-  }
-
-  double _extraRowSqft(CoveLightRow row) {
-    final l = double.tryParse(row.lengthController.text.trim()) ?? 0.0;
-    final b = double.tryParse(row.widthController.text.trim()) ?? 0.0;
-    final qText = row.quantityController.text.trim();
-    final q = qText.isEmpty ? 1.0 : (double.tryParse(qText) ?? 1.0);
-    return (l * b * q) * _conversionFactor;
-  }
-
-  double get _extraRowsTotalSqft {
-    double sum = 0.0;
-    for (final r in widget.ctrl.extraCoveRows) {
-      sum += _extraRowSqft(r);
-    }
-    return sum;
-  }
-
-  // SQFT for deduction extra row
-  double get _deductionRowSqft {
-    final l = double.tryParse(_deductionLengthController.text.trim()) ?? 0.0;
-    final b = double.tryParse(_deductionBorderController.text.trim()) ?? 0.0;
-    final qText = _deductionQtyController.text.trim();
-    final q = qText.isEmpty ? 1.0 : (double.tryParse(qText) ?? 1.0);
-    return (l * b * q) * _conversionFactor;
-  }
-
+  double get _widthRowSqft => CoveCalculationHelper.getWidthRowSqft(widget.ctrl);
+  double _extraRowSqft(CoveLightRow row) => CoveCalculationHelper.getExtraRowSqft(row, widget.ctrl);
+  double get _extraRowsTotalSqft => CoveCalculationHelper.getExtraRowsTotalSqft(widget.ctrl);
   double get _curveSqft => _curveQty * _singleCurveSqft;
-
-  double get _totalCoveSqft => _lengthRowSqft + _widthRowSqft + _extraRowsTotalSqft + _curveSqft + _deductionRowSqft;
-
-  double get _customRate {
-    final val = double.tryParse(widget.ctrl.coveRateController.text.trim());
-    if (val != null && val > 0) return val;
-    final mainR = double.tryParse(widget.ctrl.rateController.text.trim());
-    if (mainR != null && mainR > 0) return mainR;
-    return 105.0;
-  }
-
+  double get _totalCoveSqft => _lengthRowSqft + _widthRowSqft + _extraRowsTotalSqft + _curveSqft;
+  double get _customRate => CoveCalculationHelper.getCustomRate(widget.ctrl);
   double get _grandTotal => _totalCoveSqft * _customRate;
 
   void _syncDeduction() {
-    final border1 = double.tryParse(widget.ctrl.coveWidthController.text.trim()) ?? 0.0;
-    final border2Text = widget.ctrl.coveWidth2Controller.text.trim();
-    final border2 = border2Text.isEmpty ? 0.0 : (double.tryParse(border2Text) ?? 0.0);
+    final border1 = CoveCalculationHelper.parseNum(widget.ctrl.coveWidthController.text);
+    final border2 = CoveCalculationHelper.parseNum(widget.ctrl.coveWidth2Controller.text);
     final deductionSum = border1 + border2;
     final effW = (_userEnteredWidth - deductionSum) > 0 ? (_userEnteredWidth - deductionSum) : 0.0;
 
     if (_userEnteredWidth > 0) {
       _isUpdatingProgrammatically = true;
-      widget.ctrl.coveLength2Controller.text = effW > 0 ? effW.toStringAsFixed(2) : '0.00';
+      final textVal = effW > 0 ? (effW == effW.roundToDouble() ? effW.toInt().toString() : effW.toString()) : '';
+      if (widget.ctrl.coveLength2Controller.text.isEmpty) {
+        widget.ctrl.coveLength2Controller.text = textVal;
+      }
       _isUpdatingProgrammatically = false;
     }
 
@@ -238,7 +151,7 @@ class _CoveLightInputWidgetState extends State<CoveLightInputWidget> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             final currentSingleSqft = _singleCurveSqft;
-            final rVal = double.tryParse(_radiusController.text.trim()) ?? 2.0;
+            final rVal = double.tryParse(_radiusController.text.replaceAll(',', '.')) ?? 2.0;
             final rFt = _toFeet(rVal, _radiusUnit);
             double angleFactor = 3.1415926535 / 2.0;
             if (_archType.contains('180')) {
@@ -429,9 +342,9 @@ class _CoveLightInputWidgetState extends State<CoveLightInputWidget> {
   Widget build(BuildContext context) {
     const amberTheme = Color(0xFFD97706);
     final unitLabel = widget.ctrl.coveUnit.isNotEmpty ? widget.ctrl.coveUnit : widget.ctrl.unit;
-    final border1 = double.tryParse(widget.ctrl.coveWidthController.text.trim()) ?? 0.0;
+    final border1 = double.tryParse(widget.ctrl.coveWidthController.text.replaceAll(',', '.')) ?? 0.0;
     final border2Text = widget.ctrl.coveWidth2Controller.text.trim();
-    final border2 = border2Text.isEmpty ? 0.0 : (double.tryParse(border2Text) ?? 0.0);
+    final border2 = border2Text.isEmpty ? 0.0 : (double.tryParse(border2Text.replaceAll(',', '.')) ?? 0.0);
     final totalBorders = border1 + border2;
 
     return Column(
@@ -450,6 +363,7 @@ class _CoveLightInputWidgetState extends State<CoveLightInputWidget> {
                 onUnitChanged: (v) {
                   if (v != null) {
                     widget.ctrl.coveUnit = v;
+                    setState(() {});
                     widget.ctrl.updateLivePreview();
                     widget.ctrl.triggerAutoSave();
                   }
@@ -571,7 +485,7 @@ class _CoveLightInputWidgetState extends State<CoveLightInputWidget> {
                       borderColor: amberTheme,
                       onChanged: (val) {
                         if (!_isUpdatingProgrammatically) {
-                          _userEnteredWidth = double.tryParse(val.trim()) ?? 0.0;
+                          _userEnteredWidth = double.tryParse(val.replaceAll(',', '.')) ?? 0.0;
                         }
                         _syncDeduction();
                       },
@@ -616,45 +530,7 @@ class _CoveLightInputWidgetState extends State<CoveLightInputWidget> {
                         ),
                       ),
                     ),
-                    // Conditional deduction extra row
-                    if (_effectiveWidth > 0)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: _buildRowOfBoxes(
-                          box1: _buildInputBox(
-                            controller: _deductionLengthController,
-                            label: 'LENGTH',
-                            borderColor: amberTheme,
-                            onChanged: (_) => _syncDeduction(),
-                          ),
-                          box2: _buildInputBox(
-                            controller: _deductionBorderController,
-                            label: 'BORDER',
-                            borderColor: amberTheme,
-                            onChanged: (_) => _syncDeduction(),
-                          ),
-                          box3: _buildInputBox(
-                            controller: _deductionQtyController,
-                            label: 'QTY',
-                            hintText: '1',
-                            borderColor: amberTheme,
-                            onChanged: (_) => _syncDeduction(),
-                          ),
-                          box4: _buildDisplayBox(
-                            label: 'SQFT',
-                            value: _deductionRowSqft > 0 ? _deductionRowSqft.toStringAsFixed(2) : '0.00',
-                            borderColor: amberTheme,
-                          ),
-                          onDelete: () {
-                            setState(() {
-                              _deductionLengthController.clear();
-                              _deductionBorderController.clear();
-                              _deductionQtyController.clear();
-                            });
-                            _syncDeduction();
-                          },
-                        ),
-                      ),
+
                 ],
               ),
 
