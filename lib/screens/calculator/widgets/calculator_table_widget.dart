@@ -11,6 +11,8 @@ import '../../../../services/pdf_service.dart';
 import '../../../../services/pdf_utils/pdf_design_category_helper.dart';
 import '../../../../services/material_engine.dart';
 import '../calculator_controller.dart';
+import '../brands/ceiling_board_brands.dart';
+import '../brands/channel_brands.dart';
 import 'quick_add_bottom_sheet.dart';
 
 class CalculatorTableWidget extends StatefulWidget {
@@ -283,10 +285,44 @@ class _CalculatorTableWidgetState extends State<CalculatorTableWidget> {
     );
   }
 
+  void _duplicateCheckedRooms(List<String> checkedRooms) {
+    setState(() {
+      final clones = <QuotationItem>[];
+      for (final item in widget.ctrl.currentItems) {
+        if (checkedRooms.contains(item.roomName)) {
+          clones.add(item.copyWith(roomName: '${item.roomName} (Copy)'));
+        }
+      }
+      widget.ctrl.currentItems.addAll(clones);
+      _roomCheckboxes.clear();
+      _itemCheckboxes.clear();
+      widget.ctrl.updateLivePreview();
+      widget.ctrl.notifyUI();
+      widget.ctrl.triggerAutoSave();
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('✓ Marked rooms duplicated successfully!'), backgroundColor: Color(0xFF16A34A)),
+    );
+  }
+
+  void _deleteCheckedRooms(List<String> checkedRooms) {
+    setState(() {
+      widget.ctrl.currentItems.removeWhere((item) => checkedRooms.contains(item.roomName));
+      _roomCheckboxes.clear();
+      _itemCheckboxes.clear();
+      widget.ctrl.updateLivePreview();
+      widget.ctrl.notifyUI();
+      widget.ctrl.triggerAutoSave();
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('✓ Marked rooms deleted successfully!'), backgroundColor: Colors.red),
+    );
+  }
+
   void _showBulkEditForCheckedRooms(BuildContext context, List<String> checkedRooms) {
     double initialRate = 105.0;
-    String initialBoard = 'Saint-Gobain Gyproc (Regular)';
-    String initialChannel = 'Standard Medium G.I. (0.45mm)';
+    String initialBoard = 'Gyproc';
+    String initialChannel = 'Gyproc';
 
     if (widget.ctrl.currentItems.isNotEmpty) {
       final matching = widget.ctrl.currentItems.where((i) => checkedRooms.contains(i.roomName)).toList();
@@ -327,10 +363,10 @@ class _CalculatorTableWidgetState extends State<CalculatorTableWidget> {
       'Terrace / Roof',
     ];
 
-    final availableBoards = List<String>.from(RateTierConstants.availableBoards.where((b) => b != 'More')).toSet().toList();
+    final availableBoards = List<String>.from(CeilingBoardBrands.brands);
     if (!availableBoards.contains(bulkBoard)) availableBoards.insert(0, bulkBoard);
 
-    final availableChannels = List<String>.from(RateTierConstants.availableChannels.where((c) => c != 'More')).toSet().toList();
+    final availableChannels = List<String>.from(ChannelBrands.brands);
     if (!availableChannels.contains(bulkChannel)) availableChannels.insert(0, bulkChannel);
 
     const unitList = [
@@ -1811,6 +1847,32 @@ class _CalculatorTableWidgetState extends State<CalculatorTableWidget> {
                             icon: const Icon(Icons.auto_awesome, size: 13),
                             label: const Text('ബൾക്ക് എഡിറ്റ്', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
                             onPressed: () => _showBulkEditForCheckedRooms(context, checkedRooms),
+                          ),
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFD97706),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            icon: const Icon(Icons.copy, size: 12),
+                            label: const Text('കോപ്പി', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+                            onPressed: () => _duplicateCheckedRooms(checkedRooms),
+                          ),
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red.shade700,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            icon: const Icon(Icons.delete_outline, size: 12),
+                            label: const Text('ഡിലീറ്റ്', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+                            onPressed: () => _deleteCheckedRooms(checkedRooms),
                           ),
                           ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(

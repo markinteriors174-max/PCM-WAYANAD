@@ -5,6 +5,7 @@ import '../../../../models/rate_tier.dart';
 import '../../brands/ceiling_board_brands.dart';
 import '../../brands/channel_brands.dart';
 import '../../brands/brand_selector_helper.dart';
+import '../../../../utils/calculator_utils.dart';
 
 class QuickAddMultiRateTiersWidget extends StatefulWidget {
   final CalculatorController ctrl;
@@ -257,110 +258,133 @@ class _QuickAddMultiRateTiersWidgetState extends State<QuickAddMultiRateTiersWid
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 3),
-      padding: const EdgeInsets.all(8),
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: tierColor.withValues(alpha: isActiveRate ? 0.22 : 0.08),
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: tierColor.withValues(alpha: isActiveRate ? 1.0 : (isSelected ? 0.85 : 0.5)),
+          color: isActiveRate ? tierColor : (isSelected ? tierColor.withValues(alpha: 0.85) : Colors.grey.shade300),
           width: isActiveRate ? 2.2 : (isSelected ? 1.6 : 1.2),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: tierColor.withValues(alpha: isActiveRate ? 0.2 : 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Tier name & rate
+          // Tier Name & Active Badge
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Text(
                   tier.name,
-                  style: TextStyle(color: tierColor, fontWeight: FontWeight.w900, fontSize: 11.5),
+                  style: TextStyle(color: tierColor, fontWeight: FontWeight.w900, fontSize: 13),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              SizedBox(
-                width: 70,
-                height: 26,
-                child: TextField(
-                  controller: _getRateController(tier),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  style: TextStyle(color: tierColor, fontWeight: FontWeight.w900, fontSize: 11.5),
-                  decoration: InputDecoration(
-                    prefixText: '₹ ',
-                    prefixStyle: TextStyle(color: tierColor, fontWeight: FontWeight.w900, fontSize: 11),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
-                    isDense: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(4),
-                      borderSide: BorderSide(color: tierColor.withValues(alpha: 0.5), width: 1.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(4),
-                      borderSide: BorderSide(color: tierColor, width: 1.5),
-                    ),
+              if (isActiveRate)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: tierColor,
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                  onChanged: (val) {
-                    final newRate = double.tryParse(val) ?? 0.0;
-                    setState(() {
-                      tier.rate = newRate;
-                      if (isActiveRate) {
-                        ctrl.rateController.text = newRate.toString();
-                      }
-                      ctrl.updateLivePreview();
-                      ctrl.notifyUI();
-                      ctrl.triggerAutoSave();
-                    });
-                  },
+                  child: const Text(
+                    'ACTIVE',
+                    style: TextStyle(color: Colors.white, fontSize: 7.5, fontWeight: FontWeight.w900),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 6),
+
+          // Rate Input Box (Modern styling, no leading zeros)
+          Row(
+            children: [
+              const Text('Rate: ', style: TextStyle(color: Color(0xFF64748B), fontSize: 11, fontWeight: FontWeight.bold)),
+              Expanded(
+                child: SizedBox(
+                  height: 32,
+                  child: TextField(
+                    controller: _getRateController(tier),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    style: const TextStyle(color: Color(0xFF1E293B), fontWeight: FontWeight.w900, fontSize: 12),
+                    decoration: InputDecoration(
+                      prefixText: '₹ ',
+                      prefixStyle: TextStyle(color: tierColor, fontWeight: FontWeight.w900, fontSize: 11),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      isDense: true,
+                      filled: true,
+                      fillColor: const Color(0xFFF8FAFC),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey.shade300, width: 1.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey.shade300, width: 1.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: tierColor, width: 1.6),
+                      ),
+                    ),
+                    onChanged: (val) {
+                      final cleanVal = val.trim().replaceFirst(RegExp(r'^0+(?=\d)'), '');
+                      final newRate = double.tryParse(cleanVal.isEmpty ? '0' : cleanVal) ?? 0.0;
+                      setState(() {
+                        tier.rate = newRate;
+                        if (isActiveRate) {
+                          ctrl.rateController.text = newRate.toString();
+                        }
+                        ctrl.updateLivePreview();
+                        ctrl.notifyUI();
+                        ctrl.triggerAutoSave();
+                      });
+                    },
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
-
-          // CURRENT ACTIVE Label with fixed slot height for perfect baseline alignment across all cards
-          SizedBox(
-            height: 20,
-            child: isActiveRate
-                ? Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
-                      decoration: BoxDecoration(
-                        color: tierColor,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Text(
-                        '⚡ CURRENT ACTIVE',
-                        style: TextStyle(color: Colors.white, fontSize: 7.5, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  )
-                : const SizedBox.shrink(),
-          ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 8),
 
           // Channel Dropdown
+          const Text('Channel', style: TextStyle(color: Color(0xFF64748B), fontSize: 9.5, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 2),
           DropdownButtonHideUnderline(
             child: Container(
               height: 30,
               padding: const EdgeInsets.symmetric(horizontal: 6),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: tierColor.withValues(alpha: 0.6), width: 1.1),
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade300, width: 1.1),
               ),
               child: DropdownButton<String>(
                 value: currentChannel,
                 isExpanded: true,
                 dropdownColor: Colors.white,
                 style: const TextStyle(color: Color(0xFF1E293B), fontSize: 9.5, fontWeight: FontWeight.bold),
+                selectedItemBuilder: (context) {
+                  return availableChannels.map((channel) {
+                    return Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Ch: $channel', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 9.5, fontWeight: FontWeight.bold)),
+                    );
+                  }).toList();
+                },
                 items: availableChannels.map((channel) {
                   return DropdownMenuItem(
                     value: channel,
-                    child: Text(channel, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 9.5)),
+                    child: Text('Ch: $channel', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 9.5)),
                   );
                 }).toList(),
                 onChanged: (newChannel) async {
@@ -395,24 +419,34 @@ class _QuickAddMultiRateTiersWidgetState extends State<QuickAddMultiRateTiersWid
           const SizedBox(height: 6),
 
           // Board Dropdown
+          const Text('Board', style: TextStyle(color: Color(0xFF64748B), fontSize: 9.5, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 2),
           DropdownButtonHideUnderline(
             child: Container(
               height: 30,
               padding: const EdgeInsets.symmetric(horizontal: 6),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: tierColor.withValues(alpha: 0.6), width: 1.1),
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade300, width: 1.1),
               ),
               child: DropdownButton<String>(
                 value: currentBoard,
                 isExpanded: true,
                 dropdownColor: Colors.white,
                 style: const TextStyle(color: Color(0xFF1E293B), fontSize: 9.5, fontWeight: FontWeight.bold),
+                selectedItemBuilder: (context) {
+                  return availableBoards.map((board) {
+                    return Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Bd: $board', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 9.5, fontWeight: FontWeight.bold)),
+                    );
+                  }).toList();
+                },
                 items: availableBoards.map((board) {
                   return DropdownMenuItem(
                     value: board,
-                    child: Text(board, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 9.5)),
+                    child: Text('Bd: $board', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 9.5)),
                   );
                 }).toList(),
                 onChanged: (newBoard) async {
@@ -448,50 +482,68 @@ class _QuickAddMultiRateTiersWidgetState extends State<QuickAddMultiRateTiersWid
 
           // Total amount
           Text(
-            'Total: ₹ ${tierTotal.toStringAsFixed(2)}',
-            style: TextStyle(color: tierColor, fontSize: 10, fontWeight: FontWeight.w900),
+            'Total: ₹ ${CalculatorUtils.formatIndianCurrency(tierTotal)}',
+            style: TextStyle(color: tierColor, fontSize: 10.5, fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 6),
 
-          // SELECTED FOR PDF Button
-          InkWell(
-            onTap: () {
-              setState(() {
-                ctrl.toggleTierSelection(tier.id);
-                ctrl.selectTier(tier.name);
-                ctrl.notifyUI();
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              decoration: BoxDecoration(
-                color: isSelected ? Colors.green.shade700 : Colors.white,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(
-                  color: isSelected ? Colors.green.shade800 : tierColor.withValues(alpha: 0.7),
-                  width: 1.2,
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    isSelected ? Icons.check_box : Icons.check_box_outline_blank,
-                    color: isSelected ? Colors.white : tierColor,
-                    size: 13,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    isSelected ? 'SELECTED FOR PDF' : 'TAP TO SELECT',
-                    style: TextStyle(
-                      color: isSelected ? Colors.white : tierColor,
-                      fontSize: 7.5,
-                      fontWeight: FontWeight.w900,
+          // SELECTED FOR PDF Button & Activate button
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 26,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        ctrl.toggleTierSelection(tier.id);
+                        ctrl.selectTier(tier.name);
+                        ctrl.notifyUI();
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isSelected ? const Color(0xFF16A34A) : Colors.white,
+                      foregroundColor: isSelected ? Colors.white : tierColor,
+                      elevation: 0,
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                        side: BorderSide(color: isSelected ? const Color(0xFF16A34A) : tierColor, width: 1.2),
+                      ),
+                    ),
+                    child: Text(
+                      isSelected ? 'PDF ✓' : 'SELECT',
+                      style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w900, color: isSelected ? Colors.white : tierColor),
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
+              const SizedBox(width: 4),
+              SizedBox(
+                height: 26,
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      ctrl.selectTier(tier.name);
+                      ctrl.rateController.text = tier.rate.toString();
+                      ctrl.updateLivePreview();
+                      ctrl.notifyUI();
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isActiveRate ? tierColor : const Color(0xFFF1F5F9),
+                    foregroundColor: isActiveRate ? Colors.white : const Color(0xFF475569),
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                  ),
+                  child: Text(
+                    isActiveRate ? 'ACTIVE' : 'USE',
+                    style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.bold, color: isActiveRate ? Colors.white : const Color(0xFF475569)),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

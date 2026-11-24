@@ -42,7 +42,7 @@ class CalculatorController extends ChangeNotifier {
   final heightController = TextEditingController();
   final thicknessController = TextEditingController();
   final brandController = TextEditingController();
-  final channelController = TextEditingController(text: 'Saint-Gobain Gypframe / Gypsteel');
+  final channelController = TextEditingController(text: 'Gyproc');
   final customCeilingController = TextEditingController();
   final designController = TextEditingController();
   final roomController = TextEditingController();
@@ -119,8 +119,8 @@ class CalculatorController extends ChangeNotifier {
   bool get isAreaUnit => unit == 'SqFt' || unit == 'SqM' || unit == 'Meters' || unit == 'Meter' || unit == 'Inches' || unit == 'mm' || unit == 'Feet' || unit == 'CM' || unit == 'cm';
   String? selectedRoom;
   String? selectedCeilingType;
-  String? selectedBrand = 'Saint-Gobain Gyproc (Regular & MR Green Board)';
-  String? selectedChannel = 'Saint-Gobain Gypframe / Gypsteel';
+  String? selectedBrand = 'Gyproc';
+  String? selectedChannel = 'Gyproc';
   String? selectedDesign;
   
   final List<String> rooms = RoomSelectorHelper.masterRoomOptions;

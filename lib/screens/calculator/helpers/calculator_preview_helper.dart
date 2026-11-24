@@ -31,23 +31,33 @@ class CalculatorPreviewHelper {
 
     double cove2 = 0;
     if (ctrl.hasCentralDesign) {
+      double centralAreaFactor = conversionFactor;
+      if (ctrl.centralUnit.isNotEmpty) {
+        centralAreaFactor = PcmMathEngine.getUnitConversionFactor(ctrl.centralUnit);
+      }
+
       double cove2Length = double.tryParse(ctrl.centralLengthController.text.replaceAll(',', '.')) ?? 0.0;
       double cove2Height = double.tryParse(ctrl.centralWidthController.text.replaceAll(',', '.')) ?? 0.0;
       double cove2Qty = double.tryParse(ctrl.centralQuantityController.text.replaceAll(',', '.')) ?? 0.0;
+      if (cove2Qty == 0) cove2Qty = 1.0;
       cove2 = cove2Length * cove2Height * cove2Qty;
       
+      double extraCentralSum = 0;
       for (var r in ctrl.extraCentralRows) {
         double len = double.tryParse(r.lengthController.text.replaceAll(',', '.')) ?? 0.0;
         double wid = double.tryParse(r.widthController.text.replaceAll(',', '.')) ?? 0.0;
-        double qty = double.tryParse(r.quantityController.text.replaceAll(',', '.')) ?? 0.0;
+        double qty = double.tryParse(r.quantityController.text.replaceAll(',', '.')) ?? 1.0;
+        if (qty == 0) qty = 1.0;
         double area = len * wid * qty;
-        double convertedArea = area * conversionFactor * q;
-        r.areaController.text = '${convertedArea.toStringAsFixed(2)} SQFT';
-        cove2 += area;
+        double convertedRowArea = area * centralAreaFactor * (q > 0 ? q : 1.0);
+        r.areaController.text = convertedRowArea > 0 ? '${convertedRowArea.toStringAsFixed(2)} SQFT' : '';
+        extraCentralSum += area;
       }
       
-      double convertedCove2 = cove2 * conversionFactor * q;
-      ctrl.centralAreaController.text = '${convertedCove2.toStringAsFixed(2)} SQFT';
+      double totalCentralRaw = cove2 + extraCentralSum;
+      double convertedCove2 = totalCentralRaw * centralAreaFactor * (q > 0 ? q : 1.0);
+      ctrl.centralAreaController.text = convertedCove2 > 0 ? convertedCove2.toStringAsFixed(2) : '';
+      cove2 = totalCentralRaw;
     } else {
       ctrl.centralAreaController.clear();
     }
@@ -157,7 +167,11 @@ class CalculatorPreviewHelper {
         q == 0;
 
     double totalPlainArea = ceilingAreaSqFt + extraPlainSum;
-    double totalArea = totalPlainArea + cove1 + (cove2 * conversionFactor * q) + customCenterArea;
+    double centralAreaFactor = conversionFactor;
+    if (ctrl.hasCentralDesign && ctrl.centralUnit.isNotEmpty) {
+      centralAreaFactor = PcmMathEngine.getUnitConversionFactor(ctrl.centralUnit);
+    }
+    double totalArea = totalPlainArea + cove1 + (ctrl.hasCentralDesign ? cove2 * centralAreaFactor * (q > 0 ? q : 1.0) : 0) + customCenterArea;
 
     ctrl.livePreviewMainAreaSqFt = (isInputsEmptyOrZero && extraPlainSum == 0 && !ctrl.hasCentralDesign && !ctrl.hasCove && !ctrl.isCenterCeilingOn) ? 0.0 : totalPlainArea;
     ctrl.livePreviewAreaSqFt = totalArea;

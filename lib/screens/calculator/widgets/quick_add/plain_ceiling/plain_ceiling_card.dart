@@ -123,8 +123,8 @@ class PlainCeilingCard extends StatelessWidget {
                     onUnitChanged: (v) {
                       if (v != null) {
                         if (v == 'RFT') ctrl.widthController.clear();
-                        ctrl.unit = v;
                         ctrl.handleUnitChange(v);
+                        onChanged();
                       }
                     },
                   ),

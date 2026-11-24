@@ -145,16 +145,16 @@ class _SiteMeasurementScreenState extends State<SiteMeasurementScreen> {
   final Set<String> _selectedTiersForPdf = {'BASE'};
 
   String _baseRate = '105';
-  String _baseChannel = 'Saint-Gobain Gypframe / Gypsteel';
-  String _baseBoard = 'Saint-Gobain Gyproc (Regular & MR Green Board)';
+  String _baseChannel = 'Gyproc';
+  String _baseBoard = 'Gyproc';
 
   String _premiumRate = '120';
-  String _premiumChannel = 'Saint-Gobain Gypframe / Gypsteel';
-  String _premiumBoard = 'USG Boral / Knauf';
+  String _premiumChannel = 'Gyproc';
+  String _premiumBoard = 'Boral';
 
   String _luxuryRate = '145';
   String _luxuryChannel = 'Jindal';
-  String _luxuryBoard = 'Saint-Gobain Gyproc (Regular & MR Green Board)';
+  String _luxuryBoard = 'Gyproc';
 
   late final TextEditingController _baseRateController;
   late final TextEditingController _premiumRateController;
@@ -1348,16 +1348,16 @@ class _SiteMeasurementScreenState extends State<SiteMeasurementScreen> {
       _selectedTier = 'BASE';
       _baseRate = '105';
       _baseRateController.text = '105';
-      _baseChannel = 'Saint-Gobain Gypframe / Gypsteel';
-      _baseBoard = 'Saint-Gobain Gyproc (Regular & MR Green Board)';
+      _baseChannel = 'Gyproc';
+      _baseBoard = 'Gyproc';
       _premiumRate = '120';
       _premiumRateController.text = '120';
-      _premiumChannel = 'Saint-Gobain Gypframe / Gypsteel';
-      _premiumBoard = 'USG Boral / Knauf';
+      _premiumChannel = 'Gyproc';
+      _premiumBoard = 'Boral';
       _luxuryRate = '145';
       _luxuryRateController.text = '145';
       _luxuryChannel = 'Jindal';
-      _luxuryBoard = 'Saint-Gobain Gyproc (Regular & MR Green Board)';
+      _luxuryBoard = 'Gyproc';
       for (var r in rooms) {
         r.dispose();
       }

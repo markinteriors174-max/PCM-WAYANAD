@@ -79,6 +79,13 @@ class CalculatorUnitHelper {
       if (wVal > 0) r.widthController.text = (wVal * scale).toStringAsFixed(2);
     }
 
+    for (var r in ctrl.extraCoveRows) {
+      double lVal = double.tryParse(r.lengthController.text.replaceAll(',', '.')) ?? 0;
+      if (lVal > 0) r.lengthController.text = (lVal * scale).toStringAsFixed(2);
+      double wVal = double.tryParse(r.widthController.text.replaceAll(',', '.')) ?? 0;
+      if (wVal > 0) r.widthController.text = (wVal * scale).toStringAsFixed(2);
+    }
+
     for (var r in ctrl.extraCentralRows) {
       double lVal = double.tryParse(r.lengthController.text.replaceAll(',', '.')) ?? 0;
       if (lVal > 0) r.lengthController.text = (lVal * scale).toStringAsFixed(2);
@@ -120,6 +127,12 @@ class CalculatorUnitHelper {
     ]) {
       double v = double.tryParse(c.text.replaceAll(',', '.')) ?? 0;
       if (v > 0) c.text = (v * scale).toStringAsFixed(2);
+    }
+    for (var r in ctrl.extraCoveRows) {
+      double lVal = double.tryParse(r.lengthController.text.replaceAll(',', '.')) ?? 0;
+      if (lVal > 0) r.lengthController.text = (lVal * scale).toStringAsFixed(2);
+      double wVal = double.tryParse(r.widthController.text.replaceAll(',', '.')) ?? 0;
+      if (wVal > 0) r.widthController.text = (wVal * scale).toStringAsFixed(2);
     }
     ctrl.coveUnit = newUnit;
     ctrl.updateLivePreview();
