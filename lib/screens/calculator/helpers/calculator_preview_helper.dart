@@ -1,5 +1,6 @@
 import '../calculator_controller.dart';
 import 'cove_calculation_helper.dart';
+import '../../../utils/pcm_math_engine.dart';
 
 class CalculatorPreviewHelper {
   static void updateLivePreview(CalculatorController ctrl) {
@@ -8,14 +9,7 @@ class CalculatorPreviewHelper {
     double userRate = double.tryParse(ctrl.rateController.text.replaceAll(',', '.')) ?? 0;
     double q = double.tryParse(ctrl.quantityController.text.replaceAll(',', '.')) ?? 1;
 
-    double conversionFactor = 1.0;
-    if (ctrl.unit == 'Meters' || ctrl.unit == 'SqM' || ctrl.unit == 'Meter') {
-      conversionFactor = 10.7639104;
-    } else if (ctrl.unit == 'Inches') {
-      conversionFactor = 1.0 / 144.0;
-    } else if (ctrl.unit == 'mm') {
-      conversionFactor = 10.764 / 1000000.0;
-    }
+    double conversionFactor = PcmMathEngine.getUnitConversionFactor(ctrl.unit);
 
     double cove1 = 0;
     if (ctrl.hasCove) {
@@ -65,18 +59,7 @@ class CalculatorPreviewHelper {
 
       double ccAreaFactor = conversionFactor;
       if (ctrl.customCenterUnit.isNotEmpty) {
-        String ccUnit = ctrl.customCenterUnit;
-        if (ccUnit.toLowerCase() == 'cm') {
-          ccAreaFactor = 1.0 / (30.48 * 30.48);
-        } else if (ccUnit.toLowerCase() == 'meters' || ccUnit.toLowerCase() == 'meter' || ccUnit.toLowerCase() == 'sqm' || ccUnit.toLowerCase() == 'm') {
-          ccAreaFactor = 10.7639104;
-        } else if (ccUnit.toLowerCase() == 'inches' || ccUnit.toLowerCase() == 'inch' || ccUnit.toLowerCase() == 'in') {
-          ccAreaFactor = 1.0 / 144.0;
-        } else if (ccUnit.toLowerCase() == 'mm') {
-          ccAreaFactor = 10.7639104 / 1000000.0;
-        } else if (ccUnit.toLowerCase() == 'feet' || ccUnit.toLowerCase() == 'sqft' || ccUnit.toLowerCase() == 'ft') {
-          ccAreaFactor = 1.0;
-        }
+        ccAreaFactor = PcmMathEngine.getUnitConversionFactor(ctrl.customCenterUnit);
       }
 
       double mainCircumference = 2 * 3.1415926535 * rVal;
@@ -144,22 +127,26 @@ class CalculatorPreviewHelper {
       if (ccRate > 0 && userRate == 0) userRate = ccRate;
     }
 
-    double ceilingArea = 0;
-    if (ctrl.isCeilingDesign) {
-      if (ctrl.isAreaUnit) {
-        ceilingArea = l * w;
-      } else {
-        ceilingArea = l;
-      }
-    }
+    double ceilingAreaSqFt = PcmMathEngine.calculateAreaSqFt(
+      length: l,
+      width: w,
+      quantity: q,
+      unit: ctrl.unit,
+      isAreaUnit: ctrl.isAreaUnit,
+    );
 
     double extraPlainSum = 0;
     for (var r in ctrl.extraPlainRows) {
       double len = double.tryParse(r.lengthController.text.replaceAll(',', '.')) ?? 0.0;
       double wid = double.tryParse(r.widthController.text.replaceAll(',', '.')) ?? 0.0;
       double qty = double.tryParse(r.quantityController.text.replaceAll(',', '.')) ?? 1.0;
-      double area = ctrl.isAreaUnit ? (len * wid * qty) : (len * qty);
-      extraPlainSum += area;
+      extraPlainSum += PcmMathEngine.calculateAreaSqFt(
+        length: len,
+        width: wid,
+        quantity: qty,
+        unit: ctrl.unit,
+        isAreaUnit: ctrl.isAreaUnit,
+      );
     }
 
     bool isInputsEmptyOrZero = ctrl.lengthController.text.trim().isEmpty ||
@@ -169,13 +156,13 @@ class CalculatorPreviewHelper {
         w == 0 ||
         q == 0;
 
-    double ceilingAreaSqFt = (ceilingArea + extraPlainSum) * conversionFactor * q;
-    double totalArea = ceilingAreaSqFt + cove1 + (cove2 * conversionFactor * q) + customCenterArea;
+    double totalPlainArea = ceilingAreaSqFt + extraPlainSum;
+    double totalArea = totalPlainArea + cove1 + (cove2 * conversionFactor * q) + customCenterArea;
 
-    ctrl.livePreviewMainAreaSqFt = (isInputsEmptyOrZero && extraPlainSum == 0 && !ctrl.hasCentralDesign && !ctrl.hasCove && !ctrl.isCenterCeilingOn) ? 0.0 : ceilingAreaSqFt;
+    ctrl.livePreviewMainAreaSqFt = (isInputsEmptyOrZero && extraPlainSum == 0 && !ctrl.hasCentralDesign && !ctrl.hasCove && !ctrl.isCenterCeilingOn) ? 0.0 : totalPlainArea;
     ctrl.livePreviewAreaSqFt = totalArea;
     double effectiveRate = userRate > 0 ? userRate : 105.0;
-    ctrl.livePreviewAmount = ctrl.livePreviewAreaSqFt * effectiveRate;
+    ctrl.livePreviewAmount = PcmMathEngine.calculateAmount(areaSqFt: ctrl.livePreviewAreaSqFt, rate: effectiveRate);
 
     if (ctrl.lengthController.text.trim().isEmpty &&
         ctrl.widthController.text.trim().isEmpty &&

@@ -3,6 +3,7 @@ import '../../../../theme/app_theme.dart';
 import '../../../../utils/calculator_utils.dart';
 import '../../calculator_controller.dart';
 import '../../helpers/cove_calculation_helper.dart';
+import '../../units/calculator_unit_helper.dart';
 import 'quick_add_unit_rate_selector.dart';
 
 class CoveLightInputWidget extends StatefulWidget {
@@ -362,10 +363,8 @@ class _CoveLightInputWidgetState extends State<CoveLightInputWidget> {
                 borderColor: amberTheme,
                 onUnitChanged: (v) {
                   if (v != null) {
-                    widget.ctrl.coveUnit = v;
+                    CalculatorUnitHelper.handleCoveUnitChange(widget.ctrl, v);
                     setState(() {});
-                    widget.ctrl.updateLivePreview();
-                    widget.ctrl.triggerAutoSave();
                   }
                 },
               ),

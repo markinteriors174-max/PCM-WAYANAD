@@ -33,7 +33,20 @@ class CalculatorUnitHelper {
 
   static void handleUnitChange(CalculatorController ctrl, String newUnit) {
     if (ctrl.unit == newUnit) return;
+    convertPlainUnits(ctrl, ctrl.unit, newUnit);
+  }
 
+  static void handleCoveUnitChange(CalculatorController ctrl, String newUnit) =>
+      convertCoveUnits(ctrl, ctrl.coveUnit.isNotEmpty ? ctrl.coveUnit : ctrl.unit, newUnit);
+
+  static void handleCenterUnitChange(CalculatorController ctrl, String newUnit) =>
+      convertSquareCenterUnits(ctrl, ctrl.centralUnit.isNotEmpty ? ctrl.centralUnit : ctrl.unit, newUnit);
+
+  static void handleCustomCenterUnitChange(CalculatorController ctrl, String newUnit) =>
+      convertRoundCenterUnits(ctrl, ctrl.customCenterUnit.isNotEmpty ? ctrl.customCenterUnit : ctrl.unit, newUnit);
+
+  static void convertPlainUnits(CalculatorController ctrl, String oldUnit, String newUnit) {
+    if (oldUnit == newUnit) return;
     final wasMetric = ctrl.isMetric;
     final normalized = newUnit.toLowerCase();
     final isMetric = normalized.contains('meter') || normalized.contains('sqm') || normalized.contains('rmt') || normalized == 'cm' || normalized == 'mm';
@@ -47,28 +60,109 @@ class CalculatorUnitHelper {
       }
     }
 
-    double scale = convertValue(1.0, ctrl.unit, newUnit);
+    double scale = convertValue(1.0, oldUnit, newUnit);
     for (var c in [
       ctrl.lengthController, ctrl.widthController, ctrl.heightController, ctrl.thicknessController,
       ctrl.coveLengthController, ctrl.coveWidthController, ctrl.coveLength2Controller, ctrl.coveWidth2Controller,
-      ctrl.centralLengthController, ctrl.centralWidthController
+      ctrl.centralLengthController, ctrl.centralWidthController,
+      ctrl.customCenterRadiusController, ctrl.customCenterWidthController,
+      ctrl.customCenterDeductionController, ctrl.customCenterDeductionWidthController
     ]) {
-      double v = double.tryParse(c.text) ?? 0;
+      double v = double.tryParse(c.text.replaceAll(',', '.')) ?? 0;
       if (v > 0) c.text = (v * scale).toStringAsFixed(2);
     }
-    double ma = double.tryParse(ctrl.areaController.text) ?? 0;
+
+    for (var r in ctrl.extraPlainRows) {
+      double lVal = double.tryParse(r.lengthController.text.replaceAll(',', '.')) ?? 0;
+      if (lVal > 0) r.lengthController.text = (lVal * scale).toStringAsFixed(2);
+      double wVal = double.tryParse(r.widthController.text.replaceAll(',', '.')) ?? 0;
+      if (wVal > 0) r.widthController.text = (wVal * scale).toStringAsFixed(2);
+    }
+
+    for (var r in ctrl.extraCentralRows) {
+      double lVal = double.tryParse(r.lengthController.text.replaceAll(',', '.')) ?? 0;
+      if (lVal > 0) r.lengthController.text = (lVal * scale).toStringAsFixed(2);
+      double wVal = double.tryParse(r.widthController.text.replaceAll(',', '.')) ?? 0;
+      if (wVal > 0) r.widthController.text = (wVal * scale).toStringAsFixed(2);
+    }
+
+    for (var r in ctrl.extraCustomCentralRows) {
+      double lVal = double.tryParse(r.lengthController.text.replaceAll(',', '.')) ?? 0;
+      if (lVal > 0) r.lengthController.text = (lVal * scale).toStringAsFixed(2);
+      double wVal = double.tryParse(r.widthController.text.replaceAll(',', '.')) ?? 0;
+      if (wVal > 0) r.widthController.text = (wVal * scale).toStringAsFixed(2);
+    }
+
+    double ma = double.tryParse(ctrl.areaController.text.replaceAll(',', '.')) ?? 0;
     if (ma > 0) ctrl.areaController.text = (ma * scale * scale).toStringAsFixed(2);
 
     if (ctrl.lastLength.isNotEmpty) {
-      double lVal = double.tryParse(ctrl.lastLength) ?? 0;
+      double lVal = double.tryParse(ctrl.lastLength.replaceAll(',', '.')) ?? 0;
       if (lVal > 0) ctrl.lastLength = (lVal * scale).toStringAsFixed(2);
     }
     if (ctrl.lastWidth.isNotEmpty) {
-      double wVal = double.tryParse(ctrl.lastWidth) ?? 0;
+      double wVal = double.tryParse(ctrl.lastWidth.replaceAll(',', '.')) ?? 0;
       if (wVal > 0) ctrl.lastWidth = (wVal * scale).toStringAsFixed(2);
     }
 
     ctrl.unit = newUnit;
+    ctrl.updateLivePreview();
+    ctrl.notifyUI();
+    ctrl.triggerAutoSave();
+  }
+
+  static void convertCoveUnits(CalculatorController ctrl, String oldUnit, String newUnit) {
+    if (oldUnit == newUnit) return;
+    double scale = convertValue(1.0, oldUnit, newUnit);
+    for (var c in [
+      ctrl.coveLengthController, ctrl.coveWidthController,
+      ctrl.coveLength2Controller, ctrl.coveWidth2Controller
+    ]) {
+      double v = double.tryParse(c.text.replaceAll(',', '.')) ?? 0;
+      if (v > 0) c.text = (v * scale).toStringAsFixed(2);
+    }
+    ctrl.coveUnit = newUnit;
+    ctrl.updateLivePreview();
+    ctrl.notifyUI();
+    ctrl.triggerAutoSave();
+  }
+
+  static void convertSquareCenterUnits(CalculatorController ctrl, String oldUnit, String newUnit) {
+    if (oldUnit == newUnit) return;
+    double scale = convertValue(1.0, oldUnit, newUnit);
+    for (var c in [ctrl.centralLengthController, ctrl.centralWidthController]) {
+      double v = double.tryParse(c.text.replaceAll(',', '.')) ?? 0;
+      if (v > 0) c.text = (v * scale).toStringAsFixed(2);
+    }
+    for (var r in ctrl.extraCentralRows) {
+      double lVal = double.tryParse(r.lengthController.text.replaceAll(',', '.')) ?? 0;
+      if (lVal > 0) r.lengthController.text = (lVal * scale).toStringAsFixed(2);
+      double wVal = double.tryParse(r.widthController.text.replaceAll(',', '.')) ?? 0;
+      if (wVal > 0) r.widthController.text = (wVal * scale).toStringAsFixed(2);
+    }
+    ctrl.centralUnit = newUnit;
+    ctrl.updateLivePreview();
+    ctrl.notifyUI();
+    ctrl.triggerAutoSave();
+  }
+
+  static void convertRoundCenterUnits(CalculatorController ctrl, String oldUnit, String newUnit) {
+    if (oldUnit == newUnit) return;
+    double scale = convertValue(1.0, oldUnit, newUnit);
+    for (var c in [
+      ctrl.customCenterRadiusController, ctrl.customCenterWidthController,
+      ctrl.customCenterDeductionController, ctrl.customCenterDeductionWidthController
+    ]) {
+      double v = double.tryParse(c.text.replaceAll(',', '.')) ?? 0;
+      if (v > 0) c.text = (v * scale).toStringAsFixed(2);
+    }
+    for (var r in ctrl.extraCustomCentralRows) {
+      double lVal = double.tryParse(r.lengthController.text.replaceAll(',', '.')) ?? 0;
+      if (lVal > 0) r.lengthController.text = (lVal * scale).toStringAsFixed(2);
+      double wVal = double.tryParse(r.widthController.text.replaceAll(',', '.')) ?? 0;
+      if (wVal > 0) r.widthController.text = (wVal * scale).toStringAsFixed(2);
+    }
+    ctrl.customCenterUnit = newUnit;
     ctrl.updateLivePreview();
     ctrl.notifyUI();
     ctrl.triggerAutoSave();
@@ -113,7 +207,7 @@ class CalculatorUnitHelper {
     if (u == 'mm') {
       return 'mm';
     }
-    if (u == 'cm' || u == 'cm') {
+    if (u == 'cm') {
       return 'cm';
     }
     return unit;

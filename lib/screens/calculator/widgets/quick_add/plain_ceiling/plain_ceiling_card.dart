@@ -4,6 +4,7 @@ import '../quick_add_actions.dart';
 import '../quick_add_dimensions_row.dart';
 import '../quick_add_unit_rate_selector.dart';
 import 'package:pcm_wayanad/utils/calculator_utils.dart';
+import 'package:pcm_wayanad/utils/pcm_math_engine.dart';
 
 class PlainCeilingCard extends StatelessWidget {
   final CalculatorController ctrl;
@@ -18,34 +19,37 @@ class PlainCeilingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const cardColor = Color(0xFFD93829); // Rich red/coral
-    final double l = double.tryParse(ctrl.lengthController.text) ?? 0.0;
-    final double w = double.tryParse(ctrl.widthController.text) ?? 0.0;
-    final double q = double.tryParse(ctrl.quantityController.text) ?? 1.0;
-
-    double conversionFactor = 1.0;
-    if (ctrl.unit == 'Meters' || ctrl.unit == 'SqM' || ctrl.unit == 'Meter') {
-      conversionFactor = 10.7639104;
-    } else if (ctrl.unit == 'Inches') {
-      conversionFactor = 1.0 / 144.0;
-    } else if (ctrl.unit == 'mm') {
-      conversionFactor = 10.764 / 1000000.0;
-    }
+    final double l = double.tryParse(ctrl.lengthController.text.replaceAll(',', '.')) ?? 0.0;
+    final double w = double.tryParse(ctrl.widthController.text.replaceAll(',', '.')) ?? 0.0;
+    final double q = double.tryParse(ctrl.quantityController.text.replaceAll(',', '.')) ?? 1.0;
 
     double extraPlainSqFtSum = 0.0;
     for (var r in ctrl.extraPlainRows) {
-      double len = double.tryParse(r.lengthController.text) ?? 0.0;
-      double wid = double.tryParse(r.widthController.text) ?? 0.0;
-      double qty = double.tryParse(r.quantityController.text) ?? 1.0;
-      double area = ctrl.isAreaUnit ? (len * wid * qty) : (len * qty);
-      double converted = area * conversionFactor * q;
+      double len = double.tryParse(r.lengthController.text.replaceAll(',', '.')) ?? 0.0;
+      double wid = double.tryParse(r.widthController.text.replaceAll(',', '.')) ?? 0.0;
+      double qty = double.tryParse(r.quantityController.text.replaceAll(',', '.')) ?? 1.0;
+      double converted = PcmMathEngine.calculateAreaSqFt(
+        length: len,
+        width: wid,
+        quantity: qty,
+        unit: ctrl.unit,
+        isAreaUnit: ctrl.isAreaUnit,
+      );
       r.areaController.text = converted > 0 ? converted.toStringAsFixed(2) : '';
       extraPlainSqFtSum += converted;
     }
 
-    final double mainArea = ctrl.livePreviewMainAreaSqFt > 0 ? ctrl.livePreviewMainAreaSqFt : (l * (ctrl.isAreaUnit ? w : 1.0) * q * conversionFactor);
-    final double plainArea = mainArea + extraPlainSqFtSum;
-    final double rate = double.tryParse(ctrl.rateController.text) ?? 105.0;
-    final double plainTotal = plainArea * rate;
+    final double mainArea = ctrl.livePreviewMainAreaSqFt > 0 ? ctrl.livePreviewMainAreaSqFt : PcmMathEngine.calculateAreaSqFt(
+      length: l,
+      width: ctrl.isAreaUnit ? w : 1.0,
+      quantity: q,
+      unit: ctrl.unit,
+      isAreaUnit: ctrl.isAreaUnit,
+    );
+    final double displayedPlainArea = double.tryParse(mainArea.toStringAsFixed(2)) ?? mainArea;
+    final double plainArea = displayedPlainArea + extraPlainSqFtSum;
+    final double rate = double.tryParse(ctrl.rateController.text.replaceAll(',', '.')) ?? 105.0;
+    final double plainTotal = PcmMathEngine.calculateAmount(areaSqFt: plainArea, rate: rate);
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),

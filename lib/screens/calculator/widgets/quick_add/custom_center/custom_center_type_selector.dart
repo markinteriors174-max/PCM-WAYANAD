@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pcm_wayanad/theme/app_theme.dart';
 import 'package:pcm_wayanad/screens/calculator/calculator_controller.dart';
+import 'package:pcm_wayanad/screens/calculator/units/calculator_unit_helper.dart';
 import '../quick_add_unit_rate_selector.dart';
 
 class CustomCenterTypeSelector extends StatelessWidget {
@@ -53,9 +54,7 @@ class CustomCenterTypeSelector extends StatelessWidget {
           borderColor: themeColor,
           onUnitChanged: (v) {
             if (v != null) {
-              ctrl.customCenterUnit = v;
-              ctrl.updateLivePreview();
-              ctrl.triggerAutoSave();
+              CalculatorUnitHelper.handleCustomCenterUnitChange(ctrl, v);
             }
           },
         ),
