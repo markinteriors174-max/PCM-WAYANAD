@@ -4,7 +4,6 @@ import '../../../theme/app_theme.dart';
 import 'home_screen_admin_hub.dart';
 import 'site_measurement_card_only.dart';
 import 'home_promotion_section.dart';
-import 'home_material_list_section.dart';
 import '../../main_navigation.dart';
 
 class AdminHomeScreen extends StatelessWidget {
@@ -45,12 +44,9 @@ class AdminHomeScreen extends StatelessWidget {
             SiteMeasurementCardOnly(),
             SizedBox(height: 15),
             HomePromotionSection(),
-            SizedBox(height: 25),
-            HomeMaterialListSection(),
           ],
         ),
       ),
     );
   }
 }
-
