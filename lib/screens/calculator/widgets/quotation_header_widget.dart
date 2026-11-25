@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'sync_status_badge.dart';
 
 /// PCM Web Header Widget (`pcm-web-header`)
 /// Displays PCM WAYANAD branding with logo, company name, subtitle,
@@ -104,31 +105,38 @@ class QuotationHeaderWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Phone Badge
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      '📞',
-                      style: TextStyle(fontSize: 11, color: Color(0xFF38BDF8)),
+              // Phone Badge & Sync Status Badge
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    const SizedBox(width: 5),
-                    Text(
-                      phoneNumber,
-                      style: const TextStyle(
-                        color: Color(0xFFF8FAFC),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          '📞',
+                          style: TextStyle(fontSize: 11, color: Color(0xFF38BDF8)),
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          phoneNumber,
+                          style: const TextStyle(
+                            color: Color(0xFFF8FAFC),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 8),
+                  const SyncStatusBadge(),
+                ],
               ),
 
               // Action Buttons

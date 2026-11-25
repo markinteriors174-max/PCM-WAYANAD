@@ -173,38 +173,56 @@ class QuotationHeaderBuilder {
     final safeClientPhone = clientPhone.trim().isEmpty ? 'N/A' : clientPhone.trim();
     final safeUnitNumber = unitNumber.trim().isEmpty ? 'N/A' : ClientService.normalizeUnitNumber(unitNumber);
     final safeTotalArea = totalArea.isFinite ? totalArea : 0.0;
+    const double qrSize = 42.0;
 
     return pw.Container(
-      padding: const pw.EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-      decoration: pw.BoxDecoration(border: pw.Border.all(color: PdfColors.brown900, width: 1.5), color: PdfColors.orange50),
-      child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
-        pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
-          pw.Text('QUOTATION: $safeUnitNumber', style: pw.TextStyle(font: boldFont, fontSize: 9)),
-          pw.Text('DATE: ${DateFormat('dd-MMM-yyyy').format(DateTime.now())}', style: pw.TextStyle(font: font, fontSize: 8)),
-        ]),
-        pw.SizedBox(height: 4),
-        pw.Divider(color: PdfColors.brown200, thickness: 0.5),
-        pw.SizedBox(height: 4),
-        pw.Row(
-          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: pw.CrossAxisAlignment.center,
-          children: [
-            pw.Expanded(child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
-              pw.Text('CLIENT: $safeClientName', style: pw.TextStyle(font: boldFont, fontSize: 10, color: PdfColors.brown900)),
-              pw.SizedBox(height: 1),
-              pw.Text('Location: $safeClientLocation | Phone: $safeClientPhone', style: pw.TextStyle(font: font, fontSize: 8.5)),
-            ])),
-            pw.Container(
-              padding: const pw.EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-              decoration: const pw.BoxDecoration(color: PdfColors.yellow100, borderRadius: pw.BorderRadius.all(pw.Radius.circular(3))),
-              child: pw.Row(children: [
-                pw.Text(includeWastage ? 'TOTAL AREA (+Wastage): ' : 'TOTAL AREA: ', style: pw.TextStyle(font: boldFont, fontSize: 8, color: PdfColors.grey900)),
-                pw.Text('${safeTotalArea.toStringAsFixed(2)} SqFt', style: pw.TextStyle(font: boldFont, fontSize: 10, color: PdfColors.black)),
-              ]),
+      padding: const pw.EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+      decoration: const pw.BoxDecoration(
+        color: PdfColors.white,
+      ),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: pw.CrossAxisAlignment.center,
+        children: [
+          pw.Expanded(
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Row(
+                  children: [
+                    pw.Text('QUOTATION ISSUED TO: ', style: pw.TextStyle(font: font, fontSize: 8.5, color: PdfColors.grey700)),
+                    pw.Text(safeClientName, style: pw.TextStyle(font: boldFont, fontSize: 10, color: PdfColors.black)),
+                  ],
+                ),
+                pw.SizedBox(height: 2),
+                pw.Text('Quote ID: $safeUnitNumber | Date: ${DateFormat('dd-MMM-yyyy').format(DateTime.now())}', style: pw.TextStyle(font: boldFont, fontSize: 8.5, color: PdfColors.brown900)),
+                pw.SizedBox(height: 1),
+                pw.Text('Phone: $safeClientPhone | Location: $safeClientLocation', style: pw.TextStyle(font: font, fontSize: 8.5)),
+                pw.SizedBox(height: 1),
+                pw.Text(includeWastage ? 'TOTAL AREA (+Wastage): ${safeTotalArea.toStringAsFixed(2)} SqFt' : 'TOTAL AREA: ${safeTotalArea.toStringAsFixed(2)} SqFt', style: pw.TextStyle(font: boldFont, fontSize: 8.5, color: PdfColors.black)),
+              ],
             ),
-          ],
-        ),
-      ]),
+          ),
+          pw.SizedBox(width: 8),
+          pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            children: [
+              pw.BarcodeWidget(
+                barcode: pw.Barcode.qrCode(),
+                data: safeUnitNumber,
+                width: qrSize,
+                height: qrSize,
+                color: PdfColors.black,
+              ),
+              pw.SizedBox(height: 1),
+              pw.Text(
+                safeUnitNumber,
+                style: pw.TextStyle(font: boldFont, fontSize: 6, color: PdfColors.grey800),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

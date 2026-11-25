@@ -71,6 +71,7 @@ class PdfGenerationService {
     List<Map<String, dynamic>>? rateTiers,
     List<String>? selectedTierIds,
     double? totalSqFt,
+    double manualAmount = 0,
   }) async {
     final bytes = await QuotationBuilder.generate(
       clientName: clientName,
@@ -102,6 +103,7 @@ class PdfGenerationService {
       rateTiers: rateTiers,
       selectedTierIds: selectedTierIds,
       totalSqFt: totalSqFt,
+      manualAmount: manualAmount,
     );
     if (bytes.isNotEmpty) {
       return bytes;

@@ -98,6 +98,20 @@ class CalculatorUtils {
     final parts = raw.split('•').map((p) => p.trim()).where((p) => p.isNotEmpty).toSet().toList();
     return parts.join(' • ');
   }
+
+  static String normalizePhone(String? rawPhone) {
+    if (rawPhone == null || rawPhone.trim().isEmpty) return '';
+    String digits = rawPhone.replaceAll(RegExp(r'\D'), '');
+    if (digits.length > 10 && digits.startsWith('91')) {
+      digits = digits.substring(2);
+    } else if (digits.length > 10 && digits.startsWith('0')) {
+      digits = digits.replaceFirst(RegExp(r'^0+'), '');
+    }
+    if (digits.length > 10) {
+      digits = digits.substring(digits.length - 10);
+    }
+    return digits;
+  }
 }
 
 /// LOCKED SINGLE-PASS BACKEND CALCULATOR

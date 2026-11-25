@@ -17,6 +17,7 @@ import '../../models/client_model.dart';
 import '../../models/quotation.dart';
 import '../../services/client_service.dart';
 import '../calculator_editing_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 typedef CalculatorEditingScreen = CalculatorEditingPage;
 
@@ -44,7 +45,7 @@ class CalculatorScreen extends StatefulWidget {
   State<CalculatorScreen> createState() => CalculatorScreenState();
 }
 
-class CalculatorScreenState extends State<CalculatorScreen> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+class CalculatorScreenState extends State<CalculatorScreen> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   @override
   bool get wantKeepAlive => !widget.isSheet;
 
@@ -53,6 +54,7 @@ class CalculatorScreenState extends State<CalculatorScreen> with SingleTickerPro
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _ctrl = CalculatorController();
 
     if (widget.quotation != null) {
@@ -184,10 +186,26 @@ class CalculatorScreenState extends State<CalculatorScreen> with SingleTickerPro
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     ProjectEditController.instance.removeListener(_handleProjectEditRequest);
     _ctrl.disposeAll();
     _ctrl.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive || state == AppLifecycleState.detached) {
+      debugPrint('CalculatorScreen: App paused/minimized - Triggering immediate auto-save.');
+      _ctrl.triggerAutoSave();
+    } else if (state == AppLifecycleState.resumed) {
+      debugPrint('CalculatorScreen: App resumed - Reconnecting network and restoring state.');
+      try {
+        FirebaseFirestore.instance.enableNetwork().catchError((e) {
+          debugPrint('Firestore enableNetwork error: $e');
+        });
+      } catch (_) {}
+    }
   }
 
   void _showClearConfirmation() {

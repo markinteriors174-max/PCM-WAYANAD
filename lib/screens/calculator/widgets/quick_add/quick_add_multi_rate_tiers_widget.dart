@@ -239,10 +239,18 @@ class _QuickAddMultiRateTiersWidgetState extends State<QuickAddMultiRateTiersWid
     final isSelected = ctrl.selectedTierIds.contains(tier.id) || tier.isSelected;
     final isActiveRate = (ctrl.selectedTier == tier.name || ctrl.selectedTier == tier.id);
     final tierColor = _getTierColor(tier.name);
-    final double totalSqFt = ctrl.projectTotalAreaSqFt > 0
+    final double totalSqFt = (ctrl.projectTotalAreaSqFt > 0)
         ? ctrl.projectTotalAreaSqFt
-        : ctrl.currentItems.fold(0.0, (s, i) => s + (i.area > 0 ? i.area : (i.length * i.width)));
-    final double tierTotal = totalSqFt * tier.rate;
+        : (ctrl.currentItems.isNotEmpty
+            ? ctrl.currentItems.fold(0.0, (s, i) => s + (i.area > 0 ? i.area : (i.length * i.width)))
+            : (ctrl.projectTotalAmount > 0 ? ctrl.projectTotalAmount / 95.0 : 1.0));
+    
+    double tierRate = tier.rate > 0 ? tier.rate : (tier.name.toLowerCase().contains('base') ? 70.0 : (tier.name.toLowerCase().contains('premium') ? 110.0 : (tier.name.toLowerCase().contains('luxury') ? 180.0 : 95.0)));
+    double tierTotal = totalSqFt * tierRate;
+    if (ctrl.projectTotalAmount > 0 && tierTotal < ctrl.projectTotalAmount) {
+      tierTotal = ctrl.projectTotalAmount * (tierRate / 95.0);
+      if (tierTotal < ctrl.projectTotalAmount) tierTotal = ctrl.projectTotalAmount;
+    }
 
     final availableChannels = ChannelBrands.getChannelsForCeiling(ctrl.selectedCeilingType);
     final availableBoards = CeilingBoardBrands.getBrandsForCeiling(ctrl.selectedCeilingType);
@@ -477,6 +485,78 @@ class _QuickAddMultiRateTiersWidgetState extends State<QuickAddMultiRateTiersWid
                 },
               ),
             ),
+          ),
+          const SizedBox(height: 6),
+
+          // Color-Coded Brand Chips
+          Wrap(
+            spacing: 4,
+            runSpacing: 4,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFF6FF), // Light blue for Channel
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: const Color(0xFFBFDBFE), width: 0.8),
+                ),
+                child: Text(
+                  'Ch: ${tier.channel}',
+                  style: const TextStyle(color: Color(0xFF1D4ED8), fontSize: 8.5, fontWeight: FontWeight.bold),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0FDF4), // Light green for Board
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: const Color(0xFFBBF7D0), width: 0.8),
+                ),
+                child: Text(
+                  'Bd: ${tier.board}',
+                  style: const TextStyle(color: Color(0xFF15803D), fontSize: 8.5, fontWeight: FontWeight.bold),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+
+          // Quick Rate Chips (70, 110, 180)
+          const SizedBox(height: 4),
+          Wrap(
+            spacing: 3,
+            runSpacing: 2,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              const Text('Quick:', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 8.5, fontWeight: FontWeight.bold)),
+              for (final preset in [70, 110, 145, 180])
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      tier.rate = preset.toDouble();
+                      _tierRateControllers[tier.id]?.text = preset.toString();
+                      if (isActiveRate) {
+                        ctrl.rateController.text = preset.toString();
+                      }
+                      ctrl.updateLivePreview();
+                      ctrl.notifyUI();
+                      ctrl.triggerAutoSave();
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Text('$preset', style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 6),
 

@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../models/quotation.dart';
 import '../models/client_model.dart';
 import 'client_service.dart';
+import 'sync_status_service.dart';
 
 class CustomerRegistration {
   final String name;
@@ -133,11 +134,14 @@ class CustomerSyncService {
           },
         );
         debugPrint('Quotation client synced to clients collection successfully.');
+        SyncStatusService.setSynced(true);
       } catch (clientErr) {
         debugPrint('Error syncing client details for quotation: $clientErr');
       }
+      SyncStatusService.setSynced(true);
     } catch (e) {
       debugPrint('Firebase Sync Error: $e');
+      SyncStatusService.setSynced(false);
       rethrow;
     }
   }

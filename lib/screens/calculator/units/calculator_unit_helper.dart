@@ -114,6 +114,7 @@ class CalculatorUnitHelper {
 
     ctrl.unit = newUnit;
     ctrl.updateLivePreview();
+    ctrl.updateProjectTotals();
     ctrl.notifyUI();
     ctrl.triggerAutoSave();
   }

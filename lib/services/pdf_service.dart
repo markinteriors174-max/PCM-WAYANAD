@@ -50,6 +50,7 @@ class PdfService {
     List<Map<String, dynamic>>? rateTiers,
     List<String>? selectedTierIds,
     double? totalSqFt,
+    double manualAmount = 0,
   }) {
     return PdfGenerationService.generateQuotation(
       clientName: clientName,
@@ -81,6 +82,7 @@ class PdfService {
       rateTiers: rateTiers,
       selectedTierIds: selectedTierIds,
       totalSqFt: totalSqFt,
+      manualAmount: manualAmount,
     );
   }
 

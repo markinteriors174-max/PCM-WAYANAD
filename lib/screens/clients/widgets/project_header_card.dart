@@ -96,53 +96,55 @@ class ProjectHeaderCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(5)),
-                    child: Text('SITE: ${client.unitNumber}',
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10)),
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: status,
-                        isExpanded: true,
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.border, fontSize: 10),
-                        items: ['Pending', 'Active', 'Completed']
-                            .map((st) => DropdownMenuItem(value: st, child: Text(st.toUpperCase(), overflow: TextOverflow.ellipsis)))
-                            .toList(),
-                        onChanged: isEditing ? null : onStatusChanged,
-                      ),
-                    ),
-                  ),
-                ],
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3.5),
+              decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(5)),
+              child: Text(
+                'SITE: ${client.unitNumber}',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 9.5),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 4),
+            Expanded(
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: status,
+                  isExpanded: true,
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.border, fontSize: 9.5),
+                  items: ['Pending', 'Active', 'Completed']
+                      .map((st) => DropdownMenuItem(value: st, child: Text(st.toUpperCase(), overflow: TextOverflow.ellipsis)))
+                      .toList(),
+                  onChanged: isEditing ? null : onStatusChanged,
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                    icon: Icon(isEditing ? Icons.save : Icons.edit, color: AppColors.border, size: 18),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    onPressed: isSaving ? null : onToggleEdit),
-                const SizedBox(width: 6),
+                  icon: Icon(isEditing ? Icons.save : Icons.edit, color: AppColors.border, size: 16),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+                  onPressed: isSaving ? null : onToggleEdit,
+                  tooltip: isEditing ? 'Save' : 'Edit',
+                ),
+                const SizedBox(width: 4),
                 Icon(hasPin ? Icons.gps_fixed : Icons.gps_off,
-                    size: 12, color: hasPin ? AppColors.resultGreen : AppColors.alertRed),
-                const SizedBox(width: 3),
-                Text(hasPin ? 'PINNED' : 'NO GPS',
-                    style: TextStyle(
-                        color: hasPin ? AppColors.resultGreen : AppColors.alertRed,
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold)),
-                const SizedBox(width: 28),
+                    size: 11, color: hasPin ? AppColors.resultGreen : AppColors.alertRed),
+                const SizedBox(width: 2),
+                Text(
+                  hasPin ? 'PINNED' : 'NO GPS',
+                  style: TextStyle(
+                    color: hasPin ? AppColors.resultGreen : AppColors.alertRed,
+                    fontSize: 8.5,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
           ],

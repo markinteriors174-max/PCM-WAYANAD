@@ -189,6 +189,7 @@ class CalculatorPreviewHelper {
       ctrl.livePreviewAmount = 0.0;
     }
 
+    ctrl.updateProjectTotals();
     ctrl.notifyUI();
   }
 }

@@ -6,15 +6,10 @@ class CalculatorTotalsHelper {
     double subtotal = 0.0;
     double totalAreaSqFt = 0.0;
 
-    // Check if we have active room measurement items
     final bool hasItems = ctrl.currentItems.isNotEmpty;
 
     if (hasItems) {
-      // Clear any outdated/cached manual amount so it never overrides real room measurements
-      ctrl.manualAmountController.clear();
-
       for (var item in ctrl.currentItems) {
-        // Skip hidden/excluded items from calculation
         if (item.isHidden) continue;
 
         double factor = 1.0;
@@ -30,40 +25,29 @@ class CalculatorTotalsHelper {
         subtotal += itemAmt;
         totalAreaSqFt += item.area * factor;
       }
-    } else {
-      // Fallback draft when no room measurement items exist yet
-      final double manualAmt = double.tryParse(ctrl.manualAmountController.text) ?? 0.0;
-      if (manualAmt > 0) {
-        final double advanceAmt = ctrl.currentPayments.fold(0.0, (sum, item) => sum + item.amount);
-        ctrl.projectTotalAmount = manualAmt;
-        ctrl.projectDiscountAmount = 0.0;
-        ctrl.projectTotalAreaSqFt = 0.0;
-        ctrl.balanceAmount = manualAmt - advanceAmt;
-        ctrl.notifyUI();
-        return;
-      }
     }
 
     double total = subtotal;
 
-    // 1. Include 5% Wastage Buffer if enabled
     if (ctrl.includeWastage) {
       total = total * 1.05;
       totalAreaSqFt = totalAreaSqFt * 1.05;
     }
 
-    // 2. Apply Discount if specified
     final discountPercent = ctrl.discountPercent;
     final discountAmt = (discountPercent > 0) ? (total * (discountPercent / 100.0)) : 0.0;
     final finalBaseTotal = total - discountAmt;
 
-    // 3. Deduct advance payments for balance
+    // Optional Handwritten Final / Adjusted Amount Override
+    final double manualOverride = double.tryParse(ctrl.manualAmountController.text) ?? 0.0;
+    final double effectiveTotal = manualOverride > 0 ? manualOverride : finalBaseTotal;
+
     final double advanceAmt = ctrl.currentPayments.fold(0.0, (sum, item) => sum + item.amount);
 
-    ctrl.projectTotalAmount = finalBaseTotal;
+    ctrl.projectTotalAmount = effectiveTotal;
     ctrl.projectDiscountAmount = discountAmt;
     ctrl.projectTotalAreaSqFt = totalAreaSqFt;
-    ctrl.balanceAmount = finalBaseTotal - advanceAmt;
+    ctrl.balanceAmount = effectiveTotal - advanceAmt;
     ctrl.notifyUI();
   }
 

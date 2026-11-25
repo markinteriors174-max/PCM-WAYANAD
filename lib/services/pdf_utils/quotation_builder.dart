@@ -1,8 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/quotation.dart';
 import 'pdf_image_helper.dart';
+import 'social_media_footer_helper.dart';
 
 class QuotationBuilder {
   static Future<Uint8List> generate({
@@ -35,6 +37,7 @@ class QuotationBuilder {
     List<Map<String, dynamic>>? rateTiers,
     List<String>? selectedTierIds,
     double? totalSqFt,
+    double manualAmount = 0,
   }) async {
     final pdf = pw.Document();
 
@@ -56,15 +59,38 @@ class QuotationBuilder {
     final logoImage = await _loadMemoryImage('assets/images/logo.png', 'assets/images/pcm_logo.png');
     final roomThumb = await _loadMemoryImage('assets/images/room_thumb.jpg', 'assets/images/living.jpg');
     final sealImage = await _loadMemoryImage('assets/images/seal.png');
-    final signatureImage = await _loadMemoryImage('assets/images/signature.png');
+    final signatureImageAsset = await _loadMemoryImage('assets/images/my_signature.png', 'assets/images/signature.png');
+    pw.MemoryImage? signatureImage;
+    if (includeDigitalSignature) {
+      signatureImage = signatureImageAsset;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final bool ytEnabled = prefs.getBool('social_youtube_enabled') ?? true;
+    final String ytUrl = prefs.getString('social_youtube_url') ?? 'https://www.youtube.com/@Perimeteceilingmasters';
+    final bool fbEnabled = prefs.getBool('social_facebook_enabled') ?? true;
+    final String fbUrl = prefs.getString('social_facebook_url') ?? 'https://www.facebook.com/share/1A8m5yFFt6/';
+    final bool igEnabled = prefs.getBool('social_instagram_enabled') ?? true;
+    final String igUrl = prefs.getString('social_instagram_url') ?? 'https://www.instagram.com/premiumceilingmasters?avpt=bXd6c3dpNGpnamZn';
+
+    final socialWidget = await SocialMediaFooterHelper.buildSocialMediaRow(
+      font: fonts.regular,
+      boldFont: fonts.bold,
+      ytEnabled: ytEnabled,
+      ytUrl: ytUrl,
+      fbEnabled: fbEnabled,
+      fbUrl: fbUrl,
+      igEnabled: igEnabled,
+      igUrl: igUrl,
+    );
 
     // Color Palette (Gold, Black, Cream)
     const primaryBlack = PdfColor.fromInt(0xFF111111);
     const goldColor = PdfColor.fromInt(0xFFD4AF37);
     const greyBackground = PdfColor.fromInt(0xFFF5F5F5);
 
-    // Calculate Payment Stages (55% Advance, 30% Installation, 15% Final)
-    final double grandTotal = totalAmount;
+    // Calculate Payment Stages (55% Advance, 40% Installation, 5% Final Finishing)
+    final double grandTotal = manualAmount > 0 ? manualAmount : totalAmount;
     final double totalPaidAmount = paidAmount > 0
         ? paidAmount
         : payments.fold(0.0, (sum, p) => sum + p.amount);
@@ -72,16 +98,20 @@ class QuotationBuilder {
         ? (grandTotal - totalPaidAmount)
         : 0.0;
 
-    // ഓരോ സ്റ്റേജിന്റെയും തുക
+    // ഓരോ സ്റ്റേജിന്റെയും തുക (55% Advance, 40% Installation, 5% Final Finishing)
     final double advanceStageAmt = grandTotal * 0.55;
-    final double installationStageAmt = grandTotal * 0.30;
-    final double finalStageAmt = grandTotal * 0.15;
+    final double installationStageAmt = grandTotal * 0.40;
+    final double finalStageAmt = grandTotal * 0.05;
+
+    final double actualAdvanceReceived = totalPaidAmount > advanceStageAmt ? advanceStageAmt : totalPaidAmount;
+    final double balanceAfterAdvance = (grandTotal - actualAdvanceReceived) > 0 ? (grandTotal - actualAdvanceReceived) : 0.0;
+    final double dynamicInstallAmt = balanceAfterAdvance > 0 ? (balanceAfterAdvance * (0.40 / 0.45)) : installationStageAmt;
 
     // Payment stage status & amounts calculation
     final int paymentCount = payments.length;
-    final bool isAdvancePaid = paymentCount >= 1 || (totalPaidAmount >= advanceStageAmt - 0.01 && advanceStageAmt > 0);
-    final bool isInstallationPaid = paymentCount >= 2 || (totalPaidAmount >= (advanceStageAmt + installationStageAmt - 0.01) && installationStageAmt > 0);
-    final bool isFinalPaid = paymentCount >= 3 || remainingTotal <= 0.01;
+    final bool isAdvancePaid = totalPaidAmount >= advanceStageAmt - 0.01 && advanceStageAmt > 0;
+    final bool isInstallationPaid = totalPaidAmount >= (advanceStageAmt + dynamicInstallAmt - 0.01) && dynamicInstallAmt > 0;
+    final bool isFinalPaid = remainingTotal <= 0.01;
 
     final double advanceDue = isAdvancePaid
         ? 0.0
@@ -94,8 +124,8 @@ class QuotationBuilder {
         : 0.0;
     final double installDue = isInstallationPaid
         ? 0.0
-        : ((installationStageAmt - paidTowardsInstall) > 0 ? (installationStageAmt - paidTowardsInstall) : 0.0);
-    final double installPayable = installDue > 0 ? installDue : installationStageAmt;
+        : ((dynamicInstallAmt - paidTowardsInstall) > 0 ? (dynamicInstallAmt - paidTowardsInstall) : 0.0);
+    final double installPayable = installDue > 0 ? installDue : dynamicInstallAmt;
     final double installUpiAmt = installPayable > remainingTotal ? remainingTotal : installPayable;
 
     final double finalPayable = remainingTotal > 0 ? remainingTotal : finalStageAmt;
@@ -105,10 +135,11 @@ class QuotationBuilder {
     final bool showInstallQr = isAdvancePaid && !isInstallationPaid && remainingTotal > 0.01;
     final bool showFinalQr = isAdvancePaid && isInstallationPaid && !isFinalPaid && remainingTotal > 0.01;
 
-    // Calculate total area from items
+    // Calculate total area from items across all rooms
+    final double rawItemsArea = items.where((i) => !i.isHidden).fold(0.0, (sum, i) => sum + (i.area > 0 ? i.area : (i.length * i.width)));
     final totalArea = (totalSqFt != null && totalSqFt > 0)
         ? totalSqFt
-        : items.fold(0.0, (sum, i) => sum + (i.area > 0 ? i.area : (i.length * i.width))) * (includeWastage ? 1.05 : 1.0);
+        : (rawItemsArea > 0 ? rawItemsArea : (grandTotal / 105.0)) * (includeWastage ? 1.05 : 1.0);
 
     final List<Map<String, dynamic>> activeTiersList = selectedTiersList ??
         ((rateTiers != null && selectedTierIds != null && selectedTierIds.isNotEmpty)
@@ -330,13 +361,14 @@ class QuotationBuilder {
                     pw.Text(
                       '$currencySymbol${amount.toStringAsFixed(2)}',
                       style: pw.TextStyle(
-                        fontSize: 10.5,
+                        fontSize: 10,
                         fontWeight: pw.FontWeight.bold,
                         color: showQrCode ? const PdfColor.fromInt(0xFFB8860B) : (isPaid ? PdfColors.green900 : primaryBlack),
                         font: fonts.bold,
                       ),
                     ),
-                    if (showQrCode && payableAmount != null && (payableAmount - amount).abs() > 0.01)
+                    if (showQrCode && payableAmount != null && (payableAmount - amount).abs() > 0.01) ...[
+                      pw.SizedBox(height: 2),
                       pw.Text(
                         'Due: $currencySymbol${payableAmount.toStringAsFixed(2)}',
                         style: pw.TextStyle(
@@ -346,6 +378,7 @@ class QuotationBuilder {
                           font: fonts.bold,
                         ),
                       ),
+                    ],
                   ],
                 ),
 
@@ -452,7 +485,95 @@ class QuotationBuilder {
                   ],
                 ),
               ),
-              pw.SizedBox(height: 10),
+              pw.SizedBox(height: 8),
+
+              // Rate Tiers & Upfront Summary Right Below Client Details
+              if (activeTiersList.isNotEmpty) ...[
+                pw.Text(
+                  'SELECTED RATE TIERS & ESTIMATE COMPARISON',
+                  style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, color: const PdfColor.fromInt(0xFFB45309), font: fonts.bold),
+                ),
+                pw.SizedBox(height: 4),
+                pw.Row(
+                  children: activeTiersList.map((tier) {
+                    double tierPrice = (tier['rate'] as num?)?.toDouble() ??
+                        (tier['price'] as num?)?.toDouble() ?? 0.0;
+                    if (tierPrice <= 0) {
+                      final n = (tier['name'] as String? ?? '').toLowerCase();
+                      if (n.contains('base')) tierPrice = 70.0;
+                      else if (n.contains('premium')) tierPrice = 110.0;
+                      else if (n.contains('luxury')) tierPrice = 180.0;
+                      else tierPrice = 95.0;
+                    }
+                    double tierTotal = totalArea * tierPrice;
+                    if (tierTotal < grandTotal) {
+                      tierTotal = grandTotal * (tierPrice / 95.0);
+                      if (tierTotal < grandTotal) tierTotal = grandTotal;
+                    }
+                    final rawName = tier['name'] as String? ?? '';
+                    final displayName = isHelvetica ? rawName.replaceAll('₹', 'Rs.') : rawName;
+                    final channelName = tier['channelName'] as String? ?? tier['channel'] as String? ?? '';
+                    final boardName = tier['boardName'] as String? ?? tier['board'] as String? ?? '';
+
+                    return pw.Expanded(
+                      child: pw.Container(
+                        margin: const pw.EdgeInsets.symmetric(horizontal: 2),
+                        padding: const pw.EdgeInsets.all(5),
+                        decoration: pw.BoxDecoration(
+                          border: pw.Border.all(color: goldColor, width: 1),
+                          borderRadius: pw.BorderRadius.circular(4),
+                          color: PdfColors.grey100,
+                        ),
+                        child: pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            pw.Text(displayName, style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold, font: fonts.bold)),
+                            pw.Text('Rate: $currencySymbol$tierPrice / SqFt', style: pw.TextStyle(fontSize: 7.5, color: PdfColors.grey800, font: fonts.regular)),
+                            pw.Text('Total: $currencySymbol${tierTotal.toStringAsFixed(2)}', style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold, color: const PdfColor.fromInt(0xFFB45309), font: fonts.bold)),
+                            pw.Text('Ch: $channelName', style: pw.TextStyle(fontSize: 7, font: fonts.regular)),
+                            pw.Text('Bd: $boardName', style: pw.TextStyle(fontSize: 7, font: fonts.regular)),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                pw.SizedBox(height: 6),
+              ],
+
+              // Upfront Financial Figures Summary Banner
+              pw.Container(
+                padding: const pw.EdgeInsets.all(6),
+                decoration: pw.BoxDecoration(
+                  color: greyBackground,
+                  border: pw.Border.all(color: goldColor),
+                  borderRadius: pw.BorderRadius.circular(6),
+                ),
+                child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
+                  children: [
+                    pw.Column(
+                      children: [
+                        pw.Text('TOTAL AMOUNT', style: pw.TextStyle(fontSize: 8, color: PdfColors.grey700, font: fonts.bold)),
+                        pw.Text('$currencySymbol${grandTotal.toStringAsFixed(2)}', style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: primaryBlack, font: fonts.bold)),
+                      ],
+                    ),
+                    pw.Column(
+                      children: [
+                        pw.Text('TOTAL PAID', style: pw.TextStyle(fontSize: 8, color: PdfColors.green800, font: fonts.bold)),
+                        pw.Text('$currencySymbol${totalPaidAmount.toStringAsFixed(2)}', style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.green800, font: fonts.bold)),
+                      ],
+                    ),
+                    pw.Column(
+                      children: [
+                        pw.Text('BALANCE DUE', style: pw.TextStyle(fontSize: 8, color: PdfColors.red800, font: fonts.bold)),
+                        pw.Text('$currencySymbol${remainingTotal.toStringAsFixed(2)}', style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.red800, font: fonts.bold)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              pw.SizedBox(height: 8),
 
               // Room Specifications Table Header
               pw.Container(
@@ -467,53 +588,73 @@ class QuotationBuilder {
                 ),
               ),
 
-              // Room Items List with Thumbnails
-              ...items.map((item) {
+              // Room Items List with LED-Strip Accent & Room Number
+              ...items.asMap().entries.map((entry) {
+                final index = entry.key;
+                final item = entry.value;
                 final itemArea = item.area > 0 ? item.area : (item.length * item.width);
-                final spec = [
-                  if (item.ceilingType.isNotEmpty) 'Ch: ${item.ceilingType}',
-                  if (item.designName.isNotEmpty) 'Bd: ${item.designName}',
-                ].join(' | ');
-                final specText = spec.isNotEmpty ? spec : 'Standard Gypsum';
+                
+                final roomNumStr = item.roomNumber.isNotEmpty ? item.roomNumber : '${index + 1}';
+                final displayRoomTitle = 'Room $roomNumStr - ${item.roomName}';
+
+                String channelBrand = 'Gyproc';
+                String boardBrand = 'Gyproc';
+                if (item.brandName != null && item.brandName!.isNotEmpty) {
+                  final parts = item.brandName!.split('•');
+                  if (parts.length > 1) {
+                    boardBrand = parts[0].trim();
+                    channelBrand = parts[1].trim();
+                  } else {
+                    boardBrand = item.brandName!.trim();
+                  }
+                }
+                if (item.ceilingType.isNotEmpty && boardBrand == 'Gyproc') {
+                  boardBrand = item.ceilingType;
+                }
+
+                final designTypeLabel = item.designName.isNotEmpty ? item.designName : 'Plain Ceiling';
+                final specText = 'Ch: $channelBrand | Bd: $boardBrand | Type: $designTypeLabel';
+
+                final List<String> addons = [];
+                if (item.hasCove) addons.add('Cove Light (${item.coveRft > 0 ? item.coveRft.toStringAsFixed(1) : "Active"})');
+                if (item.hasCentralDesign) addons.add('Central Design');
 
                 return pw.Container(
-                  padding: const pw.EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-                  decoration: const pw.BoxDecoration(
-                    border: pw.Border(bottom: pw.BorderSide(color: PdfColors.grey300, width: 0.5)),
+                  margin: const pw.EdgeInsets.symmetric(vertical: 3),
+                  padding: const pw.EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                  decoration: pw.BoxDecoration(
+                    color: greyBackground,
+                    borderRadius: pw.BorderRadius.circular(6),
+                    border: pw.Border.all(color: PdfColors.grey300, width: 0.6),
                   ),
                   child: pw.Row(
                     children: [
+                      // Warm LED Cove Light strip accent along side edge
                       pw.Container(
-                        width: 45,
-                        height: 35,
+                        width: 3.5,
+                        height: 32,
                         margin: const pw.EdgeInsets.only(right: 8),
-                        child: roomThumb != null
-                            ? pw.ClipRRect(
-                                horizontalRadius: 4,
-                                verticalRadius: 4,
-                                child: pw.Image(roomThumb, fit: pw.BoxFit.cover),
-                              )
-                            : pw.Container(
-                                decoration: pw.BoxDecoration(
-                                  color: primaryBlack,
-                                  borderRadius: pw.BorderRadius.circular(4),
-                                  border: pw.Border.all(color: goldColor, width: 0.5),
-                                ),
-                                alignment: pw.Alignment.center,
-                                child: pw.Text('ROOM', style: pw.TextStyle(color: goldColor, fontSize: 8, font: fonts.bold)),
-                              ),
+                        decoration: pw.BoxDecoration(
+                          color: goldColor,
+                          borderRadius: pw.BorderRadius.circular(2),
+                        ),
                       ),
+
                       pw.Expanded(
                         child: pw.Column(
                           crossAxisAlignment: pw.CrossAxisAlignment.start,
                           children: [
-                            pw.Text(item.roomName, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, font: fonts.bold)),
-                            pw.Text('${item.length.toStringAsFixed(1)} x ${item.width.toStringAsFixed(1)} FT | ${itemArea.toStringAsFixed(2)} SQFT', style: pw.TextStyle(fontSize: 9, color: PdfColors.grey700, font: fonts.regular)),
-                            pw.Text(specText, style: pw.TextStyle(fontSize: 8, color: PdfColors.grey600, font: fonts.regular)),
+                            pw.Text(displayRoomTitle, style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, color: primaryBlack, font: fonts.bold)),
+                            pw.SizedBox(height: 2),
+                            pw.Text('${item.length.toStringAsFixed(1)} x ${item.width.toStringAsFixed(1)} FT | ${itemArea.toStringAsFixed(2)} SQFT | Rate: $currencySymbol${item.rate.toStringAsFixed(2)} / SqFt', style: pw.TextStyle(fontSize: 9, color: primaryBlack, fontWeight: pw.FontWeight.bold, font: fonts.bold)),
+                            pw.SizedBox(height: 1),
+                            pw.Text(specText, style: pw.TextStyle(fontSize: 8.5, color: PdfColors.grey900, font: fonts.regular)),
+                            if (addons.isNotEmpty)
+                              pw.Text('Add-ons: ${addons.join(", ")}', style: pw.TextStyle(fontSize: 8, color: const PdfColor.fromInt(0xFFB45309), font: fonts.bold)),
                           ],
                         ),
                       ),
-                      pw.Text('$currencySymbol${item.amount.toStringAsFixed(2)}', style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, font: fonts.bold)),
+                      pw.Text('$currencySymbol${item.amount.toStringAsFixed(2)}', style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, color: primaryBlack, font: fonts.bold)),
                     ],
                   ),
                 );
@@ -535,7 +676,34 @@ class QuotationBuilder {
                     _buildSummaryRow('TOTAL ROOMS:', '${items.length}', font: fonts.regular, boldFont: fonts.bold),
                     _buildSummaryRow('TOTAL AREA:', '${totalArea.toStringAsFixed(2)} SqFt', font: fonts.regular, boldFont: fonts.bold),
                     pw.Divider(color: goldColor),
-                    _buildSummaryRow('TOTAL WAGES / AMOUNT:', 'Rs. ${grandTotal.toStringAsFixed(2)}', isBold: true, font: fonts.regular, boldFont: fonts.bold),
+                    if (manualAmount > 0)
+                      pw.Container(
+                        padding: const pw.EdgeInsets.symmetric(vertical: 2, horizontal: 0),
+                        child: pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Text('TOTAL WAGES / AMOUNT:', style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, color: primaryBlack, font: fonts.bold)),
+                            pw.Row(
+                              children: [
+                                pw.Text(
+                                  'Rs. ${grandTotal.toStringAsFixed(2)}',
+                                  style: pw.TextStyle(fontSize: 9, decoration: pw.TextDecoration.lineThrough, color: PdfColors.grey700, font: fonts.regular),
+                                ),
+                                pw.SizedBox(width: 8),
+                                pw.Transform.rotate(
+                                  angle: -0.06,
+                                  child: pw.Text(
+                                    'Rs. ${manualAmount.toStringAsFixed(2)}',
+                                    style: pw.TextStyle(font: fonts.bold, fontSize: 13, color: const PdfColor.fromInt(0xFF1E3A8A)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      _buildSummaryRow('TOTAL WAGES / AMOUNT:', 'Rs. ${grandTotal.toStringAsFixed(2)}', isBold: true, font: fonts.regular, boldFont: fonts.bold),
                     _buildSummaryRow('TOTAL PAID AMOUNT:', 'Rs. ${totalPaidAmount.toStringAsFixed(2)}', color: PdfColors.green800, font: fonts.regular, boldFont: fonts.bold),
                     _buildSummaryRow('BALANCE DUE:', 'Rs. ${remainingTotal.toStringAsFixed(2)}', color: PdfColors.red800, isBold: true, font: fonts.regular, boldFont: fonts.bold),
                   ],
@@ -615,69 +783,7 @@ class QuotationBuilder {
               ),
               pw.SizedBox(height: 8),
 
-              // SELECTED RATE TIERS & ESTIMATE COMPARISON
-              if (activeTiersList.isNotEmpty) ...[
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text(
-                      'SELECTED RATE TIERS & ESTIMATE COMPARISON',
-                      style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, color: const PdfColor.fromInt(0xFFB45309), font: fonts.bold),
-                    ),
-                    pw.SizedBox(height: 6),
-                    pw.Row(
-                      children: activeTiersList.map((tier) {
-                        final double tierPrice = (tier['rate'] as num?)?.toDouble() ??
-                            (tier['price'] as num?)?.toDouble() ?? 0.0;
-                        final double tierTotal = totalArea * tierPrice;
-                        final rawName = tier['name'] as String? ?? '';
-                        final displayName = isHelvetica ? rawName.replaceAll('₹', 'Rs.') : rawName;
-                        final channelName = tier['channelName'] as String? ?? tier['channel'] as String? ?? '';
-                        final boardName = tier['boardName'] as String? ?? tier['board'] as String? ?? '';
 
-                        return pw.Expanded(
-                          child: pw.Container(
-                            margin: const pw.EdgeInsets.symmetric(horizontal: 2),
-                            padding: const pw.EdgeInsets.all(6),
-                            decoration: pw.BoxDecoration(
-                              border: pw.Border.all(color: goldColor, width: 1),
-                              borderRadius: pw.BorderRadius.circular(4),
-                              color: PdfColors.grey100,
-                            ),
-                            child: pw.Column(
-                              crossAxisAlignment: pw.CrossAxisAlignment.start,
-                              children: [
-                                pw.Text(
-                                  displayName,
-                                  style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold, font: fonts.bold),
-                                ),
-                                pw.SizedBox(height: 2),
-                                pw.Text(
-                                  'Rate: $currencySymbol$tierPrice / sqft',
-                                  style: pw.TextStyle(fontSize: 8, color: PdfColors.grey700, font: fonts.regular),
-                                ),
-                                pw.Text(
-                                  'Total: $currencySymbol${tierTotal.toStringAsFixed(2)}',
-                                  style: pw.TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: pw.FontWeight.bold,
-                                    color: const PdfColor.fromInt(0xFFB45309),
-                                    font: fonts.bold,
-                                  ),
-                                ),
-                                pw.SizedBox(height: 4),
-                                pw.Text('Ch: $channelName', style: pw.TextStyle(fontSize: 7, font: fonts.regular)),
-                                pw.Text('Bd: $boardName', style: pw.TextStyle(fontSize: 7, font: fonts.regular)),
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-                pw.SizedBox(height: 15),
-              ],
 
               // Payment Terms Header
               pw.Container(
@@ -686,7 +792,7 @@ class QuotationBuilder {
                 child: pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
-                    pw.Text('PAYMENT TERMS & BREAKDOWN', style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, color: primaryBlack, font: fonts.bold)),
+                    pw.Text('PAYMENT TERMS & STAGED BREAKDOWN', style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, color: primaryBlack, font: fonts.bold)),
                     pw.Text('UPI: asmadhu298@okaxis', style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold, color: primaryBlack, font: fonts.bold)),
                   ],
                 ),
@@ -697,33 +803,33 @@ class QuotationBuilder {
               buildPaymentRowWithQR(
                 title: '1. Advance Payment (Required at start / dispatch)',
                 percentage: '55%',
-                amount: advanceStageAmt,
+                amount: isAdvancePaid ? advanceStageAmt : (totalPaidAmount > 0 ? totalPaidAmount : advanceStageAmt),
                 payableAmount: advanceUpiAmt,
                 showQrCode: showAdvanceQr,
                 isPaid: isAdvancePaid,
                 upiData: 'upi://pay?pa=asmadhu298@okaxis&pn=PCM%20Wayanad&cu=INR&am=${advanceUpiAmt.toStringAsFixed(2)}&tn=Advance%20Payment',
               ),
 
-              // 2. Sheet Installation Payment (30%)
+              // 2. Sheet Installation Payment (40%)
               buildPaymentRowWithQR(
                 title: '2. Sheet Installation (When work is underway)',
-                percentage: '30%',
-                amount: installationStageAmt,
+                percentage: '40%',
+                amount: dynamicInstallAmt,
                 payableAmount: installUpiAmt,
                 showQrCode: showInstallQr,
                 isPaid: isInstallationPaid,
                 upiData: 'upi://pay?pa=asmadhu298@okaxis&pn=PCM%20Wayanad&cu=INR&am=${installUpiAmt.toStringAsFixed(2)}&tn=Installation%20Payment',
               ),
 
-              // 3. Final Payment (15%)
+              // 3. Final 5% Finishing Stage
               buildPaymentRowWithQR(
-                title: '3. Final Balance (Upon project completion)',
-                percentage: '15%',
+                title: '3. Final 5% Finishing (Upon project completion)',
+                percentage: '5%',
                 amount: finalStageAmt,
                 payableAmount: finalUpiAmt,
                 showQrCode: showFinalQr,
                 isPaid: isFinalPaid,
-                upiData: 'upi://pay?pa=asmadhu298@okaxis&pn=PCM%20Wayanad&cu=INR&am=${finalUpiAmt.toStringAsFixed(2)}&tn=Final%20Balance',
+                upiData: 'upi://pay?pa=asmadhu298@okaxis&pn=PCM%20Wayanad&cu=INR&am=${finalUpiAmt.toStringAsFixed(2)}&tn=Final%20Finishing',
               ),
 
               // പിഡിഎഫിൽ പെയ്മെന്റ് ഹിസ്റ്ററി സെക്ഷൻ (PAYMENT HISTORY LOG)
@@ -860,6 +966,10 @@ class QuotationBuilder {
                     pw.SizedBox(width: 1),
                 ],
               ),
+              if (socialWidget != null) ...[
+                pw.SizedBox(height: 6),
+                socialWidget,
+              ],
             ],
           ),
         ],

@@ -28,6 +28,13 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
   final _profitMarginController = TextEditingController();
   final _securityPinController = TextEditingController();
   
+  final _youtubeUrlController = TextEditingController();
+  bool _youtubeEnabled = true;
+  final _facebookUrlController = TextEditingController();
+  bool _facebookEnabled = true;
+  final _instagramUrlController = TextEditingController();
+  bool _instagramEnabled = true;
+  
   bool _isLoading = true;
   String? _signaturePath;
   String? _sealPath;
@@ -55,6 +62,13 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
       _profitMarginController.text = (prefs.getDouble('profit_margin') ?? 42.09).toStringAsFixed(2);
       _securityPinController.text = prefs.getString('security_pin') ?? '2025';
       
+      _youtubeUrlController.text = prefs.getString('social_youtube_url') ?? 'https://www.youtube.com/@Perimeteceilingmasters';
+      _youtubeEnabled = prefs.getBool('social_youtube_enabled') ?? true;
+      _facebookUrlController.text = prefs.getString('social_facebook_url') ?? 'https://www.facebook.com/share/1A8m5yFFt6/';
+      _facebookEnabled = prefs.getBool('social_facebook_enabled') ?? true;
+      _instagramUrlController.text = prefs.getString('social_instagram_url') ?? 'https://www.instagram.com/premiumceilingmasters?avpt=bXd6c3dpNGpnamZn';
+      _instagramEnabled = prefs.getBool('social_instagram_enabled') ?? true;
+      
       _signaturePath = prefs.getString('signature_path');
       _sealPath = prefs.getString('seal_path');
       
@@ -81,6 +95,13 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
     
     final margin = double.tryParse(_profitMarginController.text.trim()) ?? 42.09;
     await prefs.setDouble('profit_margin', margin);
+    
+    await prefs.setString('social_youtube_url', _youtubeUrlController.text.trim());
+    await prefs.setBool('social_youtube_enabled', _youtubeEnabled);
+    await prefs.setString('social_facebook_url', _facebookUrlController.text.trim());
+    await prefs.setBool('social_facebook_enabled', _facebookEnabled);
+    await prefs.setString('social_instagram_url', _instagramUrlController.text.trim());
+    await prefs.setBool('social_instagram_enabled', _instagramEnabled);
     
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -147,6 +168,29 @@ class _CompanySettingsScreenState extends State<CompanySettingsScreen> {
                 child: Text('This PIN is required to enable the "Include Digital Signature" toggle in the calculator.', style: TextStyle(color: Colors.black54, fontSize: 10, fontStyle: FontStyle.italic)),
               ),
               
+              const SizedBox(height: 30),
+              _buildSectionTitle('SOCIAL MEDIA LINKS & PDF FOOTER'),
+              SwitchListTile(
+                title: const Text('Enable YouTube Link', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                value: _youtubeEnabled,
+                onChanged: (v) => setState(() => _youtubeEnabled = v),
+              ),
+              _buildTextField('YouTube URL', _youtubeUrlController),
+              const SizedBox(height: 10),
+              SwitchListTile(
+                title: const Text('Enable Facebook Link', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                value: _facebookEnabled,
+                onChanged: (v) => setState(() => _facebookEnabled = v),
+              ),
+              _buildTextField('Facebook URL', _facebookUrlController),
+              const SizedBox(height: 10),
+              SwitchListTile(
+                title: const Text('Enable Instagram Link', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                value: _instagramEnabled,
+                onChanged: (v) => setState(() => _instagramEnabled = v),
+              ),
+              _buildTextField('Instagram URL', _instagramUrlController),
+
               const SizedBox(height: 30),
               _buildSectionTitle('SIGNATURE & COMPANY SEAL'),
               _buildImageUploadFields(),

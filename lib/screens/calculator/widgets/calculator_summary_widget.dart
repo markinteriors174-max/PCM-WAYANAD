@@ -316,6 +316,19 @@ class _CalculatorStickyActionsWidgetState extends State<CalculatorStickyActionsW
     final bool isBlocked = ctrl.discountPercent > 3.0;
 
     return Column(children: [
+      TextField(
+        controller: ctrl.manualAmountController,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        decoration: AppStyles.inputDecoration('Handwritten Final / Adjusted Amount (₹)').copyWith(
+          hintText: 'e.g. 5000 (Optional)',
+        ),
+        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent),
+        onChanged: (_) {
+          ctrl.updateProjectTotals();
+          ctrl.triggerAutoSave();
+        },
+      ),
+      const SizedBox(height: 15),
       TextField(controller: ctrl.manualWeightController, keyboardType: TextInputType.number, decoration: AppStyles.inputDecoration('Manual Weight (Kg)'), style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.border), onChanged: (_) => ctrl.triggerAutoSave()),
       if (!isBlocked) ...[
         const SizedBox(height: 25),
@@ -793,6 +806,7 @@ class _CalculatorStickyActionsWidgetState extends State<CalculatorStickyActionsW
         rateTiers: ctrl.rateTiers.map((t) => t.toMap()).toList(),
         selectedTierIds: ctrl.rateTiers.where((t) => t.isSelected).map((t) => t.name).toList(),
         selectedTiersList: ctrl.rateTiers.where((t) => t.isSelected).map((t) => t.toMap()).toList(),
+        manualAmount: currentQuota.manualAmount,
       );
 
       if (context.mounted) Navigator.pop(context);

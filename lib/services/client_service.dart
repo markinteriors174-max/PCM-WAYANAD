@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../models/client_model.dart';
+import '../utils/calculator_utils.dart';
 
 class ClientService {
   static final ClientService instance = ClientService._init();
@@ -319,16 +320,18 @@ class ClientService {
       // 3. Search collection for matching unitNumber, phone, or name
       final snapshot = await _db.collection('clients').get();
       final cleanQuery = raw.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '').toLowerCase();
+      final searchPhoneNorm = CalculatorUtils.normalizePhone(raw);
 
       for (var d in snapshot.docs) {
         final client = Client.fromMap(d.data(), d.id);
         final cleanUnit = client.unitNumber.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '').toLowerCase();
-        final cleanPhone = client.phoneNumber.replaceAll(RegExp(r'\D'), '');
+        final clientPhoneNorm = CalculatorUtils.normalizePhone(client.phoneNumber);
         final cleanName = client.clientName.toLowerCase();
 
         if (cleanUnit.contains(cleanQuery) ||
             cleanQuery.contains(cleanUnit) ||
-            (cleanQuery.length >= 4 && cleanPhone.endsWith(cleanQuery)) ||
+            (searchPhoneNorm.length >= 10 && clientPhoneNorm == searchPhoneNorm) ||
+            (searchPhoneNorm.length >= 4 && clientPhoneNorm.endsWith(searchPhoneNorm)) ||
             cleanName.contains(cleanQuery)) {
           return client;
         }

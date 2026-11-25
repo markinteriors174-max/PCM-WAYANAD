@@ -710,12 +710,7 @@ class CalculatorController extends ChangeNotifier {
       currentItems.add(item);
     }
     
-    // Preserve manual amount ONLY as a temporary fallback if currentItems is completely empty
-    final double effectiveManual = (currentItems.isEmpty && quotation.totalAmount > 0)
-        ? quotation.totalAmount
-        : (currentItems.isEmpty && quotation.manualAmount > 0 ? quotation.manualAmount : 0.0);
-
-    manualAmountController.text = (currentItems.isEmpty && effectiveManual > 0) ? effectiveManual.toString() : '';
+    manualAmountController.text = quotation.manualAmount > 0 ? quotation.manualAmount.toString() : '';
     manualWeightController.text = quotation.manualWeight > 0 ? quotation.manualWeight.toString() : '';
     globalMaterialCostController.text = quotation.globalMaterialCost > 0 ? quotation.globalMaterialCost.toString() : '';
     globalMarginController.text = quotation.globalMargin > 0 ? quotation.globalMargin.toString() : '';
